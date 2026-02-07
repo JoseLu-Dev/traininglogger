@@ -258,8 +258,9 @@ package com.liftlogger.infrastructure.security;
 
 import com.liftlogger.application.sync.UserContextProvider;
 import com.liftlogger.application.sync.validation.ValidationContext;
-import com.liftlogger.domain.repository.AthleteRepository;
-import com.liftlogger.domain.repository.CoachRepository;
+import com.liftlogger.domain.entity.User;
+import com.liftlogger.domain.exception.EntityNotFoundException;
+import com.liftlogger.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -272,23 +273,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserContextProviderImpl implements UserContextProvider {
 
-    private final AthleteRepository athleteRepository;
-    private final CoachRepository coachRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ValidationContext getValidationContext(UUID userId) {
-        // Determine user role by checking repositories
-        String role = determineUserRole(userId);
-        return new ValidationContext(userId, role);
-    }
-
-    private String determineUserRole(UUID userId) {
-        if (athleteRepository.existsById(userId)) {
-            return "ATHLETE";
-        } else if (coachRepository.existsById(userId)) {
-            return "COACH";
+        // Get user from repository
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            throw new EntityNotFoundException("User", userId);
         }
-        return "USER";  // Default role
+
+        // Get role from User entity (COACH or ATHLETE)
+        String role = user.getRole().toString();
+        return new ValidationContext(userId, role);
     }
 }
 ```
@@ -522,4 +519,4 @@ class SyncControllerTest {
 
 ## Next Step
 
-After completing this step, move to **09-entity-validators.md** to implement business validators for all 12 entities.
+After completing this step, move to **09-entity-validators.md** to implement business validators for all 10 entities.

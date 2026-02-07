@@ -1,7 +1,7 @@
 # Step 9: Entity Validators
 
 ## Objective
-Implement business validators for all 12 entity types with field validation, cross-entity validation, and business rules.
+Implement business validators for all 10 entity types with field validation, cross-entity validation, and business rules.
 
 ## Files to Create
 
@@ -14,7 +14,7 @@ package com.liftlogger.application.sync.validators;
 
 import com.liftlogger.application.sync.validation.*;
 import com.liftlogger.domain.entity.TrainingPlan;
-import com.liftlogger.domain.repository.AthleteRepository;
+import com.liftlogger.domain.repository.UserRepository;
 import com.liftlogger.domain.repository.TrainingPlanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class TrainingPlanValidator extends BaseValidator implements EntityValidator<TrainingPlan> {
 
     private final TrainingPlanRepository repository;
-    private final AthleteRepository athleteRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ValidationResult validate(TrainingPlan plan, ValidationContext context) {
@@ -54,8 +54,8 @@ public class TrainingPlanValidator extends BaseValidator implements EntityValida
         }
 
         // Cross-entity validation
-        if (plan.getAthleteId() != null && !athleteRepository.existsById(plan.getAthleteId())) {
-            errors.add(ValidationError.notFound("athleteId", "Athlete"));
+        if (plan.getAthleteId() != null && !userRepository.existsById(plan.getAthleteId())) {
+            errors.add(ValidationError.notFound("athleteId", "User"));
         }
 
         // Business rule: No overlapping plans
@@ -94,7 +94,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SetSessionValidator extends BaseValidator implements EntityValidator<SetSession> {
 
-    private final AthleteRepository athleteRepository;
+    private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
     private final TrainingPlanRepository trainingPlanRepository;
 
@@ -130,8 +130,8 @@ public class SetSessionValidator extends BaseValidator implements EntityValidato
         }
 
         // Cross-entity validation
-        if (session.getAthleteId() != null && !athleteRepository.existsById(session.getAthleteId())) {
-            errors.add(ValidationError.notFound("athleteId", "Athlete"));
+        if (session.getAthleteId() != null && !userRepository.existsById(session.getAthleteId())) {
+            errors.add(ValidationError.notFound("athleteId", "User"));
         }
 
         if (session.getExerciseId() != null && !exerciseRepository.existsById(session.getExerciseId())) {
@@ -165,10 +165,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ExerciseValidator extends BaseValidator implements EntityValidator<Exercise> {
 
-    private final CoachRepository coachRepository;
-    private final MuscleGroupRepository muscleGroupRepository;
-    private final EquipmentRepository equipmentRepository;
-    private final ExerciseCategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ValidationResult validate(Exercise exercise, ValidationContext context) {
@@ -194,23 +191,8 @@ public class ExerciseValidator extends BaseValidator implements EntityValidator<
         }
 
         // Cross-entity validation
-        if (exercise.getCoachId() != null && !coachRepository.existsById(exercise.getCoachId())) {
-            errors.add(ValidationError.notFound("coachId", "Coach"));
-        }
-
-        if (exercise.getPrimaryMuscleGroupId() != null &&
-            !muscleGroupRepository.existsById(exercise.getPrimaryMuscleGroupId())) {
-            errors.add(ValidationError.notFound("primaryMuscleGroupId", "MuscleGroup"));
-        }
-
-        if (exercise.getEquipmentId() != null &&
-            !equipmentRepository.existsById(exercise.getEquipmentId())) {
-            errors.add(ValidationError.notFound("equipmentId", "Equipment"));
-        }
-
-        if (exercise.getCategoryId() != null &&
-            !categoryRepository.existsById(exercise.getCategoryId())) {
-            errors.add(ValidationError.notFound("categoryId", "ExerciseCategory"));
+        if (exercise.getCoachId() != null && !userRepository.existsById(exercise.getCoachId())) {
+            errors.add(ValidationError.notFound("coachId", "User"));
         }
 
         return buildResult();
@@ -222,53 +204,47 @@ public class ExerciseValidator extends BaseValidator implements EntityValidator<
 
 For entities without complex business rules, create simple validators:
 
-**File:** `src/main/java/com/liftlogger/application/sync/validators/BodyMeasurementValidator.java`
+**File:** `src/main/java/com/liftlogger/application/sync/validators/BodyWeightEntryValidator.java`
 
 ```java
 package com.liftlogger.application.sync.validators;
 
 import com.liftlogger.application.sync.validation.*;
-import com.liftlogger.domain.entity.BodyMeasurement;
-import com.liftlogger.domain.repository.AthleteRepository;
+import com.liftlogger.domain.entity.BodyWeightEntry;
+import com.liftlogger.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BodyMeasurementValidator extends BaseValidator
-    implements EntityValidator<BodyMeasurement> {
+public class BodyWeightEntryValidator extends BaseValidator
+    implements EntityValidator<BodyWeightEntry> {
 
-    private final AthleteRepository athleteRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public ValidationResult validate(BodyMeasurement measurement, ValidationContext context) {
+    public ValidationResult validate(BodyWeightEntry entry, ValidationContext context) {
         clearErrors();
 
-        requiredUUID(measurement.getId(), "id");
-        requiredUUID(measurement.getAthleteId(), "athleteId");
-        required(measurement.getMeasurementDate(), "measurementDate");
+        requiredUUID(entry.getId(), "id");
+        requiredUUID(entry.getAthleteId(), "athleteId");
+        required(entry.getDate(), "date");
 
         // Weight validation
-        if (measurement.getWeight() != null) {
-            min(measurement.getWeight(), 20.0, "weight");
-            max(measurement.getWeight(), 500.0, "weight");
-        }
-
-        // Body fat percentage validation
-        if (measurement.getBodyFatPercentage() != null) {
-            min(measurement.getBodyFatPercentage(), 0.0, "bodyFatPercentage");
-            max(measurement.getBodyFatPercentage(), 100.0, "bodyFatPercentage");
+        if (entry.getWeight() != null) {
+            min(entry.getWeight(), 20.0, "weight");
+            max(entry.getWeight(), 500.0, "weight");
         }
 
         // Ownership validation
-        if (!measurement.getAthleteId().equals(context.currentUserId()) && !context.isCoach()) {
+        if (!entry.getAthleteId().equals(context.currentUserId()) && !context.isCoach()) {
             errors.add(ValidationError.invalid("athleteId",
-                "You can only create measurements for yourself"));
+                "You can only create body weight entries for yourself"));
         }
 
         // Cross-entity validation
-        if (!athleteRepository.existsById(measurement.getAthleteId())) {
-            errors.add(ValidationError.notFound("athleteId", "Athlete"));
+        if (!userRepository.existsById(entry.getAthleteId())) {
+            errors.add(ValidationError.notFound("athleteId", "User"));
         }
 
         return buildResult();
@@ -276,54 +252,53 @@ public class BodyMeasurementValidator extends BaseValidator
 }
 ```
 
-### 5. Progress Photo Validator
+### 5. Additional Validators Needed
 
-**File:** `src/main/java/com/liftlogger/application/sync/validators/ProgressPhotoValidator.java`
+Create validators for the remaining entities following the same patterns:
+
+**Validators to implement:**
+- `UserValidator` - for User entity
+- `VariantValidator` - for exercise variants
+- `ExercisePlanValidator` - for planned exercises
+- `SetPlanValidator` - for planned sets
+- `TrainingSessionValidator` - for training sessions
+- `ExerciseSessionValidator` - for exercise sessions
+
+Example structure (similar to above validators):
 
 ```java
-package com.liftlogger.application.sync.validators;
-
-import com.liftlogger.application.sync.validation.*;
-import com.liftlogger.domain.entity.ProgressPhoto;
-import com.liftlogger.domain.repository.AthleteRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
 @Component
 @RequiredArgsConstructor
-public class ProgressPhotoValidator extends BaseValidator
-    implements EntityValidator<ProgressPhoto> {
+public class VariantValidator extends BaseValidator
+    implements EntityValidator<Variant> {
 
-    private final AthleteRepository athleteRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public ValidationResult validate(ProgressPhoto photo, ValidationContext context) {
+    public ValidationResult validate(Variant variant, ValidationContext context) {
         clearErrors();
 
-        requiredUUID(photo.getId(), "id");
-        requiredUUID(photo.getAthleteId(), "athleteId");
-        requiredString(photo.getPhotoUrl(), "photoUrl");
-        required(photo.getTakenDate(), "takenDate");
+        requiredUUID(variant.getId(), "id");
+        requiredUUID(variant.getCoachId(), "coachId");
+        requiredString(variant.getName(), "name");
+        minLength(variant.getName(), 2, "name");
+        maxLength(variant.getName(), 100, "name");
+        maxLength(variant.getDescription(), 1000, "description");
 
-        maxLength(photo.getPhotoUrl(), 500, "photoUrl");
-        maxLength(photo.getNotes(), 1000, "notes");
-
-        // Photo type validation
-        if (photo.getPhotoType() != null &&
-            !List.of("FRONT", "BACK", "SIDE", "OTHER").contains(photo.getPhotoType())) {
-            errors.add(ValidationError.invalid("photoType",
-                "Photo type must be one of: FRONT, BACK, SIDE, OTHER"));
+        // Ownership validation (only coaches can create variants)
+        if (!context.isCoach()) {
+            errors.add(ValidationError.invalid("coachId",
+                "Only coaches can create variants"));
         }
 
-        // Ownership validation
-        if (!photo.getAthleteId().equals(context.currentUserId()) && !context.isCoach()) {
-            errors.add(ValidationError.invalid("athleteId",
-                "You can only create photos for yourself"));
+        if (!variant.getCoachId().equals(context.currentUserId())) {
+            errors.add(ValidationError.invalid("coachId",
+                "You can only create variants for yourself"));
         }
 
         // Cross-entity validation
-        if (!athleteRepository.existsById(photo.getAthleteId())) {
-            errors.add(ValidationError.notFound("athleteId", "Athlete"));
+        if (!userRepository.existsById(variant.getCoachId())) {
+            errors.add(ValidationError.notFound("coachId", "User"));
         }
 
         return buildResult();
@@ -340,36 +315,32 @@ public class ProgressPhotoValidator extends BaseValidator
 public class EntitySyncConfiguration {
 
     // Inject all validators
-    @Autowired private TrainingPlanValidator trainingPlanValidator;
-    @Autowired private SetSessionValidator setSessionValidator;
+    @Autowired private UserValidator userValidator;
     @Autowired private ExerciseValidator exerciseValidator;
-    @Autowired private WorkoutValidator workoutValidator;
-    @Autowired private AthleteValidator athleteValidator;
-    @Autowired private CoachValidator coachValidator;
-    @Autowired private MuscleGroupValidator muscleGroupValidator;
-    @Autowired private EquipmentValidator equipmentValidator;
-    @Autowired private ExerciseCategoryValidator exerciseCategoryValidator;
-    @Autowired private ProgressPhotoValidator progressPhotoValidator;
-    @Autowired private BodyMeasurementValidator bodyMeasurementValidator;
-    @Autowired private NutritionLogValidator nutritionLogValidator;
+    @Autowired private VariantValidator variantValidator;
+    @Autowired private TrainingPlanValidator trainingPlanValidator;
+    @Autowired private ExercisePlanValidator exercisePlanValidator;
+    @Autowired private SetPlanValidator setPlanValidator;
+    @Autowired private TrainingSessionValidator trainingSessionValidator;
+    @Autowired private ExerciseSessionValidator exerciseSessionValidator;
+    @Autowired private SetSessionValidator setSessionValidator;
+    @Autowired private BodyWeightEntryValidator bodyWeightEntryValidator;
 
     @Bean
     public EntityRegistry entityRegistry() {
         EntityRegistry registry = new EntityRegistry();
 
-        // Register all entities with their validators
-        registry.register(TrainingPlan.class, "athleteId", trainingPlanValidator);
-        registry.register(SetSession.class, "athleteId", setSessionValidator);
+        // Register all 10 entities with their validators
+        registry.register(User.class, "id", userValidator);
         registry.register(Exercise.class, "coachId", exerciseValidator);
-        registry.register(Workout.class, "athleteId", workoutValidator);
-        registry.register(Athlete.class, "id", athleteValidator);
-        registry.register(Coach.class, "id", coachValidator);
-        registry.register(MuscleGroup.class, "coachId", muscleGroupValidator);
-        registry.register(Equipment.class, "coachId", equipmentValidator);
-        registry.register(ExerciseCategory.class, "coachId", exerciseCategoryValidator);
-        registry.register(ProgressPhoto.class, "athleteId", progressPhotoValidator);
-        registry.register(BodyMeasurement.class, "athleteId", bodyMeasurementValidator);
-        registry.register(NutritionLog.class, "athleteId", nutritionLogValidator);
+        registry.register(Variant.class, "coachId", variantValidator);
+        registry.register(TrainingPlan.class, "athleteId", trainingPlanValidator);
+        registry.register(ExercisePlan.class, "athleteId", exercisePlanValidator);
+        registry.register(SetPlan.class, "athleteId", setPlanValidator);
+        registry.register(TrainingSession.class, "athleteId", trainingSessionValidator);
+        registry.register(ExerciseSession.class, "athleteId", exerciseSessionValidator);
+        registry.register(SetSession.class, "athleteId", setSessionValidator);
+        registry.register(BodyWeightEntry.class, "athleteId", bodyWeightEntryValidator);
 
         return registry;
     }
@@ -386,7 +357,7 @@ package com.liftlogger.application.sync.validators;
 import com.liftlogger.application.sync.validation.ValidationContext;
 import com.liftlogger.application.sync.validation.ValidationResult;
 import com.liftlogger.domain.entity.TrainingPlan;
-import com.liftlogger.domain.repository.AthleteRepository;
+import com.liftlogger.domain.repository.UserRepository;
 import com.liftlogger.domain.repository.TrainingPlanRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -408,7 +379,7 @@ class TrainingPlanValidatorTest {
     private TrainingPlanRepository repository;
 
     @Mock
-    private AthleteRepository athleteRepository;
+    private UserRepository userRepository;
 
     private TrainingPlanValidator validator;
     private ValidationContext context;
@@ -416,7 +387,7 @@ class TrainingPlanValidatorTest {
 
     @BeforeEach
     void setUp() {
-        validator = new TrainingPlanValidator(repository, athleteRepository);
+        validator = new TrainingPlanValidator(repository, userRepository);
         athleteId = UUID.randomUUID();
         context = new ValidationContext(athleteId, "ATHLETE");
     }
@@ -433,7 +404,7 @@ class TrainingPlanValidatorTest {
             .status("ACTIVE")
             .build();
 
-        when(athleteRepository.existsById(athleteId)).thenReturn(true);
+        when(userRepository.existsById(athleteId)).thenReturn(true);
         when(repository.existsOverlappingPlan(any(), any(), any(), any())).thenReturn(false);
 
         ValidationResult result = validator.validate(plan, context);
@@ -486,7 +457,7 @@ class TrainingPlanValidatorTest {
             .endDate(LocalDate.now().plusDays(30))
             .build();
 
-        when(athleteRepository.existsById(athleteId)).thenReturn(true);
+        when(userRepository.existsById(athleteId)).thenReturn(true);
         when(repository.existsOverlappingPlan(any(), any(), any(), any())).thenReturn(true);
 
         ValidationResult result = validator.validate(plan, context);
@@ -506,7 +477,7 @@ class TrainingPlanValidatorTest {
             .endDate(LocalDate.now().plusDays(30))
             .build();
 
-        when(athleteRepository.existsById(any())).thenReturn(false);
+        when(userRepository.existsById(any())).thenReturn(false);
 
         ValidationResult result = validator.validate(plan, context);
 
@@ -519,24 +490,22 @@ class TrainingPlanValidatorTest {
 
 ## Validator Checklist
 
-Create validators for all 12 entities:
+Create validators for all 10 entities:
 
 1. ✅ `TrainingPlanValidator`
 2. ✅ `SetSessionValidator`
 3. ✅ `ExerciseValidator`
-4. `WorkoutValidator`
-5. `AthleteValidator`
-6. `CoachValidator`
-7. `MuscleGroupValidator`
-8. `EquipmentValidator`
-9. `ExerciseCategoryValidator`
-10. ✅ `ProgressPhotoValidator`
-11. ✅ `BodyMeasurementValidator`
-12. `NutritionLogValidator`
+4. `UserValidator`
+5. `VariantValidator`
+6. `ExercisePlanValidator`
+7. `SetPlanValidator`
+8. `TrainingSessionValidator`
+9. `ExerciseSessionValidator`
+10. ✅ `BodyWeightEntryValidator`
 
 ## Acceptance Criteria
 
-- ✅ All 12 validators implement `EntityValidator<T>`
+- ✅ All 10 validators implement `EntityValidator<T>`
 - ✅ Field validation (required, length, min/max)
 - ✅ Cross-entity validation (foreign keys exist)
 - ✅ Business rules (overlapping dates, ownership, etc.)

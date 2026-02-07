@@ -233,18 +233,16 @@ Available entity types for sync:
 
 | Entity Type | Owner Field | Description |
 |------------|-------------|-------------|
-| `TrainingPlan` | `athleteId` | Training plans for athletes |
-| `SetSession` | `athleteId` | Individual exercise sets |
+| `User` | `id` | User profiles (coaches and athletes) |
 | `Exercise` | `coachId` | Exercise definitions |
-| `Workout` | `athleteId` | Workout sessions |
-| `Athlete` | `id` | Athlete profiles |
-| `Coach` | `id` | Coach profiles |
-| `MuscleGroup` | `coachId` | Muscle group definitions |
-| `Equipment` | `coachId` | Equipment definitions |
-| `ExerciseCategory` | `coachId` | Exercise categories |
-| `ProgressPhoto` | `athleteId` | Progress photos |
-| `BodyMeasurement` | `athleteId` | Body measurements |
-| `NutritionLog` | `athleteId` | Nutrition logs |
+| `Variant` | `coachId` | Exercise variants |
+| `TrainingPlan` | `athleteId` | Training plans for athletes |
+| `ExercisePlan` | `athleteId` | Planned exercises in training plan |
+| `SetPlan` | `athleteId` | Planned sets |
+| `TrainingSession` | `athleteId` | Actual workout sessions |
+| `ExerciseSession` | `athleteId` | Actual exercises performed |
+| `SetSession` | `athleteId` | Actual sets performed |
+| `BodyWeightEntry` | `athleteId` | Body weight tracking |
 
 ## Sync Strategy
 

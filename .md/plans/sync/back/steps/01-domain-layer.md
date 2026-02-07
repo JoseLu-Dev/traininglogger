@@ -205,20 +205,18 @@ public class SetSession {
 
 ## Repository Interfaces to Create
 
-Create similar repository interfaces for all 12 entities:
+Create similar repository interfaces for all 10 entities:
 
 1. ✅ `TrainingPlanRepository`
 2. `SetSessionRepository`
 3. `ExerciseRepository`
-4. `WorkoutRepository`
-5. `AthleteRepository`
-6. `CoachRepository`
-7. `MuscleGroupRepository`
-8. `EquipmentRepository`
-9. `ExerciseCategoryRepository`
-10. `ProgressPhotoRepository`
-11. `BodyMeasurementRepository`
-12. `NutritionLogRepository`
+4. `UserRepository`  // For both coaches and athletes
+5. `VariantRepository`
+6. `ExercisePlanRepository`
+7. `SetPlanRepository`
+8. `TrainingSessionRepository`
+9. `ExerciseSessionRepository`
+10. `BodyWeightEntryRepository`
 
 ## Acceptance Criteria
 

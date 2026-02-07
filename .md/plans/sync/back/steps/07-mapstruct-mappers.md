@@ -473,8 +473,8 @@ class TrainingPlanMapperTest {
 ## Acceptance Criteria
 
 - ✅ MapStruct dependency configured with annotation processors
-- ✅ Domain ↔ JPA mappers for all 12 entities
-- ✅ Domain ↔ DTO mappers for all 12 entities
+- ✅ Domain ↔ JPA mappers for all 10 entities
+- ✅ Domain ↔ DTO mappers for all 10 entities
 - ✅ `DtoMapperProvider` for dynamic mapper lookup
 - ✅ `SyncDtoConverter` for sync-specific DTO conversion
 - ✅ DTOs with proper JSON formatting (@JsonFormat)
@@ -488,15 +488,13 @@ Create mappers for these entities:
 1. ✅ TrainingPlan
 2. SetSession
 3. Exercise
-4. Workout
-5. Athlete
-6. Coach
-7. MuscleGroup
-8. Equipment
-9. ExerciseCategory
-10. ProgressPhoto
-11. BodyMeasurement
-12. NutritionLog
+4. User
+5. Variant
+6. ExercisePlan
+7. SetPlan
+8. TrainingSession
+9. ExerciseSession
+10. BodyWeightEntry
 
 ## Next Step
 

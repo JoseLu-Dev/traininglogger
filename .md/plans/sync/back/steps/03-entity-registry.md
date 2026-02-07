@@ -1,7 +1,7 @@
 # Step 3: Entity Registry
 
 ## Objective
-Create the entity metadata registry that makes the sync system generic - adding new entities requires only 1 line of configuration.
+Create the entity metadata registry that makes the sync system generic - adding new entities requires only 1 line of configuration. This registry handles all 10 entity types.
 
 ## Files to Create
 
@@ -166,21 +166,19 @@ public class EntitySyncConfiguration {
     public EntityRegistry entityRegistry() {
         EntityRegistry registry = new EntityRegistry();
 
-        // Register all 12 entity types
+        // Register all 10 entity types
         // Format: .register(EntityClass.class, "ownerField", validator)
 
-        registry.register(TrainingPlan.class, "athleteId", noOpValidator);
-        registry.register(SetSession.class, "athleteId", noOpValidator);
+        registry.register(User.class, "id", noOpValidator);  // Owner is self
         registry.register(Exercise.class, "coachId", noOpValidator);
-        registry.register(Workout.class, "athleteId", noOpValidator);
-        registry.register(Athlete.class, "id", noOpValidator);  // Owner is self
-        registry.register(Coach.class, "id", noOpValidator);    // Owner is self
-        registry.register(MuscleGroup.class, "coachId", noOpValidator);
-        registry.register(Equipment.class, "coachId", noOpValidator);
-        registry.register(ExerciseCategory.class, "coachId", noOpValidator);
-        registry.register(ProgressPhoto.class, "athleteId", noOpValidator);
-        registry.register(BodyMeasurement.class, "athleteId", noOpValidator);
-        registry.register(NutritionLog.class, "athleteId", noOpValidator);
+        registry.register(Variant.class, "coachId", noOpValidator);
+        registry.register(TrainingPlan.class, "athleteId", noOpValidator);
+        registry.register(ExercisePlan.class, "athleteId", noOpValidator);
+        registry.register(SetPlan.class, "athleteId", noOpValidator);
+        registry.register(TrainingSession.class, "athleteId", noOpValidator);
+        registry.register(ExerciseSession.class, "athleteId", noOpValidator);
+        registry.register(SetSession.class, "athleteId", noOpValidator);
+        registry.register(BodyWeightEntry.class, "athleteId", noOpValidator);
 
         return registry;
     }
@@ -297,21 +295,19 @@ class EntitySyncConfigurationTest {
 
     @Test
     void entityRegistry_hasAllEntities() {
-        // Verify all 12 entities are registered
-        assertThat(entityRegistry.getEntityCount()).isEqualTo(12);
+        // Verify all 10 entities are registered
+        assertThat(entityRegistry.getEntityCount()).isEqualTo(10);
 
-        assertThat(entityRegistry.isRegistered("TrainingPlan")).isTrue();
-        assertThat(entityRegistry.isRegistered("SetSession")).isTrue();
+        assertThat(entityRegistry.isRegistered("User")).isTrue();
         assertThat(entityRegistry.isRegistered("Exercise")).isTrue();
-        assertThat(entityRegistry.isRegistered("Workout")).isTrue();
-        assertThat(entityRegistry.isRegistered("Athlete")).isTrue();
-        assertThat(entityRegistry.isRegistered("Coach")).isTrue();
-        assertThat(entityRegistry.isRegistered("MuscleGroup")).isTrue();
-        assertThat(entityRegistry.isRegistered("Equipment")).isTrue();
-        assertThat(entityRegistry.isRegistered("ExerciseCategory")).isTrue();
-        assertThat(entityRegistry.isRegistered("ProgressPhoto")).isTrue();
-        assertThat(entityRegistry.isRegistered("BodyMeasurement")).isTrue();
-        assertThat(entityRegistry.isRegistered("NutritionLog")).isTrue();
+        assertThat(entityRegistry.isRegistered("Variant")).isTrue();
+        assertThat(entityRegistry.isRegistered("TrainingPlan")).isTrue();
+        assertThat(entityRegistry.isRegistered("ExercisePlan")).isTrue();
+        assertThat(entityRegistry.isRegistered("SetPlan")).isTrue();
+        assertThat(entityRegistry.isRegistered("TrainingSession")).isTrue();
+        assertThat(entityRegistry.isRegistered("ExerciseSession")).isTrue();
+        assertThat(entityRegistry.isRegistered("SetSession")).isTrue();
+        assertThat(entityRegistry.isRegistered("BodyWeightEntry")).isTrue();
     }
 
     @Test
@@ -320,7 +316,7 @@ class EntitySyncConfigurationTest {
             .isEqualTo("athleteId");
         assertThat(entityRegistry.getByName("Exercise").ownerField())
             .isEqualTo("coachId");
-        assertThat(entityRegistry.getByName("Athlete").ownerField())
+        assertThat(entityRegistry.getByName("User").ownerField())
             .isEqualTo("id");
     }
 }
@@ -330,7 +326,7 @@ class EntitySyncConfigurationTest {
 
 - ✅ `EntityMetadata<T>` record stores entity configuration
 - ✅ `EntityRegistry` provides lookup by name and class
-- ✅ `EntitySyncConfiguration` registers all 12 entities
+- ✅ `EntitySyncConfiguration` registers all 10 entities
 - ✅ Adding new entity only requires 1 line in configuration
 - ✅ Registry throws clear exceptions for unknown entities
 - ✅ Tests pass for registry functionality
