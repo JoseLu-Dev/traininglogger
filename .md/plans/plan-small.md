@@ -82,49 +82,6 @@ IF local.isDirty AND server.version > local.version THEN
 END IF
 ```
 
-### API Endpoints
-
-**GET /api/v1/sync/pull?since={timestamp}&athleteId={uuid}**
-
-````json
-{
-  "changes": [
-    {"entityType": "TrainingPlan", "entity": {...}}
-  ],
-  "syncTimestamp": "2026-02-05T12:00:00Z"
-}
-```my
-
-**Backend Query:**
-```sql
--- Athlete: Filter by athleteId
-SELECT * FROM training_plan WHERE athlete_id = ? AND updated_at > ?;
-
--- Coach: Filter by coachId (all their athletes)
-SELECT tp.* FROM training_plan tp
-JOIN athlete a ON tp.athlete_id = a.id
-WHERE a.coach_id = ? AND tp.updated_at > ?;
-````
-
-**POST /api/v1/sync/push**
-
-```json
-Request:
-{
-  "changes": [
-    {"entityType": "SetSession", "entity": {...}}
-  ]
-}
-
-Response:
-{
-  "applied": [
-    {"entityType": "SetSession", "id": "uuid", "version": 3, "updatedAt": "..."}
-  ],
-  "syncTimestamp": "2026-02-05T12:00:00Z"
-}
-```
-
 ### Retry Queue (Exponential Backoff)
 
 ```dart
@@ -177,50 +134,6 @@ Future<bool> login(String username, String password) async {
 - `providers/` - Riverpod providers
 
 **Frontend Apps:** `features/` (screens + controllers) + `widgets/` (reusable UI)
-
----
-
-## 🚀 Implementation Roadmap
-
-### Phase 1: Foundation (Weeks 1-2)
-
-**Backend:** PostgreSQL schema, JPA entities with sync metadata, Spring Security setup
-**Frontend:** Drift schema in `front_shared`, domain models, Riverpod providers
-**Deliverable:** Local CRUD works (no sync)
-
-### Phase 2: Authentication (Week 3)
-
-**Backend:** `/api/v1/auth/login` + role-based authorization
-**Frontend:** `AuthService` with offline login, `flutter_secure_storage`
-**Deliverable:** Online + offline authentication
-
-### Phase 3: Sync Infrastructure (Weeks 4-5)
-
-**Backend:** `/api/v1/sync/pull` + `/api/v1/sync/push` with client-wins conflict resolution
-**Frontend:** `SyncManager`, `SyncQueue`, `NetworkMonitor`, `isDirty` logic
-**Deliverable:** Manual sync works
-
-### Phase 4: Auto-Sync (Week 6)
-
-**Frontend:** Auto-sync triggers (launch, resume, after edits, network restore), sync indicator UI
-**Deliverable:** Fully automatic offline-first
-
-### Phase 5: Athlete App (Weeks 7-8)
-
-**Features:** Session logging, body weight tracking, plan viewing
-**Deliverable:** Athletes log workouts offline
-
-### Phase 6: Coach App (Weeks 9-10)
-
-**Features:** Exercise library, plan builder, athlete management
-**Deliverable:** Coaches create plans offline
-
-### Phase 7: Polish (Weeks 11-12)
-
-**Testing:** E2E offline scenarios, performance tuning, UI/UX refinement
-**Deliverable:** Production MVP
-
----
 
 ## 🎯 Next Steps
 
