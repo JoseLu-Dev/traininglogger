@@ -2,11 +2,15 @@ package com.example.liftlogger.infrastructure.security.service;
 
 import com.example.liftlogger.domain.model.User;
 import com.example.liftlogger.domain.outbound.repository.UserRepository;
+import com.example.liftlogger.infrastructure.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +23,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPasswordHash())
-                .authorities("ROLE_" + user.getRole().name())
-                .build();
+        return new CurrentUser(
+                user.getId(),
+                user.getEmail(),
+                user.getPasswordHash(),
+                user.getRole().name(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+        );
     }
 }
