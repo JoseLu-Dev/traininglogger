@@ -5,7 +5,12 @@
       "Bash(dir:*)",
       "Bash(docker ps:*)",
       "Bash(./mvnw compile:*)",
-      "Bash(./mvnw spring-boot:run:*)"
+      "Bash(./mvnw spring-boot:run:*)",
+      "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" compile)",
+      "Bash(mvn test:*)",
+      "Bash(./mvnw test:*)",
+      "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" test *)",
+      "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" compile *)"
     ]
   }
 }
