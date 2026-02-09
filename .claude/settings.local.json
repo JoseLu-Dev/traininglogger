@@ -10,7 +10,9 @@
       "Bash(mvn test:*)",
       "Bash(./mvnw test:*)",
       "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" test *)",
-      "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" compile *)"
+      "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" compile *)",
+      "WebSearch",
+      "Bash(.mvnw compile:*)"
     ]
   }
 }
