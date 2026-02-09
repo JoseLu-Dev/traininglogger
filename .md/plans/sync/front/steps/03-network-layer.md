@@ -49,18 +49,8 @@ class SecureStorageService {
 
   SecureStorageService(this._storage);
 
-  // Token management
-  Future<void> saveToken(String token) async {
-    await _storage.write(key: 'auth_token', value: token);
-  }
-
-  Future<String?> getToken() async {
-    return await _storage.read(key: 'auth_token');
-  }
-
-  Future<void> deleteToken() async {
-    await _storage.delete(key: 'auth_token');
-  }
+  // Token management removed - backend uses cookie-based authentication
+  // Session cookies are automatically handled by Dio
 
   // Password hash for offline auth
   Future<void> savePasswordHash(String hash) async {
@@ -80,12 +70,12 @@ class SecureStorageService {
     return await _storage.read(key: 'user_id');
   }
 
-  Future<void> saveUserType(String userType) async {
-    await _storage.write(key: 'user_type', value: userType);
+  Future<void> saveUserRole(String role) async {
+    await _storage.write(key: 'user_role', value: role);
   }
 
-  Future<String?> getUserType() async {
-    return await _storage.read(key: 'user_type');
+  Future<String?> getUserRole() async {
+    return await _storage.read(key: 'user_role');
   }
 
   // Clear all
@@ -111,61 +101,17 @@ class ApiClient {
       baseUrl: ApiConstants.baseUrl,
       connectTimeout: ApiConstants.connectTimeout,
       receiveTimeout: ApiConstants.receiveTimeout,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     ));
 
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          final token = await _storage.getToken();
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
-          handler.next(options);
-        },
-        onError: (error, handler) async {
-          if (error.response?.statusCode == 401) {
-            // Token expired, try to refresh
-            final refreshed = await _refreshToken();
-            if (refreshed) {
-              // Retry the request with new token
-              final opts = error.requestOptions;
-              final token = await _storage.getToken();
-              opts.headers['Authorization'] = 'Bearer $token';
-              try {
-                final response = await _dio.fetch(opts);
-                return handler.resolve(response);
-              } catch (e) {
-                return handler.next(error);
-              }
-            }
-          }
-          handler.next(error);
-        },
-      ),
-    );
+    // No authorization interceptor needed - cookies handled automatically by Dio
+    // Session cookie (SESSION) is automatically sent with each request
   }
 
   Dio get dio => _dio;
-
-  Future<bool> _refreshToken() async {
-    try {
-      final token = await _storage.getToken();
-      if (token == null) return false;
-
-      final response = await _dio.post('/api/v1/auth/refresh', data: {
-        'token': token,
-      });
-
-      if (response.statusCode == 200) {
-        final newToken = response.data['token'] as String;
-        await _storage.saveToken(newToken);
-        return true;
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }
 }
 
 class NetworkException implements Exception {
@@ -207,6 +153,8 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   return ApiClient(ref.watch(secureStorageProvider));
 });
 ```
+
+**Note on Cookie Management**: Dio automatically manages cookies via its default cookie jar. The backend sets a `SESSION` cookie on login, which Dio will automatically include in subsequent requests. No manual cookie handling is required.
 
 ## Success Criteria
 - ✅ NetworkInfo interface and implementation created

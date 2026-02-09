@@ -17,9 +17,10 @@ class AuthState with _$AuthState {
   const factory AuthState.initial() = _Initial;
   const factory AuthState.loading() = _Loading;
   const factory AuthState.authenticated({
-    required String userId,
-    required String userType, // 'athlete' or 'coach'
-    required String token,
+    required String id,
+    required String email,
+    required String role, // 'COACH' or 'ATHLETE' (uppercase)
+    String? coachId,
     @Default(false) bool isOffline,
   }) = _Authenticated;
   const factory AuthState.unauthenticated() = _Unauthenticated;
@@ -39,13 +40,13 @@ class AuthApiService {
 
   AuthApiService(this._apiClient);
 
-  /// Login with username and password
-  Future<LoginResponseDto> login(String username, String password) async {
+  /// Login with email and password
+  Future<LoginResponseDto> login(String email, String password) async {
     try {
       final response = await _apiClient.dio.post(
         '/api/v1/auth/login',
         data: {
-          'username': username,
+          'email': email,  // Changed from 'username'
           'password': password,
         },
       );
@@ -56,7 +57,7 @@ class AuthApiService {
     }
   }
 
-  /// Logout (invalidate token on server)
+  /// Logout (invalidate session)
   Future<void> logout() async {
     try {
       await _apiClient.dio.post('/api/v1/auth/logout');
@@ -96,7 +97,7 @@ part 'auth_dtos.g.dart';
 @freezed
 class LoginRequestDto with _$LoginRequestDto {
   const factory LoginRequestDto({
-    required String username,
+    required String email,  // Changed from username
     required String password,
   }) = _LoginRequestDto;
 
@@ -107,10 +108,10 @@ class LoginRequestDto with _$LoginRequestDto {
 @freezed
 class LoginResponseDto with _$LoginResponseDto {
   const factory LoginResponseDto({
-    required String token,
-    required String userId,
-    required String userType, // 'athlete' or 'coach'
-    required String username,
+    required String id,        // Changed from userId
+    required String email,     // Changed from username
+    required String role,      // Changed from userType, values: 'COACH' or 'ATHLETE'
+    String? coachId,          // Added optional coachId
   }) = _LoginResponseDto;
 
   factory LoginResponseDto.fromJson(Map<String, dynamic> json) =>
@@ -139,25 +140,28 @@ class AuthService {
     this._networkInfo,
   );
 
-  /// Login with username and password
+  /// Login with email and password
   /// If online: authenticates with server and caches credentials
   /// If offline: validates against cached password hash
-  Future<AuthState> login(String username, String password) async {
+  Future<AuthState> login(String email, String password) async {
     try {
       if (await _networkInfo.isConnected) {
         // Online login
-        final response = await _authApi.login(username, password);
+        final response = await _authApi.login(email, password);
 
         // Cache credentials for offline use
-        await _secureStorage.saveToken(response.token);
         await _secureStorage.savePasswordHash(_hashPassword(password));
-        await _secureStorage.saveUserId(response.userId);
-        await _secureStorage.saveUserType(response.userType);
+        await _secureStorage.saveUserId(response.id);
+        await _secureStorage.saveUserRole(response.role);
+        if (response.coachId != null) {
+          await _secureStorage.write(key: 'coach_id', value: response.coachId!);
+        }
 
         return AuthState.authenticated(
-          userId: response.userId,
-          userType: response.userType,
-          token: response.token,
+          id: response.id,
+          email: response.email,
+          role: response.role,
+          coachId: response.coachId,
           isOffline: false,
         );
       } else {
@@ -176,17 +180,18 @@ class AuthService {
 
         // Load cached user info
         final userId = await _secureStorage.getUserId();
-        final userType = await _secureStorage.getUserType();
-        final token = await _secureStorage.getToken();
+        final userRole = await _secureStorage.getUserRole();
+        final coachId = await _secureStorage.read(key: 'coach_id');
 
-        if (userId == null || userType == null || token == null) {
+        if (userId == null || userRole == null) {
           return const AuthState.error('Cached credentials incomplete');
         }
 
         return AuthState.authenticated(
-          userId: userId,
-          userType: userType,
-          token: token,
+          id: userId,
+          email: email,  // Use the email provided during offline login
+          role: userRole,
+          coachId: coachId,
           isOffline: true,
         );
       }
@@ -212,26 +217,25 @@ class AuthService {
     }
   }
 
-  /// Check if user is authenticated (has valid token)
+  /// Check if user is authenticated
   Future<AuthState> checkAuthStatus() async {
-    final token = await _secureStorage.getToken();
-    if (token == null) {
-      return const AuthState.unauthenticated();
-    }
-
     final userId = await _secureStorage.getUserId();
-    final userType = await _secureStorage.getUserType();
+    final userRole = await _secureStorage.getUserRole();
 
-    if (userId == null || userType == null) {
+    if (userId == null || userRole == null) {
       return const AuthState.unauthenticated();
     }
 
+    final coachId = await _secureStorage.read(key: 'coach_id');
     final isOffline = !await _networkInfo.isConnected;
 
+    // Note: email is not cached for offline login, only verified via password hash
+    // For a full implementation, consider caching email as well
     return AuthState.authenticated(
-      userId: userId,
-      userType: userType,
-      token: token,
+      id: userId,
+      email: '', // TODO: Cache email during login for offline status checks
+      role: userRole,
+      coachId: coachId,
       isOffline: isOffline,
     );
   }
@@ -279,9 +283,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = await _authService.checkAuthStatus();
   }
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String email, String password) async {
     state = const AuthState.loading();
-    state = await _authService.login(username, password);
+    state = await _authService.login(email, password);
   }
 
   Future<void> logout() async {
@@ -335,25 +339,25 @@ void main() {
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
       when(mockAuthApi.login(any, any)).thenAnswer((_) async =>
           const LoginResponseDto(
-            token: 'test-token',
-            userId: 'user-1',
-            userType: 'athlete',
-            username: 'testuser',
+            id: 'user-1',
+            email: 'test@example.com',
+            role: 'ATHLETE',
+            coachId: null,
           ));
 
-      final result = await authService.login('testuser', 'password');
+      final result = await authService.login('test@example.com', 'password');
 
-      verify(mockStorage.saveToken('test-token')).called(1);
       verify(mockStorage.saveUserId('user-1')).called(1);
-      verify(mockStorage.saveUserType('athlete')).called(1);
+      verify(mockStorage.saveUserRole('ATHLETE')).called(1);
       verify(mockStorage.savePasswordHash(any)).called(1);
 
       result.when(
         initial: () => fail('Expected authenticated'),
         loading: () => fail('Expected authenticated'),
-        authenticated: (userId, userType, token, isOffline) {
-          expect(userId, equals('user-1'));
-          expect(userType, equals('athlete'));
+        authenticated: (id, email, role, coachId, isOffline) {
+          expect(id, equals('user-1'));
+          expect(email, equals('test@example.com'));
+          expect(role, equals('ATHLETE'));
           expect(isOffline, isFalse);
         },
         unauthenticated: () => fail('Expected authenticated'),
@@ -366,18 +370,19 @@ void main() {
       when(mockStorage.getPasswordHash()).thenAnswer((_) async =>
           '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'); // 'password'
       when(mockStorage.getUserId()).thenAnswer((_) async => 'user-1');
-      when(mockStorage.getUserType()).thenAnswer((_) async => 'athlete');
-      when(mockStorage.getToken()).thenAnswer((_) async => 'cached-token');
+      when(mockStorage.getUserRole()).thenAnswer((_) async => 'ATHLETE');
+      when(mockStorage.read(key: 'coach_id')).thenAnswer((_) async => null);
 
-      final result = await authService.login('testuser', 'password');
+      final result = await authService.login('test@example.com', 'password');
 
       verifyNever(mockAuthApi.login(any, any));
 
       result.when(
         initial: () => fail('Expected authenticated'),
         loading: () => fail('Expected authenticated'),
-        authenticated: (userId, userType, token, isOffline) {
-          expect(userId, equals('user-1'));
+        authenticated: (id, email, role, coachId, isOffline) {
+          expect(id, equals('user-1'));
+          expect(email, equals('test@example.com'));
           expect(isOffline, isTrue);
         },
         unauthenticated: () => fail('Expected authenticated'),
@@ -390,12 +395,12 @@ void main() {
       when(mockStorage.getPasswordHash()).thenAnswer((_) async =>
           '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'); // 'password'
 
-      final result = await authService.login('testuser', 'wrongpassword');
+      final result = await authService.login('test@example.com', 'wrongpassword');
 
       result.when(
         initial: () => fail('Expected error'),
         loading: () => fail('Expected error'),
-        authenticated: (_, __, ___, ____) => fail('Expected error'),
+        authenticated: (_, __, ___, ____, _____) => fail('Expected error'),
         unauthenticated: () => fail('Expected error'),
         error: (message) {
           expect(message, contains('Invalid credentials'));
@@ -407,12 +412,12 @@ void main() {
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => false);
       when(mockStorage.getPasswordHash()).thenAnswer((_) async => null);
 
-      final result = await authService.login('testuser', 'password');
+      final result = await authService.login('test@example.com', 'password');
 
       result.when(
         initial: () => fail('Expected error'),
         loading: () => fail('Expected error'),
-        authenticated: (_, __, ___, ____) => fail('Expected error'),
+        authenticated: (_, __, ___, ____, _____) => fail('Expected error'),
         unauthenticated: () => fail('Expected error'),
         error: (message) {
           expect(message, contains('previous online login'));

@@ -17,10 +17,8 @@ part 'sync_dtos.g.dart';
 @freezed
 class SyncPullRequestDto with _$SyncPullRequestDto {
   const factory SyncPullRequestDto({
-    required DateTime since,
-    required String athleteId,
-    List<String>? entityTypes,
-    @Default(100) int limit,
+    required List<String> entityTypes,
+    DateTime? lastSyncTime,
   }) = _SyncPullRequestDto;
 
   factory SyncPullRequestDto.fromJson(Map<String, dynamic> json) =>
@@ -31,31 +29,22 @@ class SyncPullRequestDto with _$SyncPullRequestDto {
 @freezed
 class SyncPullResponseDto with _$SyncPullResponseDto {
   const factory SyncPullResponseDto({
-    required Map<String, List<Map<String, dynamic>>> changesByType,
+    required Map<String, List<Map<String, dynamic>>> entities,
     required DateTime syncTimestamp,
-    required Map<String, EntityStats> stats,
+    required int totalEntities,
   }) = _SyncPullResponseDto;
 
   factory SyncPullResponseDto.fromJson(Map<String, dynamic> json) =>
       _$SyncPullResponseDtoFromJson(json);
 }
 
-@freezed
-class EntityStats with _$EntityStats {
-  const factory EntityStats({
-    required int count,
-    required bool hasMore,
-  }) = _EntityStats;
-
-  factory EntityStats.fromJson(Map<String, dynamic> json) =>
-      _$EntityStatsFromJson(json);
-}
+// EntityStats removed - backend returns simple totalEntities count
 
 // Push request
 @freezed
 class SyncPushRequestDto with _$SyncPushRequestDto {
   const factory SyncPushRequestDto({
-    required Map<String, List<Map<String, dynamic>>> changes,
+    required Map<String, List<Map<String, dynamic>>> entities,
   }) = _SyncPushRequestDto;
 
   factory SyncPushRequestDto.fromJson(Map<String, dynamic> json) =>
@@ -66,59 +55,41 @@ class SyncPushRequestDto with _$SyncPushRequestDto {
 @freezed
 class SyncPushResponseDto with _$SyncPushResponseDto {
   const factory SyncPushResponseDto({
-    required List<SyncSuccessDto> succeeded,
-    required List<SyncFailureDto> failed,
-    required SyncSummary summary,
+    required int successCount,
+    required int failureCount,
+    required List<EntityFailure> failures,
+    required DateTime syncTimestamp,
   }) = _SyncPushResponseDto;
 
   factory SyncPushResponseDto.fromJson(Map<String, dynamic> json) =>
       _$SyncPushResponseDtoFromJson(json);
 }
 
-@freezed
-class SyncSuccessDto with _$SyncSuccessDto {
-  const factory SyncSuccessDto({
-    required String entityType,
-    required String entityId,
-    required Map<String, dynamic> entity,
-  }) = _SyncSuccessDto;
-
-  factory SyncSuccessDto.fromJson(Map<String, dynamic> json) =>
-      _$SyncSuccessDtoFromJson(json);
-}
+// SyncSuccessDto removed - backend only returns counts, not success details
+// SyncSummary removed - counts are top-level fields
 
 @freezed
-class SyncFailureDto with _$SyncFailureDto {
-  const factory SyncFailureDto({
+class EntityFailure with _$EntityFailure {
+  const factory EntityFailure({
     required String entityType,
     required String entityId,
     required List<ValidationError> errors,
-  }) = _SyncFailureDto;
+  }) = _EntityFailure;
 
-  factory SyncFailureDto.fromJson(Map<String, dynamic> json) =>
-      _$SyncFailureDtoFromJson(json);
+  factory EntityFailure.fromJson(Map<String, dynamic> json) =>
+      _$EntityFailureFromJson(json);
 }
 
 @freezed
 class ValidationError with _$ValidationError {
   const factory ValidationError({
     required String field,
+    required String code,     // ADDED: Backend includes error code
     required String message,
   }) = _ValidationError;
 
   factory ValidationError.fromJson(Map<String, dynamic> json) =>
       _$ValidationErrorFromJson(json);
-}
-
-@freezed
-class SyncSummary with _$SyncSummary {
-  const factory SyncSummary({
-    required int succeeded,
-    required int failed,
-  }) = _SyncSummary;
-
-  factory SyncSummary.fromJson(Map<String, dynamic> json) =>
-      _$SyncSummaryFromJson(json);
 }
 ```
 
@@ -136,20 +107,16 @@ class SyncApiService {
 
   /// Pull changes from server
   Future<SyncPullResponseDto> pull({
-    required DateTime since,
-    required String athleteId,
-    List<String>? entityTypes,
-    int limit = 100,
+    required List<String> entityTypes,
+    DateTime? lastSyncTime,
   }) async {
     try {
-      final queryParams = {
-        'since': since.toIso8601String(),
-        'athleteId': athleteId,
-        'limit': limit,
+      final queryParams = <String, dynamic>{
+        'entityTypes': entityTypes,
       };
 
-      if (entityTypes != null && entityTypes.isNotEmpty) {
-        queryParams['entityTypes'] = entityTypes.join(',');
+      if (lastSyncTime != null) {
+        queryParams['lastSyncTime'] = lastSyncTime.toIso8601String();
       }
 
       final response = await _apiClient.dio.get(

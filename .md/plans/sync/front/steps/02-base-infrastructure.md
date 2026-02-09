@@ -103,8 +103,17 @@ class EntityFailure with _$EntityFailure {
   const factory EntityFailure({
     required String entityType,
     required String entityId,
-    required List<String> errors,
+    required List<ValidationError> errors,  // Changed from List<String>
   }) = _EntityFailure;
+}
+
+@freezed
+class ValidationError with _$ValidationError {
+  const factory ValidationError({
+    required String field,
+    required String code,
+    required String message,
+  }) = _ValidationError;
 }
 ```
 

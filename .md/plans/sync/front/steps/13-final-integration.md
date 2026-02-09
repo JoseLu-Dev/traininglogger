@@ -290,7 +290,7 @@ class LoginPage extends ConsumerWidget {
     return authState.when(
       initial: () => _buildLoginForm(authNotifier),
       loading: () => const CircularProgressIndicator(),
-      authenticated: (userId, userType, token, isOffline) {
+      authenticated: (id, email, role, coachId, isOffline) {
         // Navigate to home
         return HomePage();
       },
@@ -302,7 +302,7 @@ class LoginPage extends ConsumerWidget {
   Widget _buildLoginForm(AuthNotifier notifier) {
     return ElevatedButton(
       onPressed: () {
-        notifier.login(usernameController.text, passwordController.text);
+        notifier.login(emailController.text, passwordController.text);
       },
       child: const Text('Login'),
     );
