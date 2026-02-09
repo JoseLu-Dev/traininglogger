@@ -20,7 +20,7 @@ import java.util.UUID;
 @Builder
 public class ExerciseJpaEntity extends BaseJpaEntity {
 
-    @Column(name = "coach_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "coach_id", nullable = false)
     private UUID coachId;
 
     @Column(nullable = false)

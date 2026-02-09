@@ -20,7 +20,7 @@ import java.util.UUID;
 public abstract class BaseJpaEntity {
 
     @Id
-    @Column(columnDefinition = "BINARY(16)")
+    @Column()
     private UUID id;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -29,10 +29,10 @@ public abstract class BaseJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "created_by", columnDefinition = "BINARY(16)")
+    @Column(name = "created_by")
     private UUID createdBy;
 
-    @Column(name = "updated_by", columnDefinition = "BINARY(16)")
+    @Column(name = "updated_by")
     private UUID updatedBy;
 
     @PrePersist

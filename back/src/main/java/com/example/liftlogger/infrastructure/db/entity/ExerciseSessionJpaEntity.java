@@ -20,16 +20,16 @@ import java.util.UUID;
 @Builder
 public class ExerciseSessionJpaEntity extends BaseJpaEntity {
 
-    @Column(name = "athlete_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "athlete_id", nullable = false)
     private UUID athleteId;
 
-    @Column(name = "training_session_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "training_session_id", nullable = false)
     private UUID trainingSessionId;
 
-    @Column(name = "exercise_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "exercise_id", nullable = false)
     private UUID exerciseId;
 
-    @Column(name = "variant_id", columnDefinition = "BINARY(16)")
+    @Column(name = "variant_id")
     private UUID variantId;
 
     @Column(name = "order_index")

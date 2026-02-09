@@ -20,10 +20,10 @@ import java.util.UUID;
 @Builder
 public class VariantJpaEntity extends BaseJpaEntity {
 
-    @Column(name = "coach_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "coach_id", nullable = false)
     private UUID coachId;
 
-    @Column(name = "exercise_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "exercise_id", nullable = false)
     private UUID exerciseId;
 
     @Column(nullable = false)

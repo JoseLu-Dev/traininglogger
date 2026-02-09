@@ -21,13 +21,13 @@ import java.util.UUID;
 @Builder
 public class SetSessionJpaEntity extends BaseJpaEntity {
 
-    @Column(name = "athlete_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "athlete_id", nullable = false)
     private UUID athleteId;
 
-    @Column(name = "exercise_session_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "exercise_session_id", nullable = false)
     private UUID exerciseSessionId;
 
-    @Column(name = "exercise_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "exercise_id", nullable = false)
     private UUID exerciseId;
 
     @Column

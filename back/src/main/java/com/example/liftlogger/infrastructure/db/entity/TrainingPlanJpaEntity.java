@@ -21,7 +21,7 @@ import java.util.UUID;
 @Builder
 public class TrainingPlanJpaEntity extends BaseJpaEntity {
 
-    @Column(name = "athlete_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "athlete_id", nullable = false)
     private UUID athleteId;
 
     @Column(nullable = false)
