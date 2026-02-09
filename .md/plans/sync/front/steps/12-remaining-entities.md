@@ -1,363 +1,231 @@
-# Step 12: Remaining Entities
+# Step 12: Remaining Entities (Using Generator)
 
 ## Goal
-Extend the TrainingPlan pattern to the 10 remaining entities using the established pattern.
+Implement the remaining 10 entities using the entity generator for maximum efficiency.
 
 ## Entities to Implement
 
-1. **User** - User profiles for both athletes and coaches (with role field)
-2. **Exercise** - Exercise definitions (e.g., "Squat", "Bench Press")
-3. **Variant** - Exercise variants (e.g., "Low Bar", "High Bar")
-4. **ExercisePlan** - Planned exercises in a training plan
-5. **SetPlan** - Planned sets for an exercise
-6. **TrainingSession** - Actual training session record
-7. **ExerciseSession** - Actual exercise performed in a session
-8. **SetSession** - Actual set performed
-9. **BodyWeightEntry** - Body weight measurements
-10. **ExercisePlanVariant** (join) - Links variants to exercise plans
-11. **ExerciseSessionVariant** (join) - Links variants to exercise sessions
+All YAML schemas have been pre-created in the `entities/` directory:
 
-## Pattern for Each Entity
+1. **User** (`user.yaml`) - User profiles for athletes and coaches with role field
+2. **Exercise** (`exercise.yaml`) - Exercise definitions
+3. **Variant** (`variant.yaml`) - Exercise variants
+4. **ExercisePlan** (`exercise_plan.yaml`) - Planned exercises in training plans
+5. **SetPlan** (`set_plan.yaml`) - Planned sets for exercises
+6. **TrainingSession** (`training_session.yaml`) - Actual training session records
+7. **ExerciseSession** (`exercise_session.yaml`) - Actual exercises performed
+8. **SetSession** (`set_session.yaml`) - Actual sets performed
+9. **BodyWeightEntry** (`body_weight_entry.yaml`) - Body weight measurements
+10. **ExercisePlanVariant** (`exercise_plan_variant.yaml`) - Join table for plan variants
+11. **ExerciseSessionVariant** (`exercise_session_variant.yaml`) - Join table for session variants
 
-Follow this checklist for each entity (1-2 hours each):
+## Implementation Process
 
-### 1. Domain Model
-- [ ] Create `lib/src/domain/models/{entity_name}.dart`
-- [ ] Implement `SyncableEntity` interface
-- [ ] Use `@freezed` annotation
-- [ ] Add `.create()` factory
-- [ ] Add `markDirty()` and `softDelete()` methods
-- [ ] Add `fromJson` and `toJson` for serialization
+For each entity, follow this streamlined process:
 
-### 2. Table Definition
-- [ ] Create `lib/src/data/local/database/tables/{entity_name}_table.dart`
-- [ ] Extend `Table` with `SyncableTable` mixin
-- [ ] Add entity-specific columns
-- [ ] Add foreign key references where needed
-- [ ] Define indexes for performance (`@TableIndex`)
-
-### 3. DAO Implementation
-- [ ] Create `lib/src/data/local/database/daos/{entity_name}_dao.dart`
-- [ ] Extend `BaseDao<Table, Data>`
-- [ ] Implement all required methods
-- [ ] Add `toDomain()` converter
-- [ ] Add entity-specific query methods
-- [ ] Use `@DriftAccessor` annotation
-
-### 4. Repository
-- [ ] Create `lib/src/domain/repositories/{entity_name}_repository.dart` interface
-- [ ] Create `lib/src/data/repositories/{entity_name}_repository_impl.dart`
-- [ ] Implement CRUD operations
-- [ ] Add domain-specific query methods
-
-### 5. Registry Registration
-- [ ] Update `lib/src/sync/core/entity_registry_setup.dart`
-- [ ] Register entity type, DAO, and serialization functions
-
-### 6. Database & Providers
-- [ ] Add table to `AppDatabase` tables list
-- [ ] Add DAO to `AppDatabase` daos list
-- [ ] Create DAO provider in `database_providers.dart`
-- [ ] Create repository provider in `repository_providers.dart`
-
-### 7. Code Generation
+### 1. Review YAML Schema (5 min)
 ```bash
+cat entities/{entity_name}.yaml
+```
+
+Verify the schema includes:
+- All required fields
+- Appropriate indexes
+- Custom queries if needed
+- createFactory parameters
+
+### 2. Generate Files (1 min)
+```bash
+cd front_shared
+fvm dart run tool/generate_entity.dart entities/{entity_name}.yaml
+```
+
+This creates all 6 files automatically.
+
+### 3. Update AppDatabase (2 min)
+
+Add to `lib/src/data/local/database/app_database.dart`:
+```dart
+import 'tables/{table_name}_table.dart';
+import 'daos/{entity_name}_dao.dart';
+
+@DriftDatabase(
+  tables: [
+    TrainingPlans,
+    {NewTable},  // Add new table
+    // ...
+  ],
+  daos: [
+    TrainingPlanDao,
+    {NewDao},    // Add new DAO
+    // ...
+  ],
+)
+```
+
+### 4. Register in EntityRegistry (3 min)
+
+Add to `lib/src/sync/core/entity_registry_setup.dart`:
+```dart
+registry.register(
+  entityType: '{EntityName}',
+  dao: db.{entityName}Dao,
+  fromJson: (json) => {EntityName}Data.fromJson(json),
+  toJson: (data) => (data as {EntityName}Data).toJson(),
+  toDomain: (data) => db.{entityName}Dao.toDomain(data as {EntityName}Data),
+);
+```
+
+### 5. Create Providers (3 min)
+
+Add to `database_providers.dart`:
+```dart
+final {entityName}DaoProvider = Provider((ref) {
+  return ref.watch(databaseProvider).{entityName}Dao;
+});
+```
+
+Add to `repository_providers.dart`:
+```dart
+final {entityName}RepositoryProvider = Provider<{EntityName}Repository>((ref) {
+  return {EntityName}RepositoryImpl(ref.watch({entityName}DaoProvider));
+});
+```
+
+### 6. Run Build Runner (2 min)
+```bash
+cd front_shared
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### 8. Testing
-- [ ] Create unit tests for DAO
-- [ ] Create tests for repository
-- [ ] Test sync integration
+### 7. Run Tests (2 min)
+```bash
+flutter test test/data/{entity_name}_dao_test.dart
+```
 
-## Implementation Order (by Priority)
+**Total time per entity: ~15-20 minutes** (vs. 1-2 hours manual)
 
-### Phase 1: Core User Entities (Start Here)
-1. **User** - Required for both athlete and coach profiles (includes role field)
-2. **Exercise** - Core exercise definitions
-3. **Variant** - Exercise variations
+## Implementation Order (Recommended)
 
-### Phase 2: Planning Entities
-5. **ExercisePlan** - Links to TrainingPlan
-6. **SetPlan** - Details for exercise plans
-7. **ExercisePlanVariant** - Join table for variants
+Follow dependency order for smoother implementation:
 
-### Phase 3: Execution Entities
-8. **TrainingSession** - Actual workout sessions
-9. **ExerciseSession** - Exercises performed
-10. **SetSession** - Sets performed
-11. **ExerciseSessionVariant** - Join table
+### Phase 1: Core Entities (1 hour)
+```bash
+cd front_shared
+fvm dart run tool/generate_entity.dart entities/user.yaml
+fvm dart run tool/generate_entity.dart entities/exercise.yaml
+fvm dart run tool/generate_entity.dart entities/variant.yaml
+```
 
-### Phase 4: Supplementary
-12. **BodyWeightEntry** - Weight tracking
+### Phase 2: Planning Entities (1 hour)
+```bash
+cd front_shared
+fvm dart run tool/generate_entity.dart entities/exercise_plan.yaml
+fvm dart run tool/generate_entity.dart entities/set_plan.yaml
+fvm dart run tool/generate_entity.dart entities/exercise_plan_variant.yaml
+```
 
-## Example: User Entity
+### Phase 3: Session Entities (1.5 hours)
+```bash
+cd front_shared
+fvm dart run tool/generate_entity.dart entities/training_session.yaml
+fvm dart run tool/generate_entity.dart entities/exercise_session.yaml
+fvm dart run tool/generate_entity.dart entities/set_session.yaml
+fvm dart run tool/generate_entity.dart entities/exercise_session_variant.yaml
+```
 
-Here's a complete example for the User entity:
+### Phase 4: Supplementary (20 min)
+```bash
+cd front_shared
+fvm dart run tool/generate_entity.dart entities/body_weight_entry.yaml
+```
 
-### Domain Model
+## Batch Script (Optional)
+
+Use the existing `front_shared/tool/generate_all_entities.sh`:
+```bash
+cd front_shared
+chmod +x tool/generate_all_entities.sh
+./tool/generate_all_entities.sh
+```
+
+Or on Windows:
+```bash
+cd front_shared
+tool\generate_all_entities.bat
+```
+
+Run with:
+```bash
+chmod +x tool/generate_all_entities.sh
+./tool/generate_all_entities.sh
+```
+
+## Final Integration
+
+After generating all entities:
+
+### 1. Update AppDatabase
+
+Ensure all 11 entities are registered:
 ```dart
-// lib/src/domain/models/user.dart
-enum UserRole { athlete, coach }
-
-@freezed
-class User with _$User implements SyncableEntity {
-  const factory User({
-    required String id,
-    required String email,
-    required String name,
-    required UserRole role, // ATHLETE or COACH
-    String? coachId, // Only for athletes - references their coach
-    required DateTime createdAt,
-    required DateTime updatedAt,
-    required int version,
-    DateTime? deletedAt,
-    @Default(false) bool isDirty,
-    DateTime? lastSyncedAt,
-  }) = _User;
-
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-
-  const User._();
-
-  factory User.create({
-    required String email,
-    required String name,
-    required UserRole role,
-    String? coachId,
-  }) {
-    final now = DateTime.now();
-    return User(
-      id: const Uuid().v4(),
-      email: email,
-      name: name,
-      role: role,
-      coachId: coachId,
-      createdAt: now,
-      updatedAt: now,
-      version: 1,
-      isDirty: true,
-    );
-  }
-
-  User markDirty() => copyWith(isDirty: true, updatedAt: DateTime.now());
-  User softDelete() => copyWith(deletedAt: DateTime.now(), isDirty: true, updatedAt: DateTime.now());
-}
+@DriftDatabase(
+  tables: [
+    TrainingPlans,
+    Users,
+    Exercises,
+    Variants,
+    ExercisePlans,
+    SetPlans,
+    TrainingSessions,
+    ExerciseSessions,
+    SetSessions,
+    BodyWeightEntries,
+    ExercisePlanVariants,
+    ExerciseSessionVariants,
+  ],
+  daos: [
+    TrainingPlanDao,
+    UserDao,
+    ExerciseDao,
+    // ... all 11 DAOs
+  ],
+)
 ```
 
-### Table
-```dart
-// lib/src/data/local/database/tables/users_table.dart
-@DataClassName('UserData')
-class Users extends Table with SyncableTable {
-  TextColumn get email => text().withLength(min: 1, max: 255).unique()();
-  TextColumn get name => text().withLength(min: 1, max: 255)();
-  IntColumn get role => intEnum<UserRole>()(); // ATHLETE or COACH
-  TextColumn get coachId => text().nullable()(); // Only for athletes
-}
-
-@TableIndex(name: 'idx_users_email', columns: {#email})
-@TableIndex(name: 'idx_users_role', columns: {#role})
-@TableIndex(name: 'idx_users_coach', columns: {#coachId})
-class UsersIndex extends TableIndex {
-  @override
-  final Users table = Users();
-}
+### 2. Run Full Build
+```bash
+cd front_shared
+dart run build_runner build --delete-conflicting-outputs
 ```
 
-### DAO
-```dart
-// lib/src/data/local/database/daos/user_dao.dart
-@DriftAccessor(tables: [Users])
-class UserDao extends BaseDao<Users, UserData> with _$UserDaoMixin {
-  UserDao(AppDatabase db) : super(db);
-
-  @override
-  TableInfo<Users, UserData> get table => users;
-
-  @override
-  Future<UserData?> findById(String id) {
-    return (select(users)..where((t) => t.id.equals(id))).getSingleOrNull();
-  }
-
-  @override
-  Future<List<UserData>> findAllActive() {
-    return (select(users)..where((t) => t.deletedAt.isNull())).get();
-  }
-
-  @override
-  Future<List<UserData>> findAllDirty() {
-    return (select(users)..where((t) => t.isDirty.equals(true))).get();
-  }
-
-  @override
-  Future<void> markDirty(String id) async {
-    await (update(users)..where((t) => t.id.equals(id))).write(
-      UsersCompanion(isDirty: const Value(true), updatedAt: Value(DateTime.now())),
-    );
-  }
-
-  @override
-  Future<void> clearDirty(String id, DateTime syncedAt) async {
-    await (update(users)..where((t) => t.id.equals(id))).write(
-      UsersCompanion(isDirty: const Value(false), lastSyncedAt: Value(syncedAt)),
-    );
-  }
-
-  @override
-  Future<void> upsertFromServer(UserData entity) async {
-    await into(users).insertOnConflictUpdate(entity);
-  }
-
-  @override
-  Future<void> softDelete(String id) async {
-    await (update(users)..where((t) => t.id.equals(id))).write(
-      UsersCompanion(
-        deletedAt: Value(DateTime.now()),
-        isDirty: const Value(true),
-        updatedAt: Value(DateTime.now()),
-      ),
-    );
-  }
-
-  Future<UserData?> findByEmail(String email) {
-    return (select(users)..where((t) => t.email.equals(email) & t.deletedAt.isNull()))
-        .getSingleOrNull();
-  }
-
-  Future<String> create(User user) async {
-    await into(users).insert(UsersCompanion.insert(
-      id: Value(user.id),
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      coachId: Value(user.coachId),
-      isDirty: const Value(true),
-    ));
-    return user.id;
-  }
-
-  User toDomain(UserData data) {
-    return User(
-      id: data.id,
-      email: data.email,
-      name: data.name,
-      role: data.role,
-      coachId: data.coachId,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-      version: data.version,
-      deletedAt: data.deletedAt,
-      isDirty: data.isDirty,
-      lastSyncedAt: data.lastSyncedAt,
-    );
-  }
-}
+### 3. Run All Tests
+```bash
+flutter test
 ```
 
-### Repository
-```dart
-// lib/src/domain/repositories/user_repository.dart
-abstract class UserRepository {
-  Future<User?> findById(String id);
-  Future<User?> findByEmail(String email);
-  Future<String> create(User user);
-  Future<void> update(User user);
-  Future<void> delete(String id);
-}
+### 4. Verify EntityRegistry
 
-// lib/src/data/repositories/user_repository_impl.dart
-class UserRepositoryImpl implements UserRepository {
-  final UserDao _dao;
-
-  UserRepositoryImpl(this._dao);
-
-  @override
-  Future<User?> findById(String id) async {
-    final data = await _dao.findById(id);
-    return data != null ? _dao.toDomain(data) : null;
-  }
-
-  @override
-  Future<User?> findByEmail(String email) async {
-    final data = await _dao.findByEmail(email);
-    return data != null ? _dao.toDomain(data) : null;
-  }
-
-  @override
-  Future<String> create(User user) => _dao.create(user);
-
-  @override
-  Future<void> update(User user) => _dao.markDirty(user.id);
-
-  @override
-  Future<void> delete(String id) => _dao.softDelete(id);
-}
-```
-
-### Register in Entity Registry
-```dart
-// Update lib/src/sync/core/entity_registry_setup.dart
-void setupEntityRegistry(EntityRegistry registry, AppDatabase db) {
-  // TrainingPlan (already registered)
-  registry.register(
-    entityType: 'TrainingPlan',
-    dao: db.trainingPlanDao,
-    fromJson: (json) => TrainingPlanData.fromJson(json),
-    toJson: (data) => (data as TrainingPlanData).toJson(),
-    toDomain: (data) => db.trainingPlanDao.toDomain(data as TrainingPlanData),
-  );
-
-  // User
-  registry.register(
-    entityType: 'User',
-    dao: db.userDao,
-    fromJson: (json) => UserData.fromJson(json),
-    toJson: (data) => (data as UserData).toJson(),
-    toDomain: (data) => db.userDao.toDomain(data as UserData),
-  );
-
-  // Continue for other 9 entities...
-}
-```
-
-## Tracking Progress
-
-Create a checklist file to track progress:
-
-Create `.md/plans/sync/front/steps/entity-implementation-checklist.md`:
-```markdown
-# Entity Implementation Checklist
-
-## Phase 1: Core User Entities
-- [ ] User (includes both ATHLETE and COACH roles)
-- [ ] Exercise
-- [ ] Variant
-
-## Phase 2: Planning Entities
-- [ ] ExercisePlan
-- [ ] SetPlan
-- [ ] ExercisePlanVariant
-
-## Phase 3: Execution Entities
-- [ ] TrainingSession
-- [ ] ExerciseSession
-- [ ] SetSession
-- [ ] ExerciseSessionVariant
-
-## Phase 4: Supplementary
-- [ ] BodyWeightEntry
-```
+Ensure all 11 entities are registered in `entity_registry_setup.dart`.
 
 ## Success Criteria
-- ✅ All 11 entities implemented following the pattern
+- ✅ All 11 entities generated from YAML schemas
+- ✅ All entities registered in AppDatabase
 - ✅ All entities registered in EntityRegistry
+- ✅ All providers created
 - ✅ Code generation successful for all entities
-- ✅ Basic CRUD tests pass for each entity
-- ✅ Sync integration works for all entities
+- ✅ All DAO tests pass
+- ✅ No compilation errors
 
-## Estimated Time
-11-22 hours (1-2 hours per entity, User entity may take slightly longer due to role handling)
+## Time Savings
+
+**Manual implementation:**
+- 11 entities × 1.5 hours = ~16.5 hours
+
+**With generator:**
+- 11 entities × 20 minutes = ~3.5 hours
+
+**Total time saved: ~13 hours** (78% reduction)
 
 ## Next Step
-13-ui-indicators.md - Add UI components for sync status and offline indicators
+13-final-integration.md - Wire everything together and run end-to-end tests

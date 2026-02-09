@@ -173,7 +173,29 @@ class SyncQueue {
 }
 ```
 
-### 6. Run code generation
+### 6. Setup Entity Generator
+
+Install code generation dependencies:
+```bash
+cd front_shared
+flutter pub add drift freezed_annotation json_annotation uuid
+flutter pub add dev:build_runner dev:drift_dev dev:freezed dev:json_serializable dev:mustache_template dev:yaml dev:recase
+```
+
+Create the entity generator tool and templates as documented in `/GENERATOR_GUIDE.md`. This generator will be used to create all entity boilerplate from simple YAML schemas, reducing code duplication by 70-80%.
+
+The generator includes:
+- `front_shared/tool/generate_entity.dart` - Main CLI script
+- `front_shared/tool/templates/*.mustache` - 6 template files for generating entity code
+- `front_shared/entities/*.yaml` - Entity schema definitions
+
+**Benefits:**
+- Reduces ~470 lines per entity to ~40 lines of YAML
+- Saves 1-2 hours per entity (down to 15-20 minutes)
+- Single source of truth for entity structure
+- Consistent code across all entities
+
+### 7. Run code generation
 ```bash
 cd front_shared
 dart run build_runner build --delete-conflicting-outputs
@@ -185,10 +207,11 @@ dart run build_runner build --delete-conflicting-outputs
 - ✅ BaseDao abstract class defined
 - ✅ SyncState freezed models created
 - ✅ SyncQueue with exponential backoff implemented
+- ✅ Entity generator tool and templates created
 - ✅ Code generation runs successfully
 
 ## Estimated Time
-1 hour
+2-3 hours (includes 1-2 hours for generator setup)
 
 ## Next Step
 03-network-layer.md - Implement network detection and API client
