@@ -12,7 +12,9 @@
       "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" test *)",
       "Bash(\"C:\\\\code\\\\liftlogger\\\\back\\\\mvnw.cmd\" compile *)",
       "WebSearch",
-      "Bash(.mvnw compile:*)"
+      "Bash(.mvnw compile:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(dart run build_runner build:*)"
     ]
   }
 }
