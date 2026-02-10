@@ -1,0 +1,61 @@
+entity:
+  name: BodyWeightEntry
+  tableName: body_weight_entries
+  description: Body weight measurement record
+
+fields:
+  - name: athleteId
+    type: String
+    tableType: text()
+    reference:
+      table: Users
+      column: id
+
+  - name: weight
+    type: double
+    tableType: real()
+
+  - name: measurementDate
+    type: DateTime
+    tableType: dateTime()
+
+  - name: notes
+    type: String
+    nullable: true
+    tableType: text()
+
+indexes:
+  - name: idx_body_weight_entries_athlete
+    columns: [athleteId]
+  - name: idx_body_weight_entries_date
+    columns: [measurementDate]
+  - name: idx_body_weight_entries_athlete_date
+    columns: [athleteId, measurementDate]
+
+queries:
+  - name: findByAthleteId
+    params:
+      - name: athleteId
+        type: String
+    returns: List<BodyWeightEntryData>
+    where: t.athleteId.equals(athleteId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.desc(t.measurementDate)
+
+  - name: findByAthleteBetweenDates
+    params:
+      - name: athleteId
+        type: String
+      - name: start
+        type: DateTime
+      - name: end
+        type: DateTime
+    returns: List<BodyWeightEntryData>
+    where: t.athleteId.equals(athleteId) & t.measurementDate.isBiggerOrEqualValue(start) & t.measurementDate.isSmallerOrEqualValue(end) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.asc(t.measurementDate)
+
+createFactory:
+  params:
+    - athleteId
+    - weight
+    - measurementDate
+    - notes

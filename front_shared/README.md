@@ -1,39 +1,70 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# front_shared
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Shared Flutter package for LiftLogger containing the offline-first sync system, domain models, data layer, and business logic.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Offline-first architecture with automatic sync
+- Entity generator for rapid development
+- Clean architecture with domain/data separation
+- Drift-based local database
+- Freezed domain models
+- Comprehensive testing utilities
 
-## Getting started
+## Entity Generator
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+This package includes a powerful code generator that automates entity boilerplate creation.
 
-## Usage
+### Quick Start
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Generate a new entity from a YAML schema:
 
-```dart
-const like = 'sample';
+```bash
+cd front_shared
+fvm dart run tool/generate_entity.dart entities/training_plan.yaml
 ```
 
-## Additional information
+This generates 6 files:
+- Domain model (Freezed)
+- Drift table definition
+- DAO with CRUD operations
+- Repository interface
+- Repository implementation
+- Basic tests
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+### Generate All Entities
+
+```bash
+cd front_shared
+./tool/generate_all_entities.sh  # Unix/Mac
+# or
+tool\generate_all_entities.bat  # Windows
+```
+
+### Documentation
+
+See the following files for complete documentation:
+- [QUICK_START.md](QUICK_START.md) - 5-step quick reference
+- [ENTITY_GENERATOR_README.md](ENTITY_GENERATOR_README.md) - Complete overview
+- [GENERATOR_GUIDE.md](GENERATOR_GUIDE.md) - Detailed usage guide
+- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Technical implementation
+
+## Development
+
+### Setup
+
+```bash
+flutter pub get
+```
+
+### Run Code Generation
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+### Run Tests
+
+```bash
+flutter test
+```

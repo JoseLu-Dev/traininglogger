@@ -1,0 +1,63 @@
+entity:
+  name: ExerciseSession
+  tableName: exercise_sessions
+  description: Actual exercise performed in a session
+
+fields:
+  - name: trainingSessionId
+    type: String
+    tableType: text()
+    reference:
+      table: TrainingSessions
+      column: id
+
+  - name: exercisePlanId
+    type: String
+    nullable: true
+    tableType: text()
+    reference:
+      table: ExercisePlans
+      column: id
+
+  - name: exerciseId
+    type: String
+    tableType: text()
+    reference:
+      table: Exercises
+      column: id
+
+  - name: orderIndex
+    type: int
+    tableType: integer()
+
+  - name: notes
+    type: String
+    nullable: true
+    tableType: text()
+
+indexes:
+  - name: idx_exercise_sessions_training_session
+    columns: [trainingSessionId]
+  - name: idx_exercise_sessions_plan
+    columns: [exercisePlanId]
+  - name: idx_exercise_sessions_exercise
+    columns: [exerciseId]
+  - name: idx_exercise_sessions_order
+    columns: [trainingSessionId, orderIndex]
+
+queries:
+  - name: findByTrainingSessionId
+    params:
+      - name: trainingSessionId
+        type: String
+    returns: List<ExerciseSessionData>
+    where: t.trainingSessionId.equals(trainingSessionId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.asc(t.orderIndex)
+
+createFactory:
+  params:
+    - trainingSessionId
+    - exercisePlanId
+    - exerciseId
+    - orderIndex
+    - notes

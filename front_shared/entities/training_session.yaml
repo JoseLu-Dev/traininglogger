@@ -1,0 +1,66 @@
+entity:
+  name: TrainingSession
+  tableName: training_sessions
+  description: Actual training session record
+
+fields:
+  - name: trainingPlanId
+    type: String
+    tableType: text()
+    reference:
+      table: TrainingPlans
+      column: id
+
+  - name: athleteId
+    type: String
+    tableType: text()
+    reference:
+      table: Users
+      column: id
+
+  - name: startTime
+    type: DateTime
+    tableType: dateTime()
+
+  - name: endTime
+    type: DateTime
+    nullable: true
+    tableType: dateTime()
+
+  - name: notes
+    type: String
+    nullable: true
+    tableType: text()
+
+indexes:
+  - name: idx_training_sessions_plan
+    columns: [trainingPlanId]
+  - name: idx_training_sessions_athlete
+    columns: [athleteId]
+  - name: idx_training_sessions_start_time
+    columns: [startTime]
+
+queries:
+  - name: findByTrainingPlanId
+    params:
+      - name: trainingPlanId
+        type: String
+    returns: List<TrainingSessionData>
+    where: t.trainingPlanId.equals(trainingPlanId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.desc(t.startTime)
+
+  - name: findByAthleteId
+    params:
+      - name: athleteId
+        type: String
+    returns: List<TrainingSessionData>
+    where: t.athleteId.equals(athleteId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.desc(t.startTime)
+
+createFactory:
+  params:
+    - trainingPlanId
+    - athleteId
+    - startTime
+    - endTime
+    - notes

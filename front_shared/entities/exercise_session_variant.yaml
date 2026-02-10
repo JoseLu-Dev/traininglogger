@@ -1,0 +1,47 @@
+entity:
+  name: ExerciseSessionVariant
+  tableName: exercise_session_variants
+  description: Join table linking variants to exercise sessions
+
+fields:
+  - name: exerciseSessionId
+    type: String
+    tableType: text()
+    reference:
+      table: ExerciseSessions
+      column: id
+
+  - name: variantId
+    type: String
+    tableType: text()
+    reference:
+      table: Variants
+      column: id
+
+indexes:
+  - name: idx_exercise_session_variants_session
+    columns: [exerciseSessionId]
+  - name: idx_exercise_session_variants_variant
+    columns: [variantId]
+  - name: idx_exercise_session_variants_unique
+    columns: [exerciseSessionId, variantId]
+
+queries:
+  - name: findByExerciseSessionId
+    params:
+      - name: exerciseSessionId
+        type: String
+    returns: List<ExerciseSessionVariantData>
+    where: t.exerciseSessionId.equals(exerciseSessionId) & t.deletedAt.isNull()
+
+  - name: findByVariantId
+    params:
+      - name: variantId
+        type: String
+    returns: List<ExerciseSessionVariantData>
+    where: t.variantId.equals(variantId) & t.deletedAt.isNull()
+
+createFactory:
+  params:
+    - exerciseSessionId
+    - variantId

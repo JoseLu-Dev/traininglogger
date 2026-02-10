@@ -1,0 +1,18 @@
+import 'package:drift/drift.dart';
+import 'package:front_shared/src/data/local/database/tables/base_table.dart';
+{{#references}}
+import '{{snakeTable}}_table.dart';
+{{/references}}
+{{#enums}}
+import 'package:front_shared/src/generated/domain/models/{{entitySnakeName}}.dart';
+{{/enums}}
+
+{{#indexes}}
+@TableIndex(name: '{{name}}', columns: { {{#columns}}#{{.}}{{^last}}, {{/last}}{{/columns}} })
+{{/indexes}}
+@DataClassName('{{name}}Data')
+class {{pluralName}} extends Table with SyncableTable {
+  {{#fields}}
+  {{dartColumnType}} get {{name}} => {{{tableType}}}{{#constraints}}{{{constraints}}}{{/constraints}}{{#nullable}}.nullable(){{/nullable}}{{#default}}.withDefault({{{default}}}){{/default}}{{#reference}}.references({{reference.table}}, #{{reference.column}}){{/reference}}();
+  {{/fields}}
+}

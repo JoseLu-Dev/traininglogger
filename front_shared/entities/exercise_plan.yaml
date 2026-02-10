@@ -1,0 +1,52 @@
+entity:
+  name: ExercisePlan
+  tableName: exercise_plans
+  description: Planned exercise in a training plan
+
+fields:
+  - name: trainingPlanId
+    type: String
+    tableType: text()
+    reference:
+      table: TrainingPlans
+      column: id
+
+  - name: exerciseId
+    type: String
+    tableType: text()
+    reference:
+      table: Exercises
+      column: id
+
+  - name: orderIndex
+    type: int
+    tableType: integer()
+
+  - name: notes
+    type: String
+    nullable: true
+    tableType: text()
+
+indexes:
+  - name: idx_exercise_plans_training_plan
+    columns: [trainingPlanId]
+  - name: idx_exercise_plans_exercise
+    columns: [exerciseId]
+  - name: idx_exercise_plans_order
+    columns: [trainingPlanId, orderIndex]
+
+queries:
+  - name: findByTrainingPlanId
+    params:
+      - name: trainingPlanId
+        type: String
+    returns: List<ExercisePlanData>
+    where: t.trainingPlanId.equals(trainingPlanId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.asc(t.orderIndex)
+
+createFactory:
+  params:
+    - trainingPlanId
+    - exerciseId
+    - orderIndex
+    - notes

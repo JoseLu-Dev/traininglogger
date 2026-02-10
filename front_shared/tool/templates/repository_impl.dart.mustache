@@ -1,0 +1,51 @@
+import '../../domain/models/{{snakeName}}.dart';
+import '../../domain/repositories/{{snakeName}}_repository.dart';
+import '../local/database/daos/{{snakeName}}_dao.dart';
+
+class {{name}}RepositoryImpl implements {{name}}Repository {
+  final {{name}}Dao _dao;
+
+  {{name}}RepositoryImpl(this._dao);
+
+  @override
+  Future<{{name}}?> findById(String id) async {
+    final data = await _dao.findById(id);
+    return data != null ? _dao.toDomain(data) : null;
+  }
+
+  @override
+  Future<List<{{name}}>> findAllActive() async {
+    final dataList = await _dao.findAllActive();
+    return dataList.map(_dao.toDomain).toList();
+  }
+
+  {{#queries}}
+  @override
+  Future<{{{domainReturns}}}> {{name}}({{#params}}{{type}} {{name}}{{^last}}, {{/last}}{{/params}}) async {
+    {{#isSingle}}
+    final data = await _dao.{{name}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}});
+    return data != null ? _dao.toDomain(data) : null;
+    {{/isSingle}}
+    {{^isSingle}}
+    final dataList = await _dao.{{name}}({{#params}}{{name}}{{^last}}, {{/last}}{{/params}});
+    return dataList.map(_dao.toDomain).toList();
+    {{/isSingle}}
+  }
+
+  {{/queries}}
+
+  @override
+  Future<String> create({{name}} entity) async {
+    return await _dao.create(entity);
+  }
+
+  @override
+  Future<void> update({{name}} entity) async {
+    await _dao.markDirty(entity.id);
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    await _dao.softDelete(id);
+  }
+}

@@ -1,0 +1,110 @@
+import 'package:drift/drift.dart';
+import 'package:front_shared/src/data/local/database/app_database.dart';
+import '../tables/{{snakeTableName}}_table.dart';
+import 'package:front_shared/src/data/local/database/daos/base_dao.dart';
+import '../../../../domain/models/{{snakeName}}.dart';
+
+part '{{snakeName}}_dao.g.dart';
+
+@DriftAccessor(tables: [{{pluralName}}])
+class {{name}}Dao extends BaseDao<{{pluralName}}, {{name}}Data>
+    with _${{name}}DaoMixin {
+  {{name}}Dao(AppDatabase db) : super(db);
+
+  @override
+  TableInfo<{{pluralName}}, {{name}}Data> get table => {{camelPluralName}};
+
+  @override
+  Future<{{name}}Data?> findById(String id) {
+    return (select({{camelPluralName}})..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+  }
+
+  @override
+  Future<List<{{name}}Data>> findAllActive() {
+    return (select({{camelPluralName}})
+          ..where((t) => t.deletedAt.isNull())
+          ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
+        .get();
+  }
+
+  @override
+  Future<List<{{name}}Data>> findAllDirty() {
+    return (select({{camelPluralName}})..where((t) => t.isDirty.equals(true))).get();
+  }
+
+  @override
+  Future<void> markDirty(String id) async {
+    await (update({{camelPluralName}})..where((t) => t.id.equals(id))).write(
+      {{pluralName}}Companion(
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  @override
+  Future<void> clearDirty(String id, DateTime syncedAt) async {
+    await (update({{camelPluralName}})..where((t) => t.id.equals(id))).write(
+      {{pluralName}}Companion(
+        isDirty: const Value(false),
+        lastSyncedAt: Value(syncedAt),
+      ),
+    );
+  }
+
+  @override
+  Future<void> upsertFromServer({{name}}Data entity) async {
+    await into({{camelPluralName}}).insertOnConflictUpdate(entity);
+  }
+
+  @override
+  Future<void> softDelete(String id) async {
+    await (update({{camelPluralName}})..where((t) => t.id.equals(id))).write(
+      {{pluralName}}Companion(
+        deletedAt: Value(DateTime.now()),
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  {{#queries}}
+  Future<{{{returns}}}> {{name}}({{#params}}{{type}} {{name}}{{^last}}, {{/last}}{{/params}}) {
+    return (select(table)
+          ..where((t) => {{{where}}})
+          {{#orderBy}}..orderBy([(t) => {{{.}}}]){{/orderBy}})
+        .{{#isSingle}}getSingleOrNull{{/isSingle}}{{^isSingle}}get{{/isSingle}}();
+  }
+
+  {{/queries}}
+
+  Future<String> create({{name}} entity) async {
+    await into({{camelPluralName}}).insert(
+      {{pluralName}}Companion.insert(
+        id: Value(entity.id),
+        {{#fields}}
+        {{name}}: {{#nullable}}Value(entity.{{name}}){{/nullable}}{{^nullable}}{{#hasDefault}}Value(entity.{{name}}){{/hasDefault}}{{^hasDefault}}entity.{{name}}{{/hasDefault}}{{/nullable}},
+        {{/fields}}
+        isDirty: const Value(true),
+      ),
+    );
+    return entity.id;
+  }
+
+  /// Convert Drift data class to domain model
+  {{name}} toDomain({{name}}Data data) {
+    return {{name}}(
+      id: data.id,
+      {{#fields}}
+      {{name}}: data.{{name}},
+      {{/fields}}
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      version: data.version,
+      deletedAt: data.deletedAt,
+      isDirty: data.isDirty,
+      lastSyncedAt: data.lastSyncedAt,
+    );
+  }
+}

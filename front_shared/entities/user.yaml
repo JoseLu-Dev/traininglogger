@@ -1,0 +1,51 @@
+entity:
+  name: User
+  tableName: users
+  description: User profile for athletes and coaches
+
+fields:
+  - name: email
+    type: String
+    tableType: text()
+    constraints: ".withLength(min: 1, max: 255).unique()"
+
+  - name: name
+    type: String
+    tableType: text()
+    constraints: ".withLength(min: 1, max: 255)"
+
+  - name: role
+    type: UserRole
+    tableType: intEnum<UserRole>()
+    enumValues: [athlete, coach]
+
+  - name: coachId
+    type: String
+    nullable: true
+    tableType: text()
+    reference:
+      table: Users
+      column: id
+
+indexes:
+  - name: idx_users_email
+    columns: [email]
+  - name: idx_users_role
+    columns: [role]
+  - name: idx_users_coach
+    columns: [coachId]
+
+queries:
+  - name: findByEmail
+    params:
+      - name: email
+        type: String
+    returns: UserData?
+    where: t.email.equals(email) & t.deletedAt.isNull()
+
+createFactory:
+  params:
+    - email
+    - name
+    - role
+    - coachId

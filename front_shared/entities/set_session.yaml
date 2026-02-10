@@ -1,0 +1,69 @@
+entity:
+  name: SetSession
+  tableName: set_sessions
+  description: Actual set performed in an exercise
+
+fields:
+  - name: exerciseSessionId
+    type: String
+    tableType: text()
+    reference:
+      table: ExerciseSessions
+      column: id
+
+  - name: setPlanId
+    type: String
+    nullable: true
+    tableType: text()
+    reference:
+      table: SetPlans
+      column: id
+
+  - name: setNumber
+    type: int
+    tableType: integer()
+
+  - name: actualReps
+    type: int
+    tableType: integer()
+
+  - name: actualWeight
+    type: double
+    tableType: real()
+
+  - name: actualRpe
+    type: double
+    nullable: true
+    tableType: real()
+
+  - name: notes
+    type: String
+    nullable: true
+    tableType: text()
+
+indexes:
+  - name: idx_set_sessions_exercise_session
+    columns: [exerciseSessionId]
+  - name: idx_set_sessions_plan
+    columns: [setPlanId]
+  - name: idx_set_sessions_order
+    columns: [exerciseSessionId, setNumber]
+
+queries:
+  - name: findByExerciseSessionId
+    params:
+      - name: exerciseSessionId
+        type: String
+    returns: List<SetSessionData>
+    where: t.exerciseSessionId.equals(exerciseSessionId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.asc(t.setNumber)
+
+createFactory:
+  params:
+    - exerciseSessionId
+    - setPlanId
+    - setNumber
+    - actualReps
+    - actualWeight
+    - actualRpe
+    - notes

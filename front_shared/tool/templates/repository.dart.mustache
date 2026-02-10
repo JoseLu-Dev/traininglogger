@@ -1,0 +1,12 @@
+import '../models/{{snakeName}}.dart';
+
+abstract class {{name}}Repository {
+  Future<{{name}}?> findById(String id);
+  Future<List<{{name}}>> findAllActive();
+  {{#queries}}
+  Future<{{{domainReturns}}}> {{name}}({{#params}}{{type}} {{name}}{{^last}}, {{/last}}{{/params}});
+  {{/queries}}
+  Future<String> create({{name}} entity);
+  Future<void> update({{name}} entity);
+  Future<void> delete(String id);
+}
