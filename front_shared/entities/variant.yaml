@@ -1,0 +1,32 @@
+entity:
+  name: Variant
+  tableName: variants
+  description: Exercise variant (e.g., Low Bar, High Bar)
+
+fields:
+  - name: name
+    type: String
+    tableType: text()
+    constraints: ".withLength(min: 1, max: 255)"
+
+  - name: description
+    type: String
+    nullable: true
+    tableType: text()
+
+indexes:
+  - name: idx_variants_name
+    columns: [name]
+
+queries:
+  - name: findByName
+    params:
+      - name: name
+        type: String
+    returns: VariantData?
+    where: t.name.equals(name) & t.deletedAt.isNull()
+
+createFactory:
+  params:
+    - name
+    - description

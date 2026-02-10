@@ -1,3 +1,27 @@
 spring:
   application:
     name: liftlogger
+  datasource:
+    url: jdbc:postgresql://localhost:5432/liftlogger
+    username: postgres
+    password: postgres
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.time_zone: UTC
+  session:
+    store-type: jdbc
+    timeout: 30d
+    jdbc:
+      initialize-schema: always
+logging:
+  level:
+    com.example.liftlogger: DEBUG

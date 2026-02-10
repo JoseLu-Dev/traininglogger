@@ -1,0 +1,63 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:uuid/uuid.dart';
+import 'package:front_shared/src/domain/models/syncable_entity.dart';
+
+part '{{snakeName}}.freezed.dart';
+part '{{snakeName}}.g.dart';
+
+{{#enums}}
+enum {{name}} { {{#values}}{{value}}{{^last}}, {{/last}}{{/values}} }
+{{/enums}}
+
+@freezed
+class {{name}} with _${{name}} implements SyncableEntity {
+  const factory {{name}}({
+    required String id,
+    {{#fields}}
+    {{#nullable}}{{type}}? {{name}},{{/nullable}}{{^nullable}}required {{type}} {{name}},{{/nullable}}
+    {{/fields}}
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required int version,
+    DateTime? deletedAt,
+    @Default(false) bool isDirty,
+    DateTime? lastSyncedAt,
+  }) = _{{name}};
+
+  factory {{name}}.fromJson(Map<String, dynamic> json) =>
+      _${{name}}FromJson(json);
+
+  const {{name}}._();
+
+  /// Factory for creating a new {{lowerName}}
+  factory {{name}}.create({
+    {{#createFactoryParams}}
+    {{#isRequired}}required {{/isRequired}}{{type}}{{^isRequired}}{{^hasDefault}}?{{/hasDefault}}{{/isRequired}} {{name}}{{#hasDefault}} = {{default}}{{/hasDefault}},
+    {{/createFactoryParams}}
+  }) {
+    final now = DateTime.now();
+    return {{name}}(
+      id: const Uuid().v4(),
+      {{#createFactoryParams}}
+      {{name}}: {{name}},
+      {{/createFactoryParams}}
+      createdAt: now,
+      updatedAt: now,
+      version: 1,
+      isDirty: true,
+    );
+  }
+
+  /// Mark entity as dirty (needs sync)
+  {{name}} markDirty() => copyWith(
+        isDirty: true,
+        updatedAt: DateTime.now(),
+      );
+
+  /// Soft delete entity
+  {{name}} softDelete() => copyWith(
+        deletedAt: DateTime.now(),
+        isDirty: true,
+        updatedAt: DateTime.now(),
+      );
+}

@@ -1,0 +1,62 @@
+entity:
+  name: TrainingPlan
+  tableName: training_plans
+  description: Training plan created by a coach for an athlete
+
+fields:
+  - name: athleteId
+    type: String
+    tableType: text()
+    reference:
+      table: Users
+      column: id
+
+  - name: name
+    type: String
+    tableType: text()
+    constraints: ".withLength(min: 1, max: 255)"
+
+  - name: date
+    type: DateTime
+    tableType: dateTime()
+
+  - name: isLocked
+    type: bool
+    tableType: boolean()
+    default: const Constant(false)
+
+indexes:
+  - name: idx_training_plans_athlete
+    columns: [athleteId]
+  - name: idx_training_plans_dirty
+    columns: [isDirty, athleteId]
+  - name: idx_training_plans_date
+    columns: [date]
+
+queries:
+  - name: findByAthleteId
+    params:
+      - name: athleteId
+        type: String
+    returns: List<TrainingPlanData>
+    where: t.athleteId.equals(athleteId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.desc(t.date)
+
+  - name: findByAthleteBetweenDates
+    params:
+      - name: athleteId
+        type: String
+      - name: start
+        type: DateTime
+      - name: end
+        type: DateTime
+    returns: List<TrainingPlanData>
+    where: t.athleteId.equals(athleteId) & t.date.isBiggerOrEqualValue(start) & t.date.isSmallerOrEqualValue(end) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.desc(t.date)
+
+createFactory:
+  params:
+    - athleteId
+    - name
+    - date
+    - isLocked

@@ -1,9 +1,11 @@
 # Backend Authentication - LiftLogger
 
 ## Context
+
 Implement JWT-free, session-based authentication for offline-first training app. Two roles: COACH (manages athletes) & ATHLETE (self-data only). Spring Boot 4.0.2 + Spring Security + JDBC sessions. Hexagonal architecture (domain → application → infrastructure). Client handles offline password validation separately.
 
 ## Requirements
+
 - Single User entity: email login, BCrypt hash, ROLE_COACH/ROLE_ATHLETE, one-to-many coach-athlete
 - Endpoints: POST /api/auth/register, /login, /logout
 - 30-day JDBC sessions, public registration, athletes provide coachId
@@ -15,6 +17,7 @@ Implement JWT-free, session-based authentication for offline-first training app.
 ## Implementation
 
 ### 1. Add Dependencies to `pom.xml`
+
 ```xml
 <dependency>
     <groupId>org.mapstruct</groupId>
@@ -30,6 +33,7 @@ Implement JWT-free, session-based authentication for offline-first training app.
 ```
 
 ### 2. Configure `src/main/resources/application.yaml`
+
 ```yaml
 spring:
   application:
@@ -61,6 +65,7 @@ logging:
 ## Domain Layer (`domain/`)
 
 ### `model/User.java`
+
 ```java
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class User {
@@ -77,17 +82,20 @@ public class User {
 ```
 
 ### `model/UserRole.java`
+
 ```java
 public enum UserRole { COACH, ATHLETE }
 ```
 
 ### `exception/`
+
 - `UserAlreadyExistsException(String email)`
 - `InvalidCredentialsException()`
 - `CoachNotFoundException(UUID coachId)`
 - `InvalidRoleAssignmentException(String message)` (athlete without coachId)
 
 ### `outbound/repository/UserRepository.java`
+
 ```java
 public interface UserRepository {
     User save(User user);
@@ -103,6 +111,7 @@ public interface UserRepository {
 ## Application Layer (`application/`)
 
 ### `inbound/RegisterUserUseCase.java`
+
 ```java
 public interface RegisterUserUseCase {
     User execute(String email, String rawPassword, UserRole role, UUID coachId);
@@ -110,9 +119,11 @@ public interface RegisterUserUseCase {
 ```
 
 ### `inbound/LoginUserUseCase.java`, `GetCurrentUserUseCase.java`
+
 Similar signatures: `User execute(email, password)`, `User execute()`
 
 ### `service/RegisterUserService.java`
+
 ```java
 @Service @RequiredArgsConstructor
 public class RegisterUserService implements RegisterUserUseCase {
@@ -148,6 +159,7 @@ public class RegisterUserService implements RegisterUserUseCase {
 ```
 
 ### `service/LoginUserService.java`
+
 ```java
 @Service @RequiredArgsConstructor
 public class LoginUserService implements LoginUserUseCase {
@@ -168,6 +180,7 @@ public class LoginUserService implements LoginUserUseCase {
 ```
 
 ### `service/GetCurrentUserService.java`
+
 ```java
 @Service @RequiredArgsConstructor
 public class GetCurrentUserService implements GetCurrentUserUseCase {
@@ -188,6 +201,7 @@ public class GetCurrentUserService implements GetCurrentUserUseCase {
 ## Infrastructure - DB Layer (`infrastructure/db/`)
 
 ### `entity/UserJpaEntity.java`
+
 ```java
 @Entity @Table(name = "users", indexes = {
     @Index(name = "idx_email", columnList = "email"),
@@ -209,6 +223,7 @@ public class UserJpaEntity {
 ```
 
 ### `repository/UserJpaRepository.java`
+
 ```java
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
     Optional<UserJpaEntity> findByEmail(String email);
@@ -217,6 +232,7 @@ public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
 ```
 
 ### `mapper/UserJpaMapper.java`
+
 ```java
 @Mapper(componentModel = "spring")
 public interface UserJpaMapper {
@@ -226,6 +242,7 @@ public interface UserJpaMapper {
 ```
 
 ### `adapter/UserJpaAdapter.java`
+
 ```java
 @Repository @RequiredArgsConstructor
 public class UserJpaAdapter implements UserRepository {
@@ -264,6 +281,7 @@ public class UserJpaAdapter implements UserRepository {
 ## Infrastructure - REST Layer (`infrastructure/rest/`)
 
 ### `controller/AuthController.java`
+
 ```java
 @RestController @RequestMapping("/api/auth") @RequiredArgsConstructor
 public class AuthController {
@@ -295,6 +313,7 @@ public class AuthController {
 ```
 
 ### `dto/`
+
 ```java
 public record RegisterRequest(
     @NotBlank String email,
@@ -309,6 +328,7 @@ public record AuthResponse(UUID id, String email, UserRole role, UUID coachId) {
 ```
 
 ### `mapper/`
+
 ```java
 @Mapper(componentModel = "spring")
 public interface AuthRequestMapper {
@@ -322,6 +342,7 @@ public interface AuthResponseMapper {
 ```
 
 ### `exception/AuthExceptionHandler.java`
+
 ```java
 @RestControllerAdvice
 public class AuthExceptionHandler {
@@ -352,6 +373,7 @@ public class AuthExceptionHandler {
 ## Infrastructure - Security (`infrastructure/security/`)
 
 ### `config/SecurityConfig.java`
+
 ```java
 @Configuration @EnableWebSecurity
 public class SecurityConfig {
@@ -372,6 +394,7 @@ public class SecurityConfig {
 ```
 
 ### `config/PasswordEncoderConfig.java`
+
 ```java
 @Configuration
 public class PasswordEncoderConfig {
@@ -383,6 +406,7 @@ public class PasswordEncoderConfig {
 ```
 
 ### `service/CustomUserDetailsService.java`
+
 ```java
 @Service @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
@@ -407,6 +431,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 ## Infrastructure - Config (`infrastructure/config/`)
 
 ### `DataSeeder.java`
+
 ```java
 @Component @RequiredArgsConstructor
 public class DataSeeder {
@@ -434,25 +459,21 @@ public class DataSeeder {
 ## Verification
 
 ```bash
-# 1. Create DB
-psql -U postgres -c "CREATE DATABASE liftlogger;"
 
-# 2. Run app
+# 1. Run app
 cd back && mvn spring-boot:run
 
-# 3. Test register
+# 2. Test register
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@test.com","password":"test123","role":"COACH"}'
 
-# 4. Test login
+# 3. Test login
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" -c cookies.txt \
   -d '{"email":"coach@example.com","password":"password123"}'
 
-# 5. Verify session
+# 4. Verify session
 curl -X GET http://localhost:8080/api/protected -b cookies.txt
 
-# 6. Check DB
-psql -U postgres -d liftlogger -c "SELECT id, email, role, coach_id FROM users;"
 ```

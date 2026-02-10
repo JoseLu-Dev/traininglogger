@@ -1,0 +1,60 @@
+entity:
+  name: SetPlan
+  tableName: set_plans
+  description: Planned set for an exercise
+
+fields:
+  - name: exercisePlanId
+    type: String
+    tableType: text()
+    reference:
+      table: ExercisePlans
+      column: id
+
+  - name: setNumber
+    type: int
+    tableType: integer()
+
+  - name: targetReps
+    type: int
+    nullable: true
+    tableType: integer()
+
+  - name: targetWeight
+    type: double
+    nullable: true
+    tableType: real()
+
+  - name: targetRpe
+    type: double
+    nullable: true
+    tableType: real()
+
+  - name: notes
+    type: String
+    nullable: true
+    tableType: text()
+
+indexes:
+  - name: idx_set_plans_exercise_plan
+    columns: [exercisePlanId]
+  - name: idx_set_plans_order
+    columns: [exercisePlanId, setNumber]
+
+queries:
+  - name: findByExercisePlanId
+    params:
+      - name: exercisePlanId
+        type: String
+    returns: List<SetPlanData>
+    where: t.exercisePlanId.equals(exercisePlanId) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.asc(t.setNumber)
+
+createFactory:
+  params:
+    - exercisePlanId
+    - setNumber
+    - targetReps
+    - targetWeight
+    - targetRpe
+    - notes

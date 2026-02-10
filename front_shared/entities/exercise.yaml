@@ -1,0 +1,49 @@
+entity:
+  name: Exercise
+  tableName: exercises
+  description: Exercise definition (e.g., Squat, Bench Press)
+
+fields:
+  - name: name
+    type: String
+    tableType: text()
+    constraints: ".withLength(min: 1, max: 255)"
+
+  - name: description
+    type: String
+    nullable: true
+    tableType: text()
+
+  - name: category
+    type: String
+    nullable: true
+    tableType: text()
+    constraints: ".withLength(max: 100)"
+
+indexes:
+  - name: idx_exercises_name
+    columns: [name]
+  - name: idx_exercises_category
+    columns: [category]
+
+queries:
+  - name: findByName
+    params:
+      - name: name
+        type: String
+    returns: ExerciseData?
+    where: t.name.equals(name) & t.deletedAt.isNull()
+
+  - name: findByCategory
+    params:
+      - name: category
+        type: String
+    returns: List<ExerciseData>
+    where: t.category.equals(category) & t.deletedAt.isNull()
+    orderBy: OrderingTerm.asc(t.name)
+
+createFactory:
+  params:
+    - name
+    - description
+    - category
