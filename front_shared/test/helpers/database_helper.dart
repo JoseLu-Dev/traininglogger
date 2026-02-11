@@ -15,6 +15,9 @@ export 'package:front_shared/src/generated/data/local/database/daos/training_ses
 export 'package:front_shared/src/generated/data/local/database/daos/user_dao.dart';
 export 'package:front_shared/src/generated/data/local/database/daos/variant_dao.dart';
 
+/// Create an in-memory database for testing
 AppDatabase createTestDatabase() {
-  return AppDatabase(NativeDatabase.memory());
+  return AppDatabase.withConnection(
+    NativeDatabase.memory(),
+  );
 }
