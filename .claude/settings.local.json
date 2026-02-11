@@ -14,7 +14,8 @@
       "WebSearch",
       "Bash(.mvnw compile:*)",
       "Bash(flutter analyze:*)",
-      "Bash(dart run build_runner build:*)"
+      "Bash(dart run build_runner build:*)",
+      "Bash(flutter test:*)"
     ]
   }
 }
