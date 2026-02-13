@@ -22,8 +22,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Sync", description = "Data synchronization endpoints")
@@ -47,17 +50,18 @@ public class SyncController {
             @ApiResponse(responseCode = "400", description = "Invalid entity type requested"),
             @ApiResponse(responseCode = "401", description = "Not authenticated")
     })
-    @PostMapping("/pull") //TODO change to GET with query params if possible, but POST allows for more complex request body if needed in the future
+    @GetMapping("/pull")
     public ResponseEntity<PullSyncResponseDto> pullSync(
             @AuthenticationPrincipal CurrentUser currentUser,
-            @Valid @RequestBody PullSyncRequestDto requestDto
+            @RequestParam List<String> entityTypes,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastSyncTime
     ) {
         UUID userId = currentUser.getId();
-        log.info("Pull sync requested by user {} for entity types: {}", userId, requestDto.entityTypes());
+        log.info("Pull sync requested by user {} for entity types: {}", userId, entityTypes);
 
         PullSyncRequest request = new PullSyncRequest(
-                requestDto.entityTypes(),
-                requestDto.lastSyncTime()
+                entityTypes,
+                lastSyncTime
         );
 
         PullSyncResponse response = pullSyncUseCase.pullEntities(userId, request);
