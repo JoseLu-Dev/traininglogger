@@ -13,9 +13,7 @@ class SyncApiService {
     DateTime? lastSyncTime,
   }) async {
     try {
-      final queryParams = <String, dynamic>{
-        'entityTypes': entityTypes,
-      };
+      final queryParams = <String, dynamic>{'entityTypes': entityTypes};
 
       if (lastSyncTime != null) {
         queryParams['lastSyncTime'] = lastSyncTime.toIso8601String();
@@ -56,7 +54,8 @@ class SyncApiService {
       return UnauthorizedException('Unauthorized');
     } else if (e.response?.statusCode == 400) {
       return ValidationException('Invalid request: ${e.response?.data}');
-    } else if (e.response?.statusCode != null && e.response!.statusCode! >= 500) {
+    } else if (e.response?.statusCode != null &&
+        e.response!.statusCode! >= 500) {
       return ServerException('Server error: ${e.response?.statusCode}');
     }
     return NetworkException('Network error: ${e.message}');
