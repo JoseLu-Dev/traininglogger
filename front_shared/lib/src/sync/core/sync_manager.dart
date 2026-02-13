@@ -5,6 +5,7 @@ import 'sync_queue.dart';
 import 'sync_state.dart';
 import '../../core/network/network_info.dart';
 import '../../data/local/secure_storage/secure_storage_service.dart';
+import '../../core/logging/app_logger.dart';
 
 class SyncManager {
   final PullStrategy _pullStrategy;
@@ -12,6 +13,7 @@ class SyncManager {
   final SyncQueue _syncQueue;
   final NetworkInfo _networkInfo;
   final SecureStorageService _storage;
+  final _log = AppLogger.forClass(SyncManager);
 
   final _stateController = StreamController<SyncState>.broadcast();
   Timer? _retryTimer;
@@ -75,7 +77,7 @@ class SyncManager {
       _updateState(SyncState.completed(finalResult));
       return finalResult;
     } catch (e, stackTrace) {
-      print('Sync error: $e\n$stackTrace');
+      _log.error('Sync error', e, stackTrace);
       final errorResult = SyncResult.failure(
         message: e.toString(),
         error: e,
@@ -112,11 +114,11 @@ class SyncManager {
       _updateState(const SyncState.syncing(phase: 'Processing retry queue'));
       final retryCount = await _pushStrategy.retryQueuedSyncs();
       if (retryCount > 0) {
-        print('Successfully retried $retryCount entities');
+        _log.info('Successfully retried $retryCount entities');
       }
       _updateState(const SyncState.idle());
     } catch (e) {
-      print('Error processing retry queue: $e');
+      _log.error('Error processing retry queue', e);
       _updateState(const SyncState.idle());
     }
   }

@@ -6,12 +6,14 @@ import '../../data/remote/sync_api_service.dart';
 import '../../data/remote/dto/sync_dtos.dart' as dto;
 import '../../core/network/network_info.dart';
 import '../../data/remote/api_client.dart';
+import '../../core/logging/app_logger.dart';
 
 class PushStrategy {
   final SyncApiService _syncApi;
   final NetworkInfo _networkInfo;
   final SyncQueue _syncQueue;
   final EntityRegistry _registry;
+  final _log = AppLogger.forClass(PushStrategy);
 
   PushStrategy(
     this._syncApi,
@@ -186,12 +188,12 @@ class PushStrategy {
           } else {
             // Max retries reached, remove from queue
             _syncQueue.remove(queued.id);
-            print('Max retries reached for ${failure.entityType}:${failure.entityId}');
+            _log.warning('Max retries reached for ${failure.entityType}:${failure.entityId}');
           }
         }
       }
     } catch (e) {
-      print('Error during retry: $e');
+      _log.error('Error during retry', e);
       // Don't remove from queue, will retry later
     }
 

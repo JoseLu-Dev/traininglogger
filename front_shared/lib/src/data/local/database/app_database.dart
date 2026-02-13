@@ -85,7 +85,7 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'liftlogger.db'));
+    final file = File(p.join(dbFolder.path, 'liftlogger', 'liftlogger.db')); //TODO make this parametrizable as has to be different for each front
     return NativeDatabase(file);
   });
 }

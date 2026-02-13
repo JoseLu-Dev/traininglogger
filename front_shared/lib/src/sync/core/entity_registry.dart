@@ -1,5 +1,6 @@
 import '../../data/local/database/daos/base_dao.dart';
 import 'package:drift/drift.dart';
+import '../../core/logging/app_logger.dart';
 
 /// Generic registry that maps entity types to their DAOs and serialization functions
 /// This allows sync strategies to work with any entity without switch statements
@@ -8,6 +9,7 @@ class EntityRegistry {
   final Map<String, Function(Map<String, dynamic>)> _deserializers = {};
   final Map<String, Function(dynamic)> _serializers = {};
   final Map<String, Function(dynamic)> _toDomainConverters = {};
+  final _log = AppLogger.forClass(EntityRegistry);
 
   /// Register an entity type with its DAO and serialization functions
   void register<T extends Table, D>({
@@ -74,7 +76,7 @@ class EntityRegistry {
         }
       } catch (e) {
         // Log error but continue with other entities
-        print('Error fetching dirty entities for $entityType: $e');
+        _log.error('Error fetching dirty entities for $entityType', e);
       }
     }
 

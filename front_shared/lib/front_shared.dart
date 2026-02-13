@@ -50,5 +50,9 @@ export 'src/providers/auth_providers.dart';
 // Core
 export 'src/core/api_constants.dart';
 
+// Logging
+export 'src/core/logging/log_service.dart';
+export 'src/core/logging/app_logger.dart';
+
 // UI Components
 export 'src/ui/sync_indicator.dart';

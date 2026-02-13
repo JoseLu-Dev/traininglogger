@@ -3,12 +3,14 @@ import 'package:crypto/crypto.dart';
 import '../data/remote/auth_api_service.dart';
 import '../data/local/secure_storage/secure_storage_service.dart';
 import '../core/network/network_info.dart';
+import '../core/logging/app_logger.dart';
 import 'auth_state.dart';
 
 class AuthService {
   final AuthApiService _authApi;
   final SecureStorageService _secureStorage;
   final NetworkInfo _networkInfo;
+  final _log = AppLogger.forClass(AuthService);
 
   AuthService(
     this._authApi,
@@ -86,7 +88,7 @@ class AuthService {
       }
     } catch (e) {
       // Ignore errors during logout
-      print('Error during logout: $e');
+      _log.warning('Error during logout', e);
     } finally {
       // Always clear local credentials
       await _secureStorage.clearAll();

@@ -84,6 +84,7 @@ Load detailed guidance based on context:
 | Widgets     | `references/widget-patterns.md`     | Widget architecture, state lifecycle, controllers (NOT layout/UI design) |
 | Structure   | `references/project-structure.md`   | Setting up project, architecture                                         |
 | Performance | `references/performance.md`         | Optimization, profiling, jank fixes                                      |
+| Logging     | `references/logging.md`             | Application logging, error tracking, log levels, daily rotation          |
 
 **Note:** For UI layout patterns, responsive design, screen size adaptation, and visual widget composition, use the `flutter-adaptive-ui` skill instead.
 

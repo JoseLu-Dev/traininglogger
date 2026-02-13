@@ -2,11 +2,13 @@ import '../core/entity_registry.dart';
 import '../../data/remote/sync_api_service.dart';
 import '../../core/network/network_info.dart';
 import '../../data/remote/api_client.dart';
+import '../../core/logging/app_logger.dart';
 
 class PullStrategy {
   final SyncApiService _syncApi;
   final NetworkInfo _networkInfo;
   final EntityRegistry _registry;
+  final _log = AppLogger.forClass(PullStrategy);
 
   PullStrategy(
     this._syncApi,
@@ -45,7 +47,7 @@ class PullStrategy {
       final dao = _registry.getDao(entityType);
       if (dao == null) {
         // Unknown entity type, skip it
-        print('Warning: Unknown entity type $entityType, skipping');
+        _log.warning('Unknown entity type $entityType, skipping');
         continue;
       }
 
@@ -57,7 +59,7 @@ class PullStrategy {
           // Deserialize to Drift data class
           final deserialized = _registry.deserialize(entityType, entityData);
           if (deserialized == null) {
-            print('Warning: Failed to deserialize $entityType:$entityId');
+            _log.warning('Failed to deserialize $entityType:$entityId');
             continue;
           }
 
@@ -71,10 +73,10 @@ class PullStrategy {
             mergedCount++;
           } else {
             // Local is dirty, skip server version (client wins)
-            print('Skipping server version of $entityType:$entityId (local is dirty)');
+            _log.debug('Skipping server version of $entityType:$entityId (local is dirty)');
           }
         } catch (e) {
-          print('Error processing entity $entityType: $e');
+          _log.error('Error processing entity $entityType', e);
           // Continue with next entity
         }
       }
