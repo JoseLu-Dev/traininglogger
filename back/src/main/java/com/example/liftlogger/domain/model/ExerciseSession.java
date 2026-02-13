@@ -18,11 +18,14 @@ public class ExerciseSession {
     private UUID id;
     private UUID athleteId;
     private UUID trainingSessionId;
+    private UUID exercisePlanId;
     private UUID exerciseId;
     private UUID variantId;
     private Integer orderIndex;
+    private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private LocalDateTime deletedAt;
 }

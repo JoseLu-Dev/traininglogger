@@ -10,7 +10,7 @@ import 'set_plans_table.dart';
 class SetSessions extends Table with SyncableTable {
   TextColumn get exerciseSessionId => text().references(ExerciseSessions, #id)();
   TextColumn get setPlanId => text().nullable().references(SetPlans, #id)();
-  IntColumn get setNumber => integer()();
+  IntColumn get setNumber => integer().nullable()();
   IntColumn get actualReps => integer()();
   RealColumn get actualWeight => real()();
   RealColumn get actualRpe => real().nullable()();

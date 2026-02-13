@@ -27,19 +27,24 @@ public class SetSessionValidator extends BaseValidator implements EntityValidato
         // Field validation
         requiredUUID(session.getId(), "id");
         requiredUUID(session.getAthleteId(), "athleteId");
-        requiredUUID(session.getExerciseId(), "exerciseId");
-        required(session.getSessionDate(), "sessionDate");
+        requiredUUID(session.getExerciseSessionId(), "exerciseSessionId");
 
-        // Reps validation
-        if (session.getReps() != null) {
-            min(session.getReps(), 0, "reps");
-            max(session.getReps(), 1000, "reps");
+        // Actual reps validation
+        if (session.getActualReps() != null) {
+            min(session.getActualReps(), 0, "actualReps");
+            max(session.getActualReps(), 1000, "actualReps");
         }
 
-        // Weight validation
-        if (session.getWeight() != null) {
-            min(session.getWeight(), 0.0, "weight");
-            max(session.getWeight(), 1000.0, "weight");
+        // Actual weight validation
+        if (session.getActualWeight() != null) {
+            min(session.getActualWeight(), 0.0, "actualWeight");
+            max(session.getActualWeight(), 1000.0, "actualWeight");
+        }
+
+        // Actual RPE validation
+        if (session.getActualRpe() != null) {
+            min(session.getActualRpe(), 0.0, "actualRpe");
+            max(session.getActualRpe(), 10.0, "actualRpe");
         }
 
         // Notes length
@@ -55,10 +60,6 @@ public class SetSessionValidator extends BaseValidator implements EntityValidato
         // Cross-entity validation
         if (session.getAthleteId() != null && !userRepository.existsById(session.getAthleteId())) {
             errors.add(ValidationError.notFound("athleteId", "User"));
-        }
-
-        if (session.getExerciseId() != null && !exerciseRepository.existsById(session.getExerciseId())) {
-            errors.add(ValidationError.notFound("exerciseId", "Exercise"));
         }
 
         if (session.getExerciseSessionId() != null

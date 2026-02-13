@@ -10,14 +10,14 @@ _$SetPlanImpl _$$SetPlanImplFromJson(Map<String, dynamic> json) =>
     _$SetPlanImpl(
       id: json['id'] as String,
       exercisePlanId: json['exercisePlanId'] as String,
-      setNumber: (json['setNumber'] as num).toInt(),
+      setNumber: (json['setNumber'] as num?)?.toInt(),
       targetReps: (json['targetReps'] as num?)?.toInt(),
       targetWeight: (json['targetWeight'] as num?)?.toDouble(),
       targetRpe: (json['targetRpe'] as num?)?.toDouble(),
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: (json['version'] as num).toInt(),
+      version: (json['version'] as num?)?.toInt() ?? 0,
       deletedAt: json['deletedAt'] == null
           ? null
           : DateTime.parse(json['deletedAt'] as String),

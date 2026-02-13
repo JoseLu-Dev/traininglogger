@@ -27,18 +27,21 @@ public class SetSessionJpaEntity extends BaseJpaEntity {
     @Column(name = "exercise_session_id", nullable = false)
     private UUID exerciseSessionId;
 
-    @Column(name = "exercise_id", nullable = false)
-    private UUID exerciseId;
+    @Column(name = "set_plan_id")
+    private UUID setPlanId;
 
-    @Column
-    private Integer reps;
+    @Column(name = "set_number")
+    private Integer setNumber;
 
-    @Column
-    private Double weight;
+    @Column(name = "actual_reps")
+    private Integer actualReps;
 
-    @Column
+    @Column(name = "actual_weight")
+    private Double actualWeight;
+
+    @Column(name = "actual_rpe")
+    private Double actualRpe;
+
+    @Column(columnDefinition = "TEXT")
     private String notes;
-
-    @Column(name = "session_date")
-    private LocalDateTime sessionDate;
 }

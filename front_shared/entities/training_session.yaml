@@ -18,13 +18,8 @@ fields:
       table: Users
       column: id
 
-  - name: startTime
+  - name: sessionDate
     type: DateTime
-    tableType: dateTime()
-
-  - name: endTime
-    type: DateTime
-    nullable: true
     tableType: dateTime()
 
   - name: notes
@@ -37,8 +32,8 @@ indexes:
     columns: [trainingPlanId]
   - name: idx_training_sessions_athlete
     columns: [athleteId]
-  - name: idx_training_sessions_start_time
-    columns: [startTime]
+  - name: idx_training_sessions_session_date
+    columns: [sessionDate]
 
 queries:
   - name: findByTrainingPlanId
@@ -47,7 +42,7 @@ queries:
         type: String
     returns: List<TrainingSessionData>
     where: t.trainingPlanId.equals(trainingPlanId) & t.deletedAt.isNull()
-    orderBy: OrderingTerm.desc(t.startTime)
+    orderBy: OrderingTerm.desc(t.sessionDate)
 
   - name: findByAthleteId
     params:
@@ -55,12 +50,11 @@ queries:
         type: String
     returns: List<TrainingSessionData>
     where: t.athleteId.equals(athleteId) & t.deletedAt.isNull()
-    orderBy: OrderingTerm.desc(t.startTime)
+    orderBy: OrderingTerm.desc(t.sessionDate)
 
 createFactory:
   params:
     - trainingPlanId
     - athleteId
-    - startTime
-    - endTime
+    - sessionDate
     - notes

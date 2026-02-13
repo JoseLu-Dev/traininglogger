@@ -22,7 +22,7 @@ public class BodyWeightEntryValidator extends BaseValidator implements EntityVal
 
         requiredUUID(entry.getId(), "id");
         requiredUUID(entry.getAthleteId(), "athleteId");
-        required(entry.getDate(), "date");
+        required(entry.getMeasurementDate(), "measurementDate");
 
         // Weight validation
         if (entry.getWeight() != null) {

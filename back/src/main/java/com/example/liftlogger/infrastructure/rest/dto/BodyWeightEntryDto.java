@@ -10,8 +10,8 @@ public record BodyWeightEntryDto(
     UUID id,
     UUID athleteId,
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate date,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime measurementDate,
 
     Double weight,
     String notes,
@@ -23,5 +23,8 @@ public record BodyWeightEntryDto(
     LocalDateTime updatedAt,
 
     UUID createdBy,
-    UUID updatedBy
+    UUID updatedBy,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

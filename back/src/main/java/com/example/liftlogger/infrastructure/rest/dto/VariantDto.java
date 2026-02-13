@@ -19,5 +19,8 @@ public record VariantDto(
     LocalDateTime updatedAt,
 
     UUID createdBy,
-    UUID updatedBy
+    UUID updatedBy,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

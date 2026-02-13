@@ -13,6 +13,7 @@ fields:
 
   - name: setNumber
     type: int
+    nullable: true
     tableType: integer()
 
   - name: targetReps

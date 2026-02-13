@@ -26,12 +26,18 @@ public class SetPlanJpaEntity extends BaseJpaEntity {
     @Column(name = "exercise_plan_id", nullable = false)
     private UUID exercisePlanId;
 
-    @Column
-    private Integer reps;
+    @Column(name = "set_number")
+    private Integer setNumber;
 
-    @Column
-    private Double weight;
+    @Column(name = "target_reps")
+    private Integer targetReps;
 
-    @Column(name = "order_index")
-    private Integer orderIndex;
+    @Column(name = "target_weight")
+    private Double targetWeight;
+
+    @Column(name = "target_rpe")
+    private Double targetRpe;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 }

@@ -35,6 +35,9 @@ public abstract class BaseJpaEntity {
     @Column(name = "updated_by")
     private UUID updatedBy;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @PrePersist
     protected void onCreate() {
         if (id == null) {

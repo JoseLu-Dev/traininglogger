@@ -23,7 +23,7 @@ SetPlan _$SetPlanFromJson(Map<String, dynamic> json) {
 mixin _$SetPlan {
   String get id => throw _privateConstructorUsedError;
   String get exercisePlanId => throw _privateConstructorUsedError;
-  int get setNumber => throw _privateConstructorUsedError;
+  int? get setNumber => throw _privateConstructorUsedError;
   int? get targetReps => throw _privateConstructorUsedError;
   double? get targetWeight => throw _privateConstructorUsedError;
   double? get targetRpe => throw _privateConstructorUsedError;
@@ -52,7 +52,7 @@ abstract class $SetPlanCopyWith<$Res> {
   $Res call({
     String id,
     String exercisePlanId,
-    int setNumber,
+    int? setNumber,
     int? targetReps,
     double? targetWeight,
     double? targetRpe,
@@ -83,7 +83,7 @@ class _$SetPlanCopyWithImpl<$Res, $Val extends SetPlan>
   $Res call({
     Object? id = null,
     Object? exercisePlanId = null,
-    Object? setNumber = null,
+    Object? setNumber = freezed,
     Object? targetReps = freezed,
     Object? targetWeight = freezed,
     Object? targetRpe = freezed,
@@ -105,10 +105,10 @@ class _$SetPlanCopyWithImpl<$Res, $Val extends SetPlan>
                 ? _value.exercisePlanId
                 : exercisePlanId // ignore: cast_nullable_to_non_nullable
                       as String,
-            setNumber: null == setNumber
+            setNumber: freezed == setNumber
                 ? _value.setNumber
                 : setNumber // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as int?,
             targetReps: freezed == targetReps
                 ? _value.targetReps
                 : targetReps // ignore: cast_nullable_to_non_nullable
@@ -166,7 +166,7 @@ abstract class _$$SetPlanImplCopyWith<$Res> implements $SetPlanCopyWith<$Res> {
   $Res call({
     String id,
     String exercisePlanId,
-    int setNumber,
+    int? setNumber,
     int? targetReps,
     double? targetWeight,
     double? targetRpe,
@@ -196,7 +196,7 @@ class __$$SetPlanImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? exercisePlanId = null,
-    Object? setNumber = null,
+    Object? setNumber = freezed,
     Object? targetReps = freezed,
     Object? targetWeight = freezed,
     Object? targetRpe = freezed,
@@ -218,10 +218,10 @@ class __$$SetPlanImplCopyWithImpl<$Res>
             ? _value.exercisePlanId
             : exercisePlanId // ignore: cast_nullable_to_non_nullable
                   as String,
-        setNumber: null == setNumber
+        setNumber: freezed == setNumber
             ? _value.setNumber
             : setNumber // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as int?,
         targetReps: freezed == targetReps
             ? _value.targetReps
             : targetReps // ignore: cast_nullable_to_non_nullable
@@ -273,14 +273,14 @@ class _$SetPlanImpl extends _SetPlan {
   const _$SetPlanImpl({
     required this.id,
     required this.exercisePlanId,
-    required this.setNumber,
+    this.setNumber,
     this.targetReps,
     this.targetWeight,
     this.targetRpe,
     this.notes,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version = 0,
     this.deletedAt,
     this.isDirty = false,
     this.lastSyncedAt,
@@ -294,7 +294,7 @@ class _$SetPlanImpl extends _SetPlan {
   @override
   final String exercisePlanId;
   @override
-  final int setNumber;
+  final int? setNumber;
   @override
   final int? targetReps;
   @override
@@ -308,6 +308,7 @@ class _$SetPlanImpl extends _SetPlan {
   @override
   final DateTime updatedAt;
   @override
+  @JsonKey()
   final int version;
   @override
   final DateTime? deletedAt;
@@ -388,14 +389,14 @@ abstract class _SetPlan extends SetPlan {
   const factory _SetPlan({
     required final String id,
     required final String exercisePlanId,
-    required final int setNumber,
+    final int? setNumber,
     final int? targetReps,
     final double? targetWeight,
     final double? targetRpe,
     final String? notes,
     required final DateTime createdAt,
     required final DateTime updatedAt,
-    required final int version,
+    final int version,
     final DateTime? deletedAt,
     final bool isDirty,
     final DateTime? lastSyncedAt,
@@ -409,7 +410,7 @@ abstract class _SetPlan extends SetPlan {
   @override
   String get exercisePlanId;
   @override
-  int get setNumber;
+  int? get setNumber;
   @override
   int? get targetReps;
   @override

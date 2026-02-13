@@ -14,6 +14,7 @@ import java.util.UUID;
 public record UserSyncDto(
     UUID id,
     String email,
+    String name,
     UserRole role,
     UUID coachId,
 
@@ -21,5 +22,8 @@ public record UserSyncDto(
     LocalDateTime createdAt,
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

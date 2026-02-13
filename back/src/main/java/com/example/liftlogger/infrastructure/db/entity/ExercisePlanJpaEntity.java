@@ -34,4 +34,7 @@ public class ExercisePlanJpaEntity extends BaseJpaEntity {
 
     @Column(name = "order_index")
     private Integer orderIndex;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 }

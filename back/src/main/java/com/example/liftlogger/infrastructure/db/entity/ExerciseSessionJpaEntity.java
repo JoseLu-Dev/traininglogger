@@ -26,6 +26,9 @@ public class ExerciseSessionJpaEntity extends BaseJpaEntity {
     @Column(name = "training_session_id", nullable = false)
     private UUID trainingSessionId;
 
+    @Column(name = "exercise_plan_id")
+    private UUID exercisePlanId;
+
     @Column(name = "exercise_id", nullable = false)
     private UUID exerciseId;
 
@@ -34,4 +37,7 @@ public class ExerciseSessionJpaEntity extends BaseJpaEntity {
 
     @Column(name = "order_index")
     private Integer orderIndex;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 }

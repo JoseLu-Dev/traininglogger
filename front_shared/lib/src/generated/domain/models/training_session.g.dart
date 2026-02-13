@@ -12,14 +12,11 @@ _$TrainingSessionImpl _$$TrainingSessionImplFromJson(
   id: json['id'] as String,
   trainingPlanId: json['trainingPlanId'] as String,
   athleteId: json['athleteId'] as String,
-  startTime: DateTime.parse(json['startTime'] as String),
-  endTime: json['endTime'] == null
-      ? null
-      : DateTime.parse(json['endTime'] as String),
+  sessionDate: DateTime.parse(json['sessionDate'] as String),
   notes: json['notes'] as String?,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
-  version: (json['version'] as num).toInt(),
+  version: (json['version'] as num?)?.toInt() ?? 0,
   deletedAt: json['deletedAt'] == null
       ? null
       : DateTime.parse(json['deletedAt'] as String),
@@ -35,8 +32,7 @@ Map<String, dynamic> _$$TrainingSessionImplToJson(
   'id': instance.id,
   'trainingPlanId': instance.trainingPlanId,
   'athleteId': instance.athleteId,
-  'startTime': instance.startTime.toIso8601String(),
-  'endTime': instance.endTime?.toIso8601String(),
+  'sessionDate': instance.sessionDate.toIso8601String(),
   'notes': instance.notes,
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),

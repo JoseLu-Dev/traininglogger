@@ -256,7 +256,7 @@ class _$ExercisePlanImpl extends _ExercisePlan {
     this.notes,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version = 0,
     this.deletedAt,
     this.isDirty = false,
     this.lastSyncedAt,
@@ -280,6 +280,7 @@ class _$ExercisePlanImpl extends _ExercisePlan {
   @override
   final DateTime updatedAt;
   @override
+  @JsonKey()
   final int version;
   @override
   final DateTime? deletedAt;
@@ -359,7 +360,7 @@ abstract class _ExercisePlan extends ExercisePlan {
     final String? notes,
     required final DateTime createdAt,
     required final DateTime updatedAt,
-    required final int version,
+    final int version,
     final DateTime? deletedAt,
     final bool isDirty,
     final DateTime? lastSyncedAt,

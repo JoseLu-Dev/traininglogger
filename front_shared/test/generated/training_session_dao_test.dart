@@ -20,8 +20,7 @@ void main() {
       final entity = TrainingSession.create(
         trainingPlanId: 'test-trainingPlanId',
         athleteId: 'test-athleteId',
-        startTime: DateTime(2025, 1, 15),
-        endTime: DateTime(2025, 1, 15),
+        sessionDate: DateTime(2025, 1, 15),
         notes: 'test-notes',
       );
 
@@ -37,8 +36,7 @@ void main() {
       final entity = TrainingSession.create(
         trainingPlanId: 'test-trainingPlanId',
         athleteId: 'test-athleteId',
-        startTime: DateTime(2025, 1, 15),
-        endTime: DateTime(2025, 1, 15),
+        sessionDate: DateTime(2025, 1, 15),
         notes: 'test-notes',
       );
 
@@ -57,8 +55,7 @@ void main() {
       final entity = TrainingSession.create(
         trainingPlanId: 'test-trainingPlanId',
         athleteId: 'test-athleteId',
-        startTime: DateTime(2025, 1, 15),
-        endTime: DateTime(2025, 1, 15),
+        sessionDate: DateTime(2025, 1, 15),
         notes: 'test-notes',
       );
 

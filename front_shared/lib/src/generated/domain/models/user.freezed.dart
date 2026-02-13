@@ -250,7 +250,7 @@ class _$UserImpl extends _User {
     this.coachId,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version = 0,
     this.deletedAt,
     this.isDirty = false,
     this.lastSyncedAt,
@@ -274,6 +274,7 @@ class _$UserImpl extends _User {
   @override
   final DateTime updatedAt;
   @override
+  @JsonKey()
   final int version;
   @override
   final DateTime? deletedAt;
@@ -350,7 +351,7 @@ abstract class _User extends User {
     final String? coachId,
     required final DateTime createdAt,
     required final DateTime updatedAt,
-    required final int version,
+    final int version,
     final DateTime? deletedAt,
     final bool isDirty,
     final DateTime? lastSyncedAt,

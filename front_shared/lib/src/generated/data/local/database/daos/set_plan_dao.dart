@@ -82,7 +82,7 @@ class SetPlanDao extends BaseDao<SetPlans, SetPlanData>
       SetPlansCompanion.insert(
         id: Value(entity.id),
         exercisePlanId: entity.exercisePlanId,
-        setNumber: entity.setNumber,
+        setNumber: Value(entity.setNumber),
         targetReps: Value(entity.targetReps),
         targetWeight: Value(entity.targetWeight),
         targetRpe: Value(entity.targetRpe),
@@ -105,10 +105,10 @@ class SetPlanDao extends BaseDao<SetPlans, SetPlanData>
       notes: data.notes,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-      version: data.version,
+      version: data.version ?? 0,
       deletedAt: data.deletedAt,
-      isDirty: data.isDirty,
-      lastSyncedAt: data.lastSyncedAt,
+      isDirty: data.isDirty ?? false,
+      lastSyncedAt: data.lastSyncedAt ?? DateTime.now(),
     );
   }
 }

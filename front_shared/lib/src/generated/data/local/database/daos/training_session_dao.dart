@@ -72,14 +72,14 @@ class TrainingSessionDao extends BaseDao<TrainingSessions, TrainingSessionData>
   Future<List<TrainingSessionData>> findByTrainingPlanId(String trainingPlanId) {
     return (select(table)
           ..where((t) => t.trainingPlanId.equals(trainingPlanId) & t.deletedAt.isNull())
-          ..orderBy([(t) => OrderingTerm.desc(t.startTime)]))
+          ..orderBy([(t) => OrderingTerm.desc(t.sessionDate)]))
         .get();
   }
 
   Future<List<TrainingSessionData>> findByAthleteId(String athleteId) {
     return (select(table)
           ..where((t) => t.athleteId.equals(athleteId) & t.deletedAt.isNull())
-          ..orderBy([(t) => OrderingTerm.desc(t.startTime)]))
+          ..orderBy([(t) => OrderingTerm.desc(t.sessionDate)]))
         .get();
   }
 
@@ -90,8 +90,7 @@ class TrainingSessionDao extends BaseDao<TrainingSessions, TrainingSessionData>
         id: Value(entity.id),
         trainingPlanId: entity.trainingPlanId,
         athleteId: entity.athleteId,
-        startTime: entity.startTime,
-        endTime: Value(entity.endTime),
+        sessionDate: entity.sessionDate,
         notes: Value(entity.notes),
         isDirty: const Value(true),
       ),
@@ -105,15 +104,14 @@ class TrainingSessionDao extends BaseDao<TrainingSessions, TrainingSessionData>
       id: data.id,
       trainingPlanId: data.trainingPlanId,
       athleteId: data.athleteId,
-      startTime: data.startTime,
-      endTime: data.endTime,
+      sessionDate: data.sessionDate,
       notes: data.notes,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-      version: data.version,
+      version: data.version ?? 0,
       deletedAt: data.deletedAt,
-      isDirty: data.isDirty,
-      lastSyncedAt: data.lastSyncedAt,
+      isDirty: data.isDirty ?? false,
+      lastSyncedAt: data.lastSyncedAt ?? DateTime.now(),
     );
   }
 }

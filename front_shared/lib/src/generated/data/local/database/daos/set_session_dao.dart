@@ -83,7 +83,7 @@ class SetSessionDao extends BaseDao<SetSessions, SetSessionData>
         id: Value(entity.id),
         exerciseSessionId: entity.exerciseSessionId,
         setPlanId: Value(entity.setPlanId),
-        setNumber: entity.setNumber,
+        setNumber: Value(entity.setNumber),
         actualReps: entity.actualReps,
         actualWeight: entity.actualWeight,
         actualRpe: Value(entity.actualRpe),
@@ -107,10 +107,10 @@ class SetSessionDao extends BaseDao<SetSessions, SetSessionData>
       notes: data.notes,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-      version: data.version,
+      version: data.version ?? 0,
       deletedAt: data.deletedAt,
-      isDirty: data.isDirty,
-      lastSyncedAt: data.lastSyncedAt,
+      isDirty: data.isDirty ?? false,
+      lastSyncedAt: data.lastSyncedAt ?? DateTime.now(),
     );
   }
 }

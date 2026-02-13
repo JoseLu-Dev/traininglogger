@@ -20,7 +20,7 @@ void main() {
       final entity = User.create(
         email: 'test-email',
         name: 'test-name',
-        role: UserRole.athlete,
+        role: UserRole.ATHLETE,
         coachId: 'test-coachId',
       );
 
@@ -36,7 +36,7 @@ void main() {
       final entity = User.create(
         email: 'test-email',
         name: 'test-name',
-        role: UserRole.athlete,
+        role: UserRole.ATHLETE,
         coachId: 'test-coachId',
       );
 
@@ -55,7 +55,7 @@ void main() {
       final entity = User.create(
         email: 'test-email',
         name: 'test-name',
-        role: UserRole.athlete,
+        role: UserRole.ATHLETE,
         coachId: 'test-coachId',
       );
 

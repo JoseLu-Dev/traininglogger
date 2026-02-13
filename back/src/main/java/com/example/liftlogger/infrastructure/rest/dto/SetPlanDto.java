@@ -9,9 +9,11 @@ public record SetPlanDto(
     UUID id,
     UUID athleteId,
     UUID exercisePlanId,
-    Integer reps,
-    Double weight,
-    Integer orderIndex,
+    Integer setNumber,
+    Integer targetReps,
+    Double targetWeight,
+    Double targetRpe,
+    String notes,
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdAt,
@@ -20,5 +22,8 @@ public record SetPlanDto(
     LocalDateTime updatedAt,
 
     UUID createdBy,
-    UUID updatedBy
+    UUID updatedBy,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

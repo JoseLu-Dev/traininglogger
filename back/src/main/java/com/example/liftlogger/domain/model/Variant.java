@@ -24,4 +24,5 @@ public class Variant {
     private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private LocalDateTime deletedAt;
 }

@@ -24,8 +24,7 @@ mixin _$TrainingSession {
   String get id => throw _privateConstructorUsedError;
   String get trainingPlanId => throw _privateConstructorUsedError;
   String get athleteId => throw _privateConstructorUsedError;
-  DateTime get startTime => throw _privateConstructorUsedError;
-  DateTime? get endTime => throw _privateConstructorUsedError;
+  DateTime get sessionDate => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -55,8 +54,7 @@ abstract class $TrainingSessionCopyWith<$Res> {
     String id,
     String trainingPlanId,
     String athleteId,
-    DateTime startTime,
-    DateTime? endTime,
+    DateTime sessionDate,
     String? notes,
     DateTime createdAt,
     DateTime updatedAt,
@@ -85,8 +83,7 @@ class _$TrainingSessionCopyWithImpl<$Res, $Val extends TrainingSession>
     Object? id = null,
     Object? trainingPlanId = null,
     Object? athleteId = null,
-    Object? startTime = null,
-    Object? endTime = freezed,
+    Object? sessionDate = null,
     Object? notes = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -109,14 +106,10 @@ class _$TrainingSessionCopyWithImpl<$Res, $Val extends TrainingSession>
                 ? _value.athleteId
                 : athleteId // ignore: cast_nullable_to_non_nullable
                       as String,
-            startTime: null == startTime
-                ? _value.startTime
-                : startTime // ignore: cast_nullable_to_non_nullable
+            sessionDate: null == sessionDate
+                ? _value.sessionDate
+                : sessionDate // ignore: cast_nullable_to_non_nullable
                       as DateTime,
-            endTime: freezed == endTime
-                ? _value.endTime
-                : endTime // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
             notes: freezed == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
@@ -164,8 +157,7 @@ abstract class _$$TrainingSessionImplCopyWith<$Res>
     String id,
     String trainingPlanId,
     String athleteId,
-    DateTime startTime,
-    DateTime? endTime,
+    DateTime sessionDate,
     String? notes,
     DateTime createdAt,
     DateTime updatedAt,
@@ -193,8 +185,7 @@ class __$$TrainingSessionImplCopyWithImpl<$Res>
     Object? id = null,
     Object? trainingPlanId = null,
     Object? athleteId = null,
-    Object? startTime = null,
-    Object? endTime = freezed,
+    Object? sessionDate = null,
     Object? notes = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -217,14 +208,10 @@ class __$$TrainingSessionImplCopyWithImpl<$Res>
             ? _value.athleteId
             : athleteId // ignore: cast_nullable_to_non_nullable
                   as String,
-        startTime: null == startTime
-            ? _value.startTime
-            : startTime // ignore: cast_nullable_to_non_nullable
+        sessionDate: null == sessionDate
+            ? _value.sessionDate
+            : sessionDate // ignore: cast_nullable_to_non_nullable
                   as DateTime,
-        endTime: freezed == endTime
-            ? _value.endTime
-            : endTime // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
         notes: freezed == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
@@ -265,12 +252,11 @@ class _$TrainingSessionImpl extends _TrainingSession {
     required this.id,
     required this.trainingPlanId,
     required this.athleteId,
-    required this.startTime,
-    this.endTime,
+    required this.sessionDate,
     this.notes,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version = 0,
     this.deletedAt,
     this.isDirty = false,
     this.lastSyncedAt,
@@ -286,9 +272,7 @@ class _$TrainingSessionImpl extends _TrainingSession {
   @override
   final String athleteId;
   @override
-  final DateTime startTime;
-  @override
-  final DateTime? endTime;
+  final DateTime sessionDate;
   @override
   final String? notes;
   @override
@@ -296,6 +280,7 @@ class _$TrainingSessionImpl extends _TrainingSession {
   @override
   final DateTime updatedAt;
   @override
+  @JsonKey()
   final int version;
   @override
   final DateTime? deletedAt;
@@ -307,7 +292,7 @@ class _$TrainingSessionImpl extends _TrainingSession {
 
   @override
   String toString() {
-    return 'TrainingSession(id: $id, trainingPlanId: $trainingPlanId, athleteId: $athleteId, startTime: $startTime, endTime: $endTime, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'TrainingSession(id: $id, trainingPlanId: $trainingPlanId, athleteId: $athleteId, sessionDate: $sessionDate, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -320,9 +305,8 @@ class _$TrainingSessionImpl extends _TrainingSession {
                 other.trainingPlanId == trainingPlanId) &&
             (identical(other.athleteId, athleteId) ||
                 other.athleteId == athleteId) &&
-            (identical(other.startTime, startTime) ||
-                other.startTime == startTime) &&
-            (identical(other.endTime, endTime) || other.endTime == endTime) &&
+            (identical(other.sessionDate, sessionDate) ||
+                other.sessionDate == sessionDate) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -343,8 +327,7 @@ class _$TrainingSessionImpl extends _TrainingSession {
     id,
     trainingPlanId,
     athleteId,
-    startTime,
-    endTime,
+    sessionDate,
     notes,
     createdAt,
     updatedAt,
@@ -376,12 +359,11 @@ abstract class _TrainingSession extends TrainingSession {
     required final String id,
     required final String trainingPlanId,
     required final String athleteId,
-    required final DateTime startTime,
-    final DateTime? endTime,
+    required final DateTime sessionDate,
     final String? notes,
     required final DateTime createdAt,
     required final DateTime updatedAt,
-    required final int version,
+    final int version,
     final DateTime? deletedAt,
     final bool isDirty,
     final DateTime? lastSyncedAt,
@@ -398,9 +380,7 @@ abstract class _TrainingSession extends TrainingSession {
   @override
   String get athleteId;
   @override
-  DateTime get startTime;
-  @override
-  DateTime? get endTime;
+  DateTime get sessionDate;
   @override
   String? get notes;
   @override

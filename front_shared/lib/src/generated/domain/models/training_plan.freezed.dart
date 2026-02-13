@@ -256,7 +256,7 @@ class _$TrainingPlanImpl extends _TrainingPlan {
     required this.isLocked,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version = 0,
     this.deletedAt,
     this.isDirty = false,
     this.lastSyncedAt,
@@ -280,6 +280,7 @@ class _$TrainingPlanImpl extends _TrainingPlan {
   @override
   final DateTime updatedAt;
   @override
+  @JsonKey()
   final int version;
   @override
   final DateTime? deletedAt;
@@ -358,7 +359,7 @@ abstract class _TrainingPlan extends TrainingPlan {
     required final bool isLocked,
     required final DateTime createdAt,
     required final DateTime updatedAt,
-    required final int version,
+    final int version,
     final DateTime? deletedAt,
     final bool isDirty,
     final DateTime? lastSyncedAt,

@@ -14,7 +14,7 @@ class Variant with _$Variant implements SyncableEntity {
     String? description,
     required DateTime createdAt,
     required DateTime updatedAt,
-    required int version,
+    @Default(0) int version,
     DateTime? deletedAt,
     @Default(false) bool isDirty,
     DateTime? lastSyncedAt,

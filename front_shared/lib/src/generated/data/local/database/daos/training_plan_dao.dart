@@ -108,10 +108,10 @@ class TrainingPlanDao extends BaseDao<TrainingPlans, TrainingPlanData>
       isLocked: data.isLocked,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
-      version: data.version,
+      version: data.version ?? 0,
       deletedAt: data.deletedAt,
-      isDirty: data.isDirty,
-      lastSyncedAt: data.lastSyncedAt,
+      isDirty: data.isDirty ?? false,
+      lastSyncedAt: data.lastSyncedAt ?? DateTime.now(),
     );
   }
 }

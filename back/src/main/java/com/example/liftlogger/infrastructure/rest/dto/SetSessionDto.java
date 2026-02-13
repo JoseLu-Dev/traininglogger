@@ -9,13 +9,12 @@ public record SetSessionDto(
     UUID id,
     UUID athleteId,
     UUID exerciseSessionId,
-    UUID exerciseId,
-    Integer reps,
-    Double weight,
+    UUID setPlanId,
+    Integer setNumber,
+    Integer actualReps,
+    Double actualWeight,
+    Double actualRpe,
     String notes,
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime sessionDate,
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdAt,
@@ -24,5 +23,8 @@ public record SetSessionDto(
     LocalDateTime updatedAt,
 
     UUID createdBy,
-    UUID updatedBy
+    UUID updatedBy,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

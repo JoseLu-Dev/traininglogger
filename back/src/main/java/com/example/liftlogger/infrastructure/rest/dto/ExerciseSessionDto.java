@@ -9,9 +9,11 @@ public record ExerciseSessionDto(
     UUID id,
     UUID athleteId,
     UUID trainingSessionId,
+    UUID exercisePlanId,
     UUID exerciseId,
     UUID variantId,
     Integer orderIndex,
+    String notes,
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdAt,
@@ -20,5 +22,8 @@ public record ExerciseSessionDto(
     LocalDateTime updatedAt,
 
     UUID createdBy,
-    UUID updatedBy
+    UUID updatedBy,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

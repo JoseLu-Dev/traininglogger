@@ -14,7 +14,7 @@ class ExercisePlanVariant with _$ExercisePlanVariant implements SyncableEntity {
     required String variantId,
     required DateTime createdAt,
     required DateTime updatedAt,
-    required int version,
+    @Default(0) int version,
     DateTime? deletedAt,
     @Default(false) bool isDirty,
     DateTime? lastSyncedAt,

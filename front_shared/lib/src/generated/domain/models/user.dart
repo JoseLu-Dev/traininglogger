@@ -5,7 +5,7 @@ import 'package:front_shared/src/domain/models/syncable_entity.dart';
 part 'user.freezed.dart';
 part 'user.g.dart';
 
-enum UserRole { athlete, coach }
+enum UserRole { ATHLETE, COACH }
 
 @freezed
 class User with _$User implements SyncableEntity {
@@ -17,7 +17,7 @@ class User with _$User implements SyncableEntity {
     String? coachId,
     required DateTime createdAt,
     required DateTime updatedAt,
-    required int version,
+    @Default(0) int version,
     DateTime? deletedAt,
     @Default(false) bool isDirty,
     DateTime? lastSyncedAt,

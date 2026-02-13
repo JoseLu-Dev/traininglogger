@@ -19,12 +19,11 @@ public class TrainingPlan {
     private UUID id;
     private UUID athleteId;
     private String name;
-    private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String status;
+    private LocalDateTime date;
+    private Boolean isLocked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private LocalDateTime deletedAt;
 }

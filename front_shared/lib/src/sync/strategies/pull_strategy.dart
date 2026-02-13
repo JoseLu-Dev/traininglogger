@@ -57,7 +57,17 @@ class PullStrategy {
           final entityId = entityData['id'] as String;
 
           // Deserialize to Drift data class
-          final deserialized = _registry.deserialize(entityType, entityData);
+          final deserialized;
+          try {
+            //_log.debug('Attempting to deserialize $entityType with JSON: $entityData');
+            deserialized = _registry.deserialize(entityType, entityData);
+          } catch (deserializeError, stackTrace) {
+            _log.error('Deserialization failed for $entityType', deserializeError);
+            _log.error('JSON data was: $entityData');
+            _log.error('Stack trace: $stackTrace');
+            rethrow;
+          }
+
           if (deserialized == null) {
             _log.warning('Failed to deserialize $entityType:$entityId');
             continue;

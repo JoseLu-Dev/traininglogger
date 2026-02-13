@@ -261,8 +261,9 @@ class EntityGenerator {
       case 'DateTime':
         return 'DateTimeColumn';
       default:
+        // For enums, use generic Column type to support both intEnum and textEnum
         if (dartType.endsWith('Role') || dartType.endsWith('Enum')) {
-          return 'IntColumn';
+          return 'Column';
         }
         return 'TextColumn';
     }

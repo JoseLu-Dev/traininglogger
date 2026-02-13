@@ -16,7 +16,7 @@ class TrainingPlan with _$TrainingPlan implements SyncableEntity {
     required bool isLocked,
     required DateTime createdAt,
     required DateTime updatedAt,
-    required int version,
+    @Default(0) int version,
     DateTime? deletedAt,
     @Default(false) bool isDirty,
     DateTime? lastSyncedAt,

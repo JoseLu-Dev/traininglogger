@@ -19,8 +19,10 @@ public class Exercise {
     private UUID coachId;
     private String name;
     private String description;
+    private String category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private LocalDateTime deletedAt;
 }

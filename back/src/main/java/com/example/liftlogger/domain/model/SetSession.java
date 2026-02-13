@@ -18,13 +18,15 @@ public class SetSession {
     private UUID id;
     private UUID athleteId;
     private UUID exerciseSessionId;
-    private UUID exerciseId;
-    private Integer reps;
-    private Double weight;
+    private UUID setPlanId;
+    private Integer setNumber;
+    private Integer actualReps;
+    private Double actualWeight;
+    private Double actualRpe;
     private String notes;
-    private LocalDateTime sessionDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private LocalDateTime deletedAt;
 }

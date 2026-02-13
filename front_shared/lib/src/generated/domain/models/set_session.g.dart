@@ -11,14 +11,14 @@ _$SetSessionImpl _$$SetSessionImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       exerciseSessionId: json['exerciseSessionId'] as String,
       setPlanId: json['setPlanId'] as String?,
-      setNumber: (json['setNumber'] as num).toInt(),
+      setNumber: (json['setNumber'] as num?)?.toInt(),
       actualReps: (json['actualReps'] as num).toInt(),
       actualWeight: (json['actualWeight'] as num).toDouble(),
       actualRpe: (json['actualRpe'] as num?)?.toDouble(),
       notes: json['notes'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
-      version: (json['version'] as num).toInt(),
+      version: (json['version'] as num?)?.toInt() ?? 0,
       deletedAt: json['deletedAt'] == null
           ? null
           : DateTime.parse(json['deletedAt'] as String),

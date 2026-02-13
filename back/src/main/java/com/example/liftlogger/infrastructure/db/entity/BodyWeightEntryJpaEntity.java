@@ -24,8 +24,8 @@ public class BodyWeightEntryJpaEntity extends BaseJpaEntity {
     @Column(name = "athlete_id", nullable = false)
     private UUID athleteId;
 
-    @Column(nullable = false)
-    private LocalDate date;
+    @Column(name = "measurement_date", nullable = false)
+    private java.time.LocalDateTime measurementDate;
 
     @Column(nullable = false)
     private Double weight;

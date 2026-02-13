@@ -10,15 +10,11 @@ public record TrainingPlanDto(
     UUID id,
     UUID athleteId,
     String name,
-    String description,
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate startDate,
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime date,
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate endDate,
-
-    String status,
+    Boolean isLocked,
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdAt,
@@ -27,5 +23,8 @@ public record TrainingPlanDto(
     LocalDateTime updatedAt,
 
     UUID createdBy,
-    UUID updatedBy
+    UUID updatedBy,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

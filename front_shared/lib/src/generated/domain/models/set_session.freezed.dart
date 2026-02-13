@@ -24,7 +24,7 @@ mixin _$SetSession {
   String get id => throw _privateConstructorUsedError;
   String get exerciseSessionId => throw _privateConstructorUsedError;
   String? get setPlanId => throw _privateConstructorUsedError;
-  int get setNumber => throw _privateConstructorUsedError;
+  int? get setNumber => throw _privateConstructorUsedError;
   int get actualReps => throw _privateConstructorUsedError;
   double get actualWeight => throw _privateConstructorUsedError;
   double? get actualRpe => throw _privateConstructorUsedError;
@@ -57,7 +57,7 @@ abstract class $SetSessionCopyWith<$Res> {
     String id,
     String exerciseSessionId,
     String? setPlanId,
-    int setNumber,
+    int? setNumber,
     int actualReps,
     double actualWeight,
     double? actualRpe,
@@ -89,7 +89,7 @@ class _$SetSessionCopyWithImpl<$Res, $Val extends SetSession>
     Object? id = null,
     Object? exerciseSessionId = null,
     Object? setPlanId = freezed,
-    Object? setNumber = null,
+    Object? setNumber = freezed,
     Object? actualReps = null,
     Object? actualWeight = null,
     Object? actualRpe = freezed,
@@ -115,10 +115,10 @@ class _$SetSessionCopyWithImpl<$Res, $Val extends SetSession>
                 ? _value.setPlanId
                 : setPlanId // ignore: cast_nullable_to_non_nullable
                       as String?,
-            setNumber: null == setNumber
+            setNumber: freezed == setNumber
                 ? _value.setNumber
                 : setNumber // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as int?,
             actualReps: null == actualReps
                 ? _value.actualReps
                 : actualReps // ignore: cast_nullable_to_non_nullable
@@ -178,7 +178,7 @@ abstract class _$$SetSessionImplCopyWith<$Res>
     String id,
     String exerciseSessionId,
     String? setPlanId,
-    int setNumber,
+    int? setNumber,
     int actualReps,
     double actualWeight,
     double? actualRpe,
@@ -209,7 +209,7 @@ class __$$SetSessionImplCopyWithImpl<$Res>
     Object? id = null,
     Object? exerciseSessionId = null,
     Object? setPlanId = freezed,
-    Object? setNumber = null,
+    Object? setNumber = freezed,
     Object? actualReps = null,
     Object? actualWeight = null,
     Object? actualRpe = freezed,
@@ -235,10 +235,10 @@ class __$$SetSessionImplCopyWithImpl<$Res>
             ? _value.setPlanId
             : setPlanId // ignore: cast_nullable_to_non_nullable
                   as String?,
-        setNumber: null == setNumber
+        setNumber: freezed == setNumber
             ? _value.setNumber
             : setNumber // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as int?,
         actualReps: null == actualReps
             ? _value.actualReps
             : actualReps // ignore: cast_nullable_to_non_nullable
@@ -291,14 +291,14 @@ class _$SetSessionImpl extends _SetSession {
     required this.id,
     required this.exerciseSessionId,
     this.setPlanId,
-    required this.setNumber,
+    this.setNumber,
     required this.actualReps,
     required this.actualWeight,
     this.actualRpe,
     this.notes,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version = 0,
     this.deletedAt,
     this.isDirty = false,
     this.lastSyncedAt,
@@ -314,7 +314,7 @@ class _$SetSessionImpl extends _SetSession {
   @override
   final String? setPlanId;
   @override
-  final int setNumber;
+  final int? setNumber;
   @override
   final int actualReps;
   @override
@@ -328,6 +328,7 @@ class _$SetSessionImpl extends _SetSession {
   @override
   final DateTime updatedAt;
   @override
+  @JsonKey()
   final int version;
   @override
   final DateTime? deletedAt;
@@ -412,14 +413,14 @@ abstract class _SetSession extends SetSession {
     required final String id,
     required final String exerciseSessionId,
     final String? setPlanId,
-    required final int setNumber,
+    final int? setNumber,
     required final int actualReps,
     required final double actualWeight,
     final double? actualRpe,
     final String? notes,
     required final DateTime createdAt,
     required final DateTime updatedAt,
-    required final int version,
+    final int version,
     final DateTime? deletedAt,
     final bool isDirty,
     final DateTime? lastSyncedAt,
@@ -436,7 +437,7 @@ abstract class _SetSession extends SetSession {
   @override
   String? get setPlanId;
   @override
-  int get setNumber;
+  int? get setNumber;
   @override
   int get actualReps;
   @override

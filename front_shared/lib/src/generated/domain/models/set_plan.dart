@@ -11,14 +11,14 @@ class SetPlan with _$SetPlan implements SyncableEntity {
   const factory SetPlan({
     required String id,
     required String exercisePlanId,
-    required int setNumber,
+    int? setNumber,
     int? targetReps,
     double? targetWeight,
     double? targetRpe,
     String? notes,
     required DateTime createdAt,
     required DateTime updatedAt,
-    required int version,
+    @Default(0) int version,
     DateTime? deletedAt,
     @Default(false) bool isDirty,
     DateTime? lastSyncedAt,
@@ -32,7 +32,7 @@ class SetPlan with _$SetPlan implements SyncableEntity {
   /// Factory for creating a new setPlan
   factory SetPlan.create({
     required String exercisePlanId,
-    required int setNumber,
+    int? setNumber,
     int? targetReps,
     double? targetWeight,
     double? targetRpe,

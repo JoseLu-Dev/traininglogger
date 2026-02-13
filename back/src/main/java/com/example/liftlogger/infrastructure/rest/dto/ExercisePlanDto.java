@@ -12,6 +12,7 @@ public record ExercisePlanDto(
     UUID exerciseId,
     UUID variantId,
     Integer orderIndex,
+    String notes,
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdAt,
@@ -20,5 +21,8 @@ public record ExercisePlanDto(
     LocalDateTime updatedAt,
 
     UUID createdBy,
-    UUID updatedBy
+    UUID updatedBy,
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    LocalDateTime deletedAt
 ) {}

@@ -14,7 +14,7 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
   coachId: json['coachId'] as String?,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
-  version: (json['version'] as num).toInt(),
+  version: (json['version'] as num?)?.toInt() ?? 0,
   deletedAt: json['deletedAt'] == null
       ? null
       : DateTime.parse(json['deletedAt'] as String),
@@ -40,6 +40,6 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
     };
 
 const _$UserRoleEnumMap = {
-  UserRole.athlete: 'athlete',
-  UserRole.coach: 'coach',
+  UserRole.ATHLETE: 'ATHLETE',
+  UserRole.COACH: 'COACH',
 };

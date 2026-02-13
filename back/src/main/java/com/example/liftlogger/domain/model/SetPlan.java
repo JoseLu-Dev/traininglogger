@@ -18,11 +18,14 @@ public class SetPlan {
     private UUID id;
     private UUID athleteId;
     private UUID exercisePlanId;
-    private Integer reps;
-    private Double weight;
-    private Integer orderIndex;
+    private Integer setNumber;
+    private Integer targetReps;
+    private Double targetWeight;
+    private Double targetRpe;
+    private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private LocalDateTime deletedAt;
 }

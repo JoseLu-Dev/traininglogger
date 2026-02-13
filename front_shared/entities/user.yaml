@@ -16,8 +16,8 @@ fields:
 
   - name: role
     type: UserRole
-    tableType: intEnum<UserRole>()
-    enumValues: [athlete, coach]
+    tableType: textEnum<UserRole>()
+    enumValues: [ATHLETE, COACH]
 
   - name: coachId
     type: String

@@ -49,10 +49,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserData> {
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -72,7 +72,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserData> {
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -119,12 +119,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserData> {
     requiredDuringInsert: true,
   );
   @override
-  late final GeneratedColumnWithTypeConverter<UserRole, int> role =
-      GeneratedColumn<int>(
+  late final GeneratedColumnWithTypeConverter<UserRole, String> role =
+      GeneratedColumn<String>(
         'role',
         aliasedName,
         false,
-        type: DriftSqlType.int,
+        type: DriftSqlType.string,
         requiredDuringInsert: true,
       ).withConverter<UserRole>($UsersTable.$converterrole);
   static const VerificationMeta _coachIdMeta = const VerificationMeta(
@@ -255,7 +255,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserData> {
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -263,7 +263,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserData> {
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -278,7 +278,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserData> {
       )!,
       role: $UsersTable.$converterrole.fromSql(
         attachedDatabase.typeMapping.read(
-          DriftSqlType.int,
+          DriftSqlType.string,
           data['${effectivePrefix}role'],
         )!,
       ),
@@ -294,17 +294,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, UserData> {
     return $UsersTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<UserRole, int, int> $converterrole =
-      const EnumIndexConverter<UserRole>(UserRole.values);
+  static JsonTypeConverter2<UserRole, String, String> $converterrole =
+      const EnumNameConverter<UserRole>(UserRole.values);
 }
 
 class UserData extends DataClass implements Insertable<UserData> {
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String email;
   final String name;
@@ -314,9 +314,9 @@ class UserData extends DataClass implements Insertable<UserData> {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.email,
     required this.name,
@@ -329,18 +329,22 @@ class UserData extends DataClass implements Insertable<UserData> {
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
     map['email'] = Variable<String>(email);
     map['name'] = Variable<String>(name);
     {
-      map['role'] = Variable<int>($UsersTable.$converterrole.toSql(role));
+      map['role'] = Variable<String>($UsersTable.$converterrole.toSql(role));
     }
     if (!nullToAbsent || coachId != null) {
       map['coach_id'] = Variable<String>(coachId);
@@ -353,11 +357,15 @@ class UserData extends DataClass implements Insertable<UserData> {
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -379,14 +387,14 @@ class UserData extends DataClass implements Insertable<UserData> {
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       email: serializer.fromJson<String>(json['email']),
       name: serializer.fromJson<String>(json['name']),
       role: $UsersTable.$converterrole.fromJson(
-        serializer.fromJson<int>(json['role']),
+        serializer.fromJson<String>(json['role']),
       ),
       coachId: serializer.fromJson<String?>(json['coachId']),
     );
@@ -398,13 +406,15 @@ class UserData extends DataClass implements Insertable<UserData> {
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'email': serializer.toJson<String>(email),
       'name': serializer.toJson<String>(name),
-      'role': serializer.toJson<int>($UsersTable.$converterrole.toJson(role)),
+      'role': serializer.toJson<String>(
+        $UsersTable.$converterrole.toJson(role),
+      ),
       'coachId': serializer.toJson<String?>(coachId),
     };
   }
@@ -413,9 +423,9 @@ class UserData extends DataClass implements Insertable<UserData> {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? email,
     String? name,
@@ -425,9 +435,9 @@ class UserData extends DataClass implements Insertable<UserData> {
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     email: email ?? this.email,
     name: name ?? this.name,
@@ -505,9 +515,9 @@ class UsersCompanion extends UpdateCompanion<UserData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> email;
   final Value<String> name;
@@ -554,7 +564,7 @@ class UsersCompanion extends UpdateCompanion<UserData> {
     Expression<DateTime>? lastSyncedAt,
     Expression<String>? email,
     Expression<String>? name,
-    Expression<int>? role,
+    Expression<String>? role,
     Expression<String>? coachId,
     Expression<int>? rowid,
   }) {
@@ -578,9 +588,9 @@ class UsersCompanion extends UpdateCompanion<UserData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? email,
     Value<String>? name,
@@ -635,7 +645,9 @@ class UsersCompanion extends UpdateCompanion<UserData> {
       map['name'] = Variable<String>(name.value);
     }
     if (role.present) {
-      map['role'] = Variable<int>($UsersTable.$converterrole.toSql(role.value));
+      map['role'] = Variable<String>(
+        $UsersTable.$converterrole.toSql(role.value),
+      );
     }
     if (coachId.present) {
       map['coach_id'] = Variable<String>(coachId.value);
@@ -713,10 +725,10 @@ class $BodyWeightEntriesTable extends BodyWeightEntries
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -736,7 +748,7 @@ class $BodyWeightEntriesTable extends BodyWeightEntries
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -924,7 +936,7 @@ class $BodyWeightEntriesTable extends BodyWeightEntries
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -932,7 +944,7 @@ class $BodyWeightEntriesTable extends BodyWeightEntries
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -967,9 +979,9 @@ class BodyWeightEntryData extends DataClass
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String athleteId;
   final double weight;
@@ -979,9 +991,9 @@ class BodyWeightEntryData extends DataClass
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.athleteId,
     required this.weight,
@@ -994,11 +1006,15 @@ class BodyWeightEntryData extends DataClass
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -1016,11 +1032,15 @@ class BodyWeightEntryData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -1042,9 +1062,9 @@ class BodyWeightEntryData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       athleteId: serializer.fromJson<String>(json['athleteId']),
       weight: serializer.fromJson<double>(json['weight']),
@@ -1059,9 +1079,9 @@ class BodyWeightEntryData extends DataClass
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'athleteId': serializer.toJson<String>(athleteId),
       'weight': serializer.toJson<double>(weight),
@@ -1074,9 +1094,9 @@ class BodyWeightEntryData extends DataClass
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? athleteId,
     double? weight,
@@ -1086,9 +1106,9 @@ class BodyWeightEntryData extends DataClass
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     athleteId: athleteId ?? this.athleteId,
     weight: weight ?? this.weight,
@@ -1168,9 +1188,9 @@ class BodyWeightEntriesCompanion extends UpdateCompanion<BodyWeightEntryData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> athleteId;
   final Value<double> weight;
@@ -1241,9 +1261,9 @@ class BodyWeightEntriesCompanion extends UpdateCompanion<BodyWeightEntryData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? athleteId,
     Value<double>? weight,
@@ -1376,10 +1396,10 @@ class $TrainingPlansTable extends TrainingPlans
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -1399,7 +1419,7 @@ class $TrainingPlansTable extends TrainingPlans
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -1591,7 +1611,7 @@ class $TrainingPlansTable extends TrainingPlans
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -1599,7 +1619,7 @@ class $TrainingPlansTable extends TrainingPlans
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -1634,9 +1654,9 @@ class TrainingPlanData extends DataClass
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String athleteId;
   final String name;
@@ -1646,9 +1666,9 @@ class TrainingPlanData extends DataClass
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.athleteId,
     required this.name,
@@ -1661,11 +1681,15 @@ class TrainingPlanData extends DataClass
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -1681,11 +1705,15 @@ class TrainingPlanData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -1705,9 +1733,9 @@ class TrainingPlanData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       athleteId: serializer.fromJson<String>(json['athleteId']),
       name: serializer.fromJson<String>(json['name']),
@@ -1722,9 +1750,9 @@ class TrainingPlanData extends DataClass
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'athleteId': serializer.toJson<String>(athleteId),
       'name': serializer.toJson<String>(name),
@@ -1737,9 +1765,9 @@ class TrainingPlanData extends DataClass
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? athleteId,
     String? name,
@@ -1749,9 +1777,9 @@ class TrainingPlanData extends DataClass
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     athleteId: athleteId ?? this.athleteId,
     name: name ?? this.name,
@@ -1829,9 +1857,9 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlanData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> athleteId;
   final Value<String> name;
@@ -1902,9 +1930,9 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlanData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? athleteId,
     Value<String>? name,
@@ -2037,10 +2065,10 @@ class $ExercisesTable extends Exercises
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -2060,7 +2088,7 @@ class $ExercisesTable extends Exercises
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -2229,7 +2257,7 @@ class $ExercisesTable extends Exercises
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -2237,7 +2265,7 @@ class $ExercisesTable extends Exercises
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -2267,9 +2295,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String name;
   final String? description;
@@ -2278,9 +2306,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.name,
     this.description,
@@ -2292,11 +2320,15 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -2315,11 +2347,15 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -2342,9 +2378,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String?>(json['description']),
@@ -2358,9 +2394,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String?>(description),
@@ -2372,9 +2408,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? name,
     Value<String?> description = const Value.absent(),
@@ -2383,9 +2419,9 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     name: name ?? this.name,
     description: description.present ? description.value : this.description,
@@ -2460,9 +2496,9 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> name;
   final Value<String?> description;
@@ -2526,9 +2562,9 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? name,
     Value<String?>? description,
@@ -2655,10 +2691,10 @@ class $ExercisePlansTable extends ExercisePlans
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -2678,7 +2714,7 @@ class $ExercisePlansTable extends ExercisePlans
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -2870,7 +2906,7 @@ class $ExercisePlansTable extends ExercisePlans
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -2878,7 +2914,7 @@ class $ExercisePlansTable extends ExercisePlans
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -2913,9 +2949,9 @@ class ExercisePlanData extends DataClass
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String trainingPlanId;
   final String exerciseId;
@@ -2925,9 +2961,9 @@ class ExercisePlanData extends DataClass
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.trainingPlanId,
     required this.exerciseId,
@@ -2940,11 +2976,15 @@ class ExercisePlanData extends DataClass
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -2962,11 +3002,15 @@ class ExercisePlanData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -2988,9 +3032,9 @@ class ExercisePlanData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       trainingPlanId: serializer.fromJson<String>(json['trainingPlanId']),
       exerciseId: serializer.fromJson<String>(json['exerciseId']),
@@ -3005,9 +3049,9 @@ class ExercisePlanData extends DataClass
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'trainingPlanId': serializer.toJson<String>(trainingPlanId),
       'exerciseId': serializer.toJson<String>(exerciseId),
@@ -3020,9 +3064,9 @@ class ExercisePlanData extends DataClass
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? trainingPlanId,
     String? exerciseId,
@@ -3032,9 +3076,9 @@ class ExercisePlanData extends DataClass
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     trainingPlanId: trainingPlanId ?? this.trainingPlanId,
     exerciseId: exerciseId ?? this.exerciseId,
@@ -3118,9 +3162,9 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> trainingPlanId;
   final Value<String> exerciseId;
@@ -3191,9 +3235,9 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? trainingPlanId,
     Value<String>? exerciseId,
@@ -3326,10 +3370,10 @@ class $VariantsTable extends Variants
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -3349,7 +3393,7 @@ class $VariantsTable extends Variants
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -3499,7 +3543,7 @@ class $VariantsTable extends Variants
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -3507,7 +3551,7 @@ class $VariantsTable extends Variants
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -3533,9 +3577,9 @@ class VariantData extends DataClass implements Insertable<VariantData> {
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String name;
   final String? description;
@@ -3543,9 +3587,9 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.name,
     this.description,
@@ -3556,11 +3600,15 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -3576,11 +3624,15 @@ class VariantData extends DataClass implements Insertable<VariantData> {
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -3600,9 +3652,9 @@ class VariantData extends DataClass implements Insertable<VariantData> {
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String?>(json['description']),
@@ -3615,9 +3667,9 @@ class VariantData extends DataClass implements Insertable<VariantData> {
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String?>(description),
@@ -3628,9 +3680,9 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? name,
     Value<String?> description = const Value.absent(),
@@ -3638,9 +3690,9 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     name: name ?? this.name,
     description: description.present ? description.value : this.description,
@@ -3710,9 +3762,9 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> name;
   final Value<String?> description;
@@ -3771,9 +3823,9 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? name,
     Value<String?>? description,
@@ -3894,10 +3946,10 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -3917,7 +3969,7 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -4076,7 +4128,7 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -4084,7 +4136,7 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -4111,9 +4163,9 @@ class ExercisePlanVariantData extends DataClass
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String exercisePlanId;
   final String variantId;
@@ -4121,9 +4173,9 @@ class ExercisePlanVariantData extends DataClass
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.exercisePlanId,
     required this.variantId,
@@ -4134,11 +4186,15 @@ class ExercisePlanVariantData extends DataClass
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -4152,11 +4208,15 @@ class ExercisePlanVariantData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -4174,9 +4234,9 @@ class ExercisePlanVariantData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       exercisePlanId: serializer.fromJson<String>(json['exercisePlanId']),
       variantId: serializer.fromJson<String>(json['variantId']),
@@ -4189,9 +4249,9 @@ class ExercisePlanVariantData extends DataClass
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'exercisePlanId': serializer.toJson<String>(exercisePlanId),
       'variantId': serializer.toJson<String>(variantId),
@@ -4202,9 +4262,9 @@ class ExercisePlanVariantData extends DataClass
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? exercisePlanId,
     String? variantId,
@@ -4212,9 +4272,9 @@ class ExercisePlanVariantData extends DataClass
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     exercisePlanId: exercisePlanId ?? this.exercisePlanId,
     variantId: variantId ?? this.variantId,
@@ -4287,9 +4347,9 @@ class ExercisePlanVariantsCompanion
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> exercisePlanId;
   final Value<String> variantId;
@@ -4349,9 +4409,9 @@ class ExercisePlanVariantsCompanion
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? exercisePlanId,
     Value<String>? variantId,
@@ -4472,10 +4532,10 @@ class $TrainingSessionsTable extends TrainingSessions
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -4495,7 +4555,7 @@ class $TrainingSessionsTable extends TrainingSessions
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -4542,27 +4602,16 @@ class $TrainingSessionsTable extends TrainingSessions
       'REFERENCES users (id)',
     ),
   );
-  static const VerificationMeta _startTimeMeta = const VerificationMeta(
-    'startTime',
+  static const VerificationMeta _sessionDateMeta = const VerificationMeta(
+    'sessionDate',
   );
   @override
-  late final GeneratedColumn<DateTime> startTime = GeneratedColumn<DateTime>(
-    'start_time',
+  late final GeneratedColumn<DateTime> sessionDate = GeneratedColumn<DateTime>(
+    'session_date',
     aliasedName,
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _endTimeMeta = const VerificationMeta(
-    'endTime',
-  );
-  @override
-  late final GeneratedColumn<DateTime> endTime = GeneratedColumn<DateTime>(
-    'end_time',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
   );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
@@ -4584,8 +4633,7 @@ class $TrainingSessionsTable extends TrainingSessions
     lastSyncedAt,
     trainingPlanId,
     athleteId,
-    startTime,
-    endTime,
+    sessionDate,
     notes,
   ];
   @override
@@ -4661,19 +4709,16 @@ class $TrainingSessionsTable extends TrainingSessions
     } else if (isInserting) {
       context.missing(_athleteIdMeta);
     }
-    if (data.containsKey('start_time')) {
+    if (data.containsKey('session_date')) {
       context.handle(
-        _startTimeMeta,
-        startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta),
+        _sessionDateMeta,
+        sessionDate.isAcceptableOrUnknown(
+          data['session_date']!,
+          _sessionDateMeta,
+        ),
       );
     } else if (isInserting) {
-      context.missing(_startTimeMeta);
-    }
-    if (data.containsKey('end_time')) {
-      context.handle(
-        _endTimeMeta,
-        endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta),
-      );
+      context.missing(_sessionDateMeta);
     }
     if (data.containsKey('notes')) {
       context.handle(
@@ -4705,7 +4750,7 @@ class $TrainingSessionsTable extends TrainingSessions
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -4713,7 +4758,7 @@ class $TrainingSessionsTable extends TrainingSessions
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -4726,14 +4771,10 @@ class $TrainingSessionsTable extends TrainingSessions
         DriftSqlType.string,
         data['${effectivePrefix}athlete_id'],
       )!,
-      startTime: attachedDatabase.typeMapping.read(
+      sessionDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
-        data['${effectivePrefix}start_time'],
+        data['${effectivePrefix}session_date'],
       )!,
-      endTime: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}end_time'],
-      ),
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -4752,27 +4793,25 @@ class TrainingSessionData extends DataClass
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String trainingPlanId;
   final String athleteId;
-  final DateTime startTime;
-  final DateTime? endTime;
+  final DateTime sessionDate;
   final String? notes;
   const TrainingSessionData({
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.trainingPlanId,
     required this.athleteId,
-    required this.startTime,
-    this.endTime,
+    required this.sessionDate,
     this.notes,
   });
   @override
@@ -4781,20 +4820,21 @@ class TrainingSessionData extends DataClass
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
     map['training_plan_id'] = Variable<String>(trainingPlanId);
     map['athlete_id'] = Variable<String>(athleteId);
-    map['start_time'] = Variable<DateTime>(startTime);
-    if (!nullToAbsent || endTime != null) {
-      map['end_time'] = Variable<DateTime>(endTime);
-    }
+    map['session_date'] = Variable<DateTime>(sessionDate);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
@@ -4806,20 +4846,21 @@ class TrainingSessionData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
       trainingPlanId: Value(trainingPlanId),
       athleteId: Value(athleteId),
-      startTime: Value(startTime),
-      endTime: endTime == null && nullToAbsent
-          ? const Value.absent()
-          : Value(endTime),
+      sessionDate: Value(sessionDate),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
@@ -4835,14 +4876,13 @@ class TrainingSessionData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       trainingPlanId: serializer.fromJson<String>(json['trainingPlanId']),
       athleteId: serializer.fromJson<String>(json['athleteId']),
-      startTime: serializer.fromJson<DateTime>(json['startTime']),
-      endTime: serializer.fromJson<DateTime?>(json['endTime']),
+      sessionDate: serializer.fromJson<DateTime>(json['sessionDate']),
       notes: serializer.fromJson<String?>(json['notes']),
     );
   }
@@ -4853,14 +4893,13 @@ class TrainingSessionData extends DataClass
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'trainingPlanId': serializer.toJson<String>(trainingPlanId),
       'athleteId': serializer.toJson<String>(athleteId),
-      'startTime': serializer.toJson<DateTime>(startTime),
-      'endTime': serializer.toJson<DateTime?>(endTime),
+      'sessionDate': serializer.toJson<DateTime>(sessionDate),
       'notes': serializer.toJson<String?>(notes),
     };
   }
@@ -4869,27 +4908,25 @@ class TrainingSessionData extends DataClass
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? trainingPlanId,
     String? athleteId,
-    DateTime? startTime,
-    Value<DateTime?> endTime = const Value.absent(),
+    DateTime? sessionDate,
     Value<String?> notes = const Value.absent(),
   }) => TrainingSessionData(
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     trainingPlanId: trainingPlanId ?? this.trainingPlanId,
     athleteId: athleteId ?? this.athleteId,
-    startTime: startTime ?? this.startTime,
-    endTime: endTime.present ? endTime.value : this.endTime,
+    sessionDate: sessionDate ?? this.sessionDate,
     notes: notes.present ? notes.value : this.notes,
   );
   TrainingSessionData copyWithCompanion(TrainingSessionsCompanion data) {
@@ -4907,8 +4944,9 @@ class TrainingSessionData extends DataClass
           ? data.trainingPlanId.value
           : this.trainingPlanId,
       athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
-      startTime: data.startTime.present ? data.startTime.value : this.startTime,
-      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      sessionDate: data.sessionDate.present
+          ? data.sessionDate.value
+          : this.sessionDate,
       notes: data.notes.present ? data.notes.value : this.notes,
     );
   }
@@ -4925,8 +4963,7 @@ class TrainingSessionData extends DataClass
           ..write('lastSyncedAt: $lastSyncedAt, ')
           ..write('trainingPlanId: $trainingPlanId, ')
           ..write('athleteId: $athleteId, ')
-          ..write('startTime: $startTime, ')
-          ..write('endTime: $endTime, ')
+          ..write('sessionDate: $sessionDate, ')
           ..write('notes: $notes')
           ..write(')'))
         .toString();
@@ -4943,8 +4980,7 @@ class TrainingSessionData extends DataClass
     lastSyncedAt,
     trainingPlanId,
     athleteId,
-    startTime,
-    endTime,
+    sessionDate,
     notes,
   );
   @override
@@ -4960,8 +4996,7 @@ class TrainingSessionData extends DataClass
           other.lastSyncedAt == this.lastSyncedAt &&
           other.trainingPlanId == this.trainingPlanId &&
           other.athleteId == this.athleteId &&
-          other.startTime == this.startTime &&
-          other.endTime == this.endTime &&
+          other.sessionDate == this.sessionDate &&
           other.notes == this.notes);
 }
 
@@ -4969,14 +5004,13 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> trainingPlanId;
   final Value<String> athleteId;
-  final Value<DateTime> startTime;
-  final Value<DateTime?> endTime;
+  final Value<DateTime> sessionDate;
   final Value<String?> notes;
   final Value<int> rowid;
   const TrainingSessionsCompanion({
@@ -4989,8 +5023,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     this.lastSyncedAt = const Value.absent(),
     this.trainingPlanId = const Value.absent(),
     this.athleteId = const Value.absent(),
-    this.startTime = const Value.absent(),
-    this.endTime = const Value.absent(),
+    this.sessionDate = const Value.absent(),
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5004,13 +5037,12 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     this.lastSyncedAt = const Value.absent(),
     required String trainingPlanId,
     required String athleteId,
-    required DateTime startTime,
-    this.endTime = const Value.absent(),
+    required DateTime sessionDate,
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : trainingPlanId = Value(trainingPlanId),
        athleteId = Value(athleteId),
-       startTime = Value(startTime);
+       sessionDate = Value(sessionDate);
   static Insertable<TrainingSessionData> custom({
     Expression<String>? id,
     Expression<DateTime>? createdAt,
@@ -5021,8 +5053,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     Expression<DateTime>? lastSyncedAt,
     Expression<String>? trainingPlanId,
     Expression<String>? athleteId,
-    Expression<DateTime>? startTime,
-    Expression<DateTime>? endTime,
+    Expression<DateTime>? sessionDate,
     Expression<String>? notes,
     Expression<int>? rowid,
   }) {
@@ -5036,8 +5067,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
       if (trainingPlanId != null) 'training_plan_id': trainingPlanId,
       if (athleteId != null) 'athlete_id': athleteId,
-      if (startTime != null) 'start_time': startTime,
-      if (endTime != null) 'end_time': endTime,
+      if (sessionDate != null) 'session_date': sessionDate,
       if (notes != null) 'notes': notes,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5047,14 +5077,13 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? trainingPlanId,
     Value<String>? athleteId,
-    Value<DateTime>? startTime,
-    Value<DateTime?>? endTime,
+    Value<DateTime>? sessionDate,
     Value<String?>? notes,
     Value<int>? rowid,
   }) {
@@ -5068,8 +5097,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
       trainingPlanId: trainingPlanId ?? this.trainingPlanId,
       athleteId: athleteId ?? this.athleteId,
-      startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
+      sessionDate: sessionDate ?? this.sessionDate,
       notes: notes ?? this.notes,
       rowid: rowid ?? this.rowid,
     );
@@ -5105,11 +5133,8 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     if (athleteId.present) {
       map['athlete_id'] = Variable<String>(athleteId.value);
     }
-    if (startTime.present) {
-      map['start_time'] = Variable<DateTime>(startTime.value);
-    }
-    if (endTime.present) {
-      map['end_time'] = Variable<DateTime>(endTime.value);
+    if (sessionDate.present) {
+      map['session_date'] = Variable<DateTime>(sessionDate.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -5132,8 +5157,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
           ..write('lastSyncedAt: $lastSyncedAt, ')
           ..write('trainingPlanId: $trainingPlanId, ')
           ..write('athleteId: $athleteId, ')
-          ..write('startTime: $startTime, ')
-          ..write('endTime: $endTime, ')
+          ..write('sessionDate: $sessionDate, ')
           ..write('notes: $notes, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -5188,10 +5212,10 @@ class $ExerciseSessionsTable extends ExerciseSessions
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -5211,7 +5235,7 @@ class $ExerciseSessionsTable extends ExerciseSessions
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -5428,7 +5452,7 @@ class $ExerciseSessionsTable extends ExerciseSessions
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -5436,7 +5460,7 @@ class $ExerciseSessionsTable extends ExerciseSessions
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -5475,9 +5499,9 @@ class ExerciseSessionData extends DataClass
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String trainingSessionId;
   final String? exercisePlanId;
@@ -5488,9 +5512,9 @@ class ExerciseSessionData extends DataClass
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.trainingSessionId,
     this.exercisePlanId,
@@ -5504,11 +5528,15 @@ class ExerciseSessionData extends DataClass
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -5529,11 +5557,15 @@ class ExerciseSessionData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -5558,9 +5590,9 @@ class ExerciseSessionData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       trainingSessionId: serializer.fromJson<String>(json['trainingSessionId']),
       exercisePlanId: serializer.fromJson<String?>(json['exercisePlanId']),
@@ -5576,9 +5608,9 @@ class ExerciseSessionData extends DataClass
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'trainingSessionId': serializer.toJson<String>(trainingSessionId),
       'exercisePlanId': serializer.toJson<String?>(exercisePlanId),
@@ -5592,9 +5624,9 @@ class ExerciseSessionData extends DataClass
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? trainingSessionId,
     Value<String?> exercisePlanId = const Value.absent(),
@@ -5605,9 +5637,9 @@ class ExerciseSessionData extends DataClass
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     trainingSessionId: trainingSessionId ?? this.trainingSessionId,
     exercisePlanId: exercisePlanId.present
@@ -5700,9 +5732,9 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> trainingSessionId;
   final Value<String?> exercisePlanId;
@@ -5778,9 +5810,9 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? trainingSessionId,
     Value<String?>? exercisePlanId,
@@ -5919,10 +5951,10 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -5942,7 +5974,7 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -6102,7 +6134,7 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -6110,7 +6142,7 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -6137,9 +6169,9 @@ class ExerciseSessionVariantData extends DataClass
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String exerciseSessionId;
   final String variantId;
@@ -6147,9 +6179,9 @@ class ExerciseSessionVariantData extends DataClass
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.exerciseSessionId,
     required this.variantId,
@@ -6160,11 +6192,15 @@ class ExerciseSessionVariantData extends DataClass
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -6178,11 +6214,15 @@ class ExerciseSessionVariantData extends DataClass
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -6200,9 +6240,9 @@ class ExerciseSessionVariantData extends DataClass
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       exerciseSessionId: serializer.fromJson<String>(json['exerciseSessionId']),
       variantId: serializer.fromJson<String>(json['variantId']),
@@ -6215,9 +6255,9 @@ class ExerciseSessionVariantData extends DataClass
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'exerciseSessionId': serializer.toJson<String>(exerciseSessionId),
       'variantId': serializer.toJson<String>(variantId),
@@ -6228,9 +6268,9 @@ class ExerciseSessionVariantData extends DataClass
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? exerciseSessionId,
     String? variantId,
@@ -6238,9 +6278,9 @@ class ExerciseSessionVariantData extends DataClass
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     exerciseSessionId: exerciseSessionId ?? this.exerciseSessionId,
     variantId: variantId ?? this.variantId,
@@ -6313,9 +6353,9 @@ class ExerciseSessionVariantsCompanion
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> exerciseSessionId;
   final Value<String> variantId;
@@ -6375,9 +6415,9 @@ class ExerciseSessionVariantsCompanion
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? exerciseSessionId,
     Value<String>? variantId,
@@ -6498,10 +6538,10 @@ class $SetPlansTable extends SetPlans
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -6521,7 +6561,7 @@ class $SetPlansTable extends SetPlans
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -6561,9 +6601,9 @@ class $SetPlansTable extends SetPlans
   late final GeneratedColumn<int> setNumber = GeneratedColumn<int>(
     'set_number',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _targetRepsMeta = const VerificationMeta(
     'targetReps',
@@ -6693,8 +6733,6 @@ class $SetPlansTable extends SetPlans
         _setNumberMeta,
         setNumber.isAcceptableOrUnknown(data['set_number']!, _setNumberMeta),
       );
-    } else if (isInserting) {
-      context.missing(_setNumberMeta);
     }
     if (data.containsKey('target_reps')) {
       context.handle(
@@ -6747,7 +6785,7 @@ class $SetPlansTable extends SetPlans
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -6755,7 +6793,7 @@ class $SetPlansTable extends SetPlans
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -6767,7 +6805,7 @@ class $SetPlansTable extends SetPlans
       setNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}set_number'],
-      )!,
+      ),
       targetReps: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}target_reps'],
@@ -6797,12 +6835,12 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String exercisePlanId;
-  final int setNumber;
+  final int? setNumber;
   final int? targetReps;
   final double? targetWeight;
   final double? targetRpe;
@@ -6811,12 +6849,12 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.exercisePlanId,
-    required this.setNumber,
+    this.setNumber,
     this.targetReps,
     this.targetWeight,
     this.targetRpe,
@@ -6828,16 +6866,22 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
     map['exercise_plan_id'] = Variable<String>(exercisePlanId);
-    map['set_number'] = Variable<int>(setNumber);
+    if (!nullToAbsent || setNumber != null) {
+      map['set_number'] = Variable<int>(setNumber);
+    }
     if (!nullToAbsent || targetReps != null) {
       map['target_reps'] = Variable<int>(targetReps);
     }
@@ -6858,16 +6902,22 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
       exercisePlanId: Value(exercisePlanId),
-      setNumber: Value(setNumber),
+      setNumber: setNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setNumber),
       targetReps: targetReps == null && nullToAbsent
           ? const Value.absent()
           : Value(targetReps),
@@ -6892,12 +6942,12 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       exercisePlanId: serializer.fromJson<String>(json['exercisePlanId']),
-      setNumber: serializer.fromJson<int>(json['setNumber']),
+      setNumber: serializer.fromJson<int?>(json['setNumber']),
       targetReps: serializer.fromJson<int?>(json['targetReps']),
       targetWeight: serializer.fromJson<double?>(json['targetWeight']),
       targetRpe: serializer.fromJson<double?>(json['targetRpe']),
@@ -6911,12 +6961,12 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'exercisePlanId': serializer.toJson<String>(exercisePlanId),
-      'setNumber': serializer.toJson<int>(setNumber),
+      'setNumber': serializer.toJson<int?>(setNumber),
       'targetReps': serializer.toJson<int?>(targetReps),
       'targetWeight': serializer.toJson<double?>(targetWeight),
       'targetRpe': serializer.toJson<double?>(targetRpe),
@@ -6928,12 +6978,12 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? exercisePlanId,
-    int? setNumber,
+    Value<int?> setNumber = const Value.absent(),
     Value<int?> targetReps = const Value.absent(),
     Value<double?> targetWeight = const Value.absent(),
     Value<double?> targetRpe = const Value.absent(),
@@ -6942,12 +6992,12 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     exercisePlanId: exercisePlanId ?? this.exercisePlanId,
-    setNumber: setNumber ?? this.setNumber,
+    setNumber: setNumber.present ? setNumber.value : this.setNumber,
     targetReps: targetReps.present ? targetReps.value : this.targetReps,
     targetWeight: targetWeight.present ? targetWeight.value : this.targetWeight,
     targetRpe: targetRpe.present ? targetRpe.value : this.targetRpe,
@@ -7038,12 +7088,12 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> exercisePlanId;
-  final Value<int> setNumber;
+  final Value<int?> setNumber;
   final Value<int?> targetReps;
   final Value<double?> targetWeight;
   final Value<double?> targetRpe;
@@ -7074,14 +7124,13 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
     required String exercisePlanId,
-    required int setNumber,
+    this.setNumber = const Value.absent(),
     this.targetReps = const Value.absent(),
     this.targetWeight = const Value.absent(),
     this.targetRpe = const Value.absent(),
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : exercisePlanId = Value(exercisePlanId),
-       setNumber = Value(setNumber);
+  }) : exercisePlanId = Value(exercisePlanId);
   static Insertable<SetPlanData> custom({
     Expression<String>? id,
     Expression<DateTime>? createdAt,
@@ -7120,12 +7169,12 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? exercisePlanId,
-    Value<int>? setNumber,
+    Value<int?>? setNumber,
     Value<int?>? targetReps,
     Value<double?>? targetWeight,
     Value<double?>? targetRpe,
@@ -7267,10 +7316,10 @@ class $SetSessionsTable extends SetSessions
   late final GeneratedColumn<int> version = GeneratedColumn<int>(
     'version',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(1),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
@@ -7290,7 +7339,7 @@ class $SetSessionsTable extends SetSessions
   late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
     'is_dirty',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
@@ -7345,9 +7394,9 @@ class $SetSessionsTable extends SetSessions
   late final GeneratedColumn<int> setNumber = GeneratedColumn<int>(
     'set_number',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _actualRepsMeta = const VerificationMeta(
     'actualReps',
@@ -7484,8 +7533,6 @@ class $SetSessionsTable extends SetSessions
         _setNumberMeta,
         setNumber.isAcceptableOrUnknown(data['set_number']!, _setNumberMeta),
       );
-    } else if (isInserting) {
-      context.missing(_setNumberMeta);
     }
     if (data.containsKey('actual_reps')) {
       context.handle(
@@ -7542,7 +7589,7 @@ class $SetSessionsTable extends SetSessions
       version: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}version'],
-      )!,
+      ),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -7550,7 +7597,7 @@ class $SetSessionsTable extends SetSessions
       isDirty: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_dirty'],
-      )!,
+      ),
       lastSyncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
@@ -7566,7 +7613,7 @@ class $SetSessionsTable extends SetSessions
       setNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}set_number'],
-      )!,
+      ),
       actualReps: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}actual_reps'],
@@ -7596,13 +7643,13 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
   final String id;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final int version;
+  final int? version;
   final DateTime? deletedAt;
-  final bool isDirty;
+  final bool? isDirty;
   final DateTime? lastSyncedAt;
   final String exerciseSessionId;
   final String? setPlanId;
-  final int setNumber;
+  final int? setNumber;
   final int actualReps;
   final double actualWeight;
   final double? actualRpe;
@@ -7611,13 +7658,13 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     required this.id,
     required this.createdAt,
     required this.updatedAt,
-    required this.version,
+    this.version,
     this.deletedAt,
-    required this.isDirty,
+    this.isDirty,
     this.lastSyncedAt,
     required this.exerciseSessionId,
     this.setPlanId,
-    required this.setNumber,
+    this.setNumber,
     required this.actualReps,
     required this.actualWeight,
     this.actualRpe,
@@ -7629,11 +7676,15 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     map['id'] = Variable<String>(id);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['version'] = Variable<int>(version);
+    if (!nullToAbsent || version != null) {
+      map['version'] = Variable<int>(version);
+    }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
-    map['is_dirty'] = Variable<bool>(isDirty);
+    if (!nullToAbsent || isDirty != null) {
+      map['is_dirty'] = Variable<bool>(isDirty);
+    }
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
@@ -7641,7 +7692,9 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     if (!nullToAbsent || setPlanId != null) {
       map['set_plan_id'] = Variable<String>(setPlanId);
     }
-    map['set_number'] = Variable<int>(setNumber);
+    if (!nullToAbsent || setNumber != null) {
+      map['set_number'] = Variable<int>(setNumber);
+    }
     map['actual_reps'] = Variable<int>(actualReps);
     map['actual_weight'] = Variable<double>(actualWeight);
     if (!nullToAbsent || actualRpe != null) {
@@ -7658,11 +7711,15 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       id: Value(id),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      version: Value(version),
+      version: version == null && nullToAbsent
+          ? const Value.absent()
+          : Value(version),
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
-      isDirty: Value(isDirty),
+      isDirty: isDirty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isDirty),
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
@@ -7670,7 +7727,9 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       setPlanId: setPlanId == null && nullToAbsent
           ? const Value.absent()
           : Value(setPlanId),
-      setNumber: Value(setNumber),
+      setNumber: setNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setNumber),
       actualReps: Value(actualReps),
       actualWeight: Value(actualWeight),
       actualRpe: actualRpe == null && nullToAbsent
@@ -7691,13 +7750,13 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       id: serializer.fromJson<String>(json['id']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      version: serializer.fromJson<int>(json['version']),
+      version: serializer.fromJson<int?>(json['version']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
+      isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       exerciseSessionId: serializer.fromJson<String>(json['exerciseSessionId']),
       setPlanId: serializer.fromJson<String?>(json['setPlanId']),
-      setNumber: serializer.fromJson<int>(json['setNumber']),
+      setNumber: serializer.fromJson<int?>(json['setNumber']),
       actualReps: serializer.fromJson<int>(json['actualReps']),
       actualWeight: serializer.fromJson<double>(json['actualWeight']),
       actualRpe: serializer.fromJson<double?>(json['actualRpe']),
@@ -7711,13 +7770,13 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       'id': serializer.toJson<String>(id),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'version': serializer.toJson<int>(version),
+      'version': serializer.toJson<int?>(version),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
-      'isDirty': serializer.toJson<bool>(isDirty),
+      'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'exerciseSessionId': serializer.toJson<String>(exerciseSessionId),
       'setPlanId': serializer.toJson<String?>(setPlanId),
-      'setNumber': serializer.toJson<int>(setNumber),
+      'setNumber': serializer.toJson<int?>(setNumber),
       'actualReps': serializer.toJson<int>(actualReps),
       'actualWeight': serializer.toJson<double>(actualWeight),
       'actualRpe': serializer.toJson<double?>(actualRpe),
@@ -7729,13 +7788,13 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     String? id,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? version,
+    Value<int?> version = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
-    bool? isDirty,
+    Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? exerciseSessionId,
     Value<String?> setPlanId = const Value.absent(),
-    int? setNumber,
+    Value<int?> setNumber = const Value.absent(),
     int? actualReps,
     double? actualWeight,
     Value<double?> actualRpe = const Value.absent(),
@@ -7744,13 +7803,13 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     id: id ?? this.id,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    version: version ?? this.version,
+    version: version.present ? version.value : this.version,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
-    isDirty: isDirty ?? this.isDirty,
+    isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
     exerciseSessionId: exerciseSessionId ?? this.exerciseSessionId,
     setPlanId: setPlanId.present ? setPlanId.value : this.setPlanId,
-    setNumber: setNumber ?? this.setNumber,
+    setNumber: setNumber.present ? setNumber.value : this.setNumber,
     actualReps: actualReps ?? this.actualReps,
     actualWeight: actualWeight ?? this.actualWeight,
     actualRpe: actualRpe.present ? actualRpe.value : this.actualRpe,
@@ -7845,13 +7904,13 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
   final Value<String> id;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<int> version;
+  final Value<int?> version;
   final Value<DateTime?> deletedAt;
-  final Value<bool> isDirty;
+  final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
   final Value<String> exerciseSessionId;
   final Value<String?> setPlanId;
-  final Value<int> setNumber;
+  final Value<int?> setNumber;
   final Value<int> actualReps;
   final Value<double> actualWeight;
   final Value<double?> actualRpe;
@@ -7884,14 +7943,13 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     this.lastSyncedAt = const Value.absent(),
     required String exerciseSessionId,
     this.setPlanId = const Value.absent(),
-    required int setNumber,
+    this.setNumber = const Value.absent(),
     required int actualReps,
     required double actualWeight,
     this.actualRpe = const Value.absent(),
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : exerciseSessionId = Value(exerciseSessionId),
-       setNumber = Value(setNumber),
        actualReps = Value(actualReps),
        actualWeight = Value(actualWeight);
   static Insertable<SetSessionData> custom({
@@ -7934,13 +7992,13 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     Value<String>? id,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<int>? version,
+    Value<int?>? version,
     Value<DateTime?>? deletedAt,
-    Value<bool>? isDirty,
+    Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
     Value<String>? exerciseSessionId,
     Value<String?>? setPlanId,
-    Value<int>? setNumber,
+    Value<int?>? setNumber,
     Value<int>? actualReps,
     Value<double>? actualWeight,
     Value<double?>? actualRpe,
@@ -8174,9 +8232,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_training_sessions_athlete',
     'CREATE INDEX idx_training_sessions_athlete ON training_sessions (athlete_id)',
   );
-  late final Index idxTrainingSessionsStartTime = Index(
-    'idx_training_sessions_start_time',
-    'CREATE INDEX idx_training_sessions_start_time ON training_sessions (start_time)',
+  late final Index idxTrainingSessionsSessionDate = Index(
+    'idx_training_sessions_session_date',
+    'CREATE INDEX idx_training_sessions_session_date ON training_sessions (session_date)',
   );
   late final Index idxUsersEmail = Index(
     'idx_users_email',
@@ -8263,7 +8321,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxTrainingPlansDate,
     idxTrainingSessionsPlan,
     idxTrainingSessionsAthlete,
-    idxTrainingSessionsStartTime,
+    idxTrainingSessionsSessionDate,
     idxUsersEmail,
     idxUsersRole,
     idxUsersCoach,
@@ -8276,9 +8334,9 @@ typedef $$UsersTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String email,
       required String name,
@@ -8291,9 +8349,9 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> email,
       Value<String> name,
@@ -8439,7 +8497,7 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<UserRole, UserRole, int> get role =>
+  ColumnWithTypeConverterFilters<UserRole, UserRole, String> get role =>
       $composableBuilder(
         column: $table.role,
         builder: (column) => ColumnWithTypeConverterFilters(column),
@@ -8598,7 +8656,7 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get role => $composableBuilder(
+  ColumnOrderings<String> get role => $composableBuilder(
     column: $table.role,
     builder: (column) => ColumnOrderings(column),
   );
@@ -8665,7 +8723,7 @@ class $$UsersTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<UserRole, int> get role =>
+  GeneratedColumnWithTypeConverter<UserRole, String> get role =>
       $composableBuilder(column: $table.role, builder: (column) => column);
 
   $$UsersTableAnnotationComposer get coachId {
@@ -8804,9 +8862,9 @@ class $$UsersTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> email = const Value.absent(),
                 Value<String> name = const Value.absent(),
@@ -8832,9 +8890,9 @@ class $$UsersTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String email,
                 required String name,
@@ -9004,9 +9062,9 @@ typedef $$BodyWeightEntriesTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String athleteId,
       required double weight,
@@ -9019,9 +9077,9 @@ typedef $$BodyWeightEntriesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> athleteId,
       Value<double> weight,
@@ -9331,9 +9389,9 @@ class $$BodyWeightEntriesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> athleteId = const Value.absent(),
                 Value<double> weight = const Value.absent(),
@@ -9359,9 +9417,9 @@ class $$BodyWeightEntriesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String athleteId,
                 required double weight,
@@ -9456,9 +9514,9 @@ typedef $$TrainingPlansTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String athleteId,
       required String name,
@@ -9471,9 +9529,9 @@ typedef $$TrainingPlansTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> athleteId,
       Value<String> name,
@@ -9920,9 +9978,9 @@ class $$TrainingPlansTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> athleteId = const Value.absent(),
                 Value<String> name = const Value.absent(),
@@ -9948,9 +10006,9 @@ class $$TrainingPlansTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String athleteId,
                 required String name,
@@ -10100,9 +10158,9 @@ typedef $$ExercisesTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String name,
       Value<String?> description,
@@ -10114,9 +10172,9 @@ typedef $$ExercisesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> name,
       Value<String?> description,
@@ -10471,9 +10529,9 @@ class $$ExercisesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> description = const Value.absent(),
@@ -10497,9 +10555,9 @@ class $$ExercisesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String name,
                 Value<String?> description = const Value.absent(),
@@ -10609,9 +10667,9 @@ typedef $$ExercisePlansTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String trainingPlanId,
       required String exerciseId,
@@ -10624,9 +10682,9 @@ typedef $$ExercisePlansTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> trainingPlanId,
       Value<String> exerciseId,
@@ -11235,9 +11293,9 @@ class $$ExercisePlansTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> trainingPlanId = const Value.absent(),
                 Value<String> exerciseId = const Value.absent(),
@@ -11263,9 +11321,9 @@ class $$ExercisePlansTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String trainingPlanId,
                 required String exerciseId,
@@ -11456,9 +11514,9 @@ typedef $$VariantsTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String name,
       Value<String?> description,
@@ -11469,9 +11527,9 @@ typedef $$VariantsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> name,
       Value<String?> description,
@@ -11828,9 +11886,9 @@ class $$VariantsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> description = const Value.absent(),
@@ -11852,9 +11910,9 @@ class $$VariantsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String name,
                 Value<String?> description = const Value.absent(),
@@ -11965,9 +12023,9 @@ typedef $$ExercisePlanVariantsTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String exercisePlanId,
       required String variantId,
@@ -11978,9 +12036,9 @@ typedef $$ExercisePlanVariantsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> exercisePlanId,
       Value<String> variantId,
@@ -12342,9 +12400,9 @@ class $$ExercisePlanVariantsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> exercisePlanId = const Value.absent(),
                 Value<String> variantId = const Value.absent(),
@@ -12366,9 +12424,9 @@ class $$ExercisePlanVariantsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String exercisePlanId,
                 required String variantId,
@@ -12474,14 +12532,13 @@ typedef $$TrainingSessionsTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String trainingPlanId,
       required String athleteId,
-      required DateTime startTime,
-      Value<DateTime?> endTime,
+      required DateTime sessionDate,
       Value<String?> notes,
       Value<int> rowid,
     });
@@ -12490,14 +12547,13 @@ typedef $$TrainingSessionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> trainingPlanId,
       Value<String> athleteId,
-      Value<DateTime> startTime,
-      Value<DateTime?> endTime,
+      Value<DateTime> sessionDate,
       Value<String?> notes,
       Value<int> rowid,
     });
@@ -12623,13 +12679,8 @@ class $$TrainingSessionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get startTime => $composableBuilder(
-    column: $table.startTime,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get endTime => $composableBuilder(
-    column: $table.endTime,
+  ColumnFilters<DateTime> get sessionDate => $composableBuilder(
+    column: $table.sessionDate,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12754,13 +12805,8 @@ class $$TrainingSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get startTime => $composableBuilder(
-    column: $table.startTime,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get endTime => $composableBuilder(
-    column: $table.endTime,
+  ColumnOrderings<DateTime> get sessionDate => $composableBuilder(
+    column: $table.sessionDate,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12848,11 +12894,10 @@ class $$TrainingSessionsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<DateTime> get startTime =>
-      $composableBuilder(column: $table.startTime, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get endTime =>
-      $composableBuilder(column: $table.endTime, builder: (column) => column);
+  GeneratedColumn<DateTime> get sessionDate => $composableBuilder(
+    column: $table.sessionDate,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
@@ -12966,14 +13011,13 @@ class $$TrainingSessionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> trainingPlanId = const Value.absent(),
                 Value<String> athleteId = const Value.absent(),
-                Value<DateTime> startTime = const Value.absent(),
-                Value<DateTime?> endTime = const Value.absent(),
+                Value<DateTime> sessionDate = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrainingSessionsCompanion(
@@ -12986,8 +13030,7 @@ class $$TrainingSessionsTableTableManager
                 lastSyncedAt: lastSyncedAt,
                 trainingPlanId: trainingPlanId,
                 athleteId: athleteId,
-                startTime: startTime,
-                endTime: endTime,
+                sessionDate: sessionDate,
                 notes: notes,
                 rowid: rowid,
               ),
@@ -12996,14 +13039,13 @@ class $$TrainingSessionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String trainingPlanId,
                 required String athleteId,
-                required DateTime startTime,
-                Value<DateTime?> endTime = const Value.absent(),
+                required DateTime sessionDate,
                 Value<String?> notes = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrainingSessionsCompanion.insert(
@@ -13016,8 +13058,7 @@ class $$TrainingSessionsTableTableManager
                 lastSyncedAt: lastSyncedAt,
                 trainingPlanId: trainingPlanId,
                 athleteId: athleteId,
-                startTime: startTime,
-                endTime: endTime,
+                sessionDate: sessionDate,
                 notes: notes,
                 rowid: rowid,
               ),
@@ -13143,9 +13184,9 @@ typedef $$ExerciseSessionsTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String trainingSessionId,
       Value<String?> exercisePlanId,
@@ -13159,9 +13200,9 @@ typedef $$ExerciseSessionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> trainingSessionId,
       Value<String?> exercisePlanId,
@@ -13800,9 +13841,9 @@ class $$ExerciseSessionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> trainingSessionId = const Value.absent(),
                 Value<String?> exercisePlanId = const Value.absent(),
@@ -13830,9 +13871,9 @@ class $$ExerciseSessionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String trainingSessionId,
                 Value<String?> exercisePlanId = const Value.absent(),
@@ -14018,9 +14059,9 @@ typedef $$ExerciseSessionVariantsTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String exerciseSessionId,
       required String variantId,
@@ -14031,9 +14072,9 @@ typedef $$ExerciseSessionVariantsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> exerciseSessionId,
       Value<String> variantId,
@@ -14404,9 +14445,9 @@ class $$ExerciseSessionVariantsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> exerciseSessionId = const Value.absent(),
                 Value<String> variantId = const Value.absent(),
@@ -14428,9 +14469,9 @@ class $$ExerciseSessionVariantsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String exerciseSessionId,
                 required String variantId,
@@ -14537,12 +14578,12 @@ typedef $$SetPlansTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String exercisePlanId,
-      required int setNumber,
+      Value<int?> setNumber,
       Value<int?> targetReps,
       Value<double?> targetWeight,
       Value<double?> targetRpe,
@@ -14554,12 +14595,12 @@ typedef $$SetPlansTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> exercisePlanId,
-      Value<int> setNumber,
+      Value<int?> setNumber,
       Value<int?> targetReps,
       Value<double?> targetWeight,
       Value<double?> targetRpe,
@@ -14951,12 +14992,12 @@ class $$SetPlansTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> exercisePlanId = const Value.absent(),
-                Value<int> setNumber = const Value.absent(),
+                Value<int?> setNumber = const Value.absent(),
                 Value<int?> targetReps = const Value.absent(),
                 Value<double?> targetWeight = const Value.absent(),
                 Value<double?> targetRpe = const Value.absent(),
@@ -14983,12 +15024,12 @@ class $$SetPlansTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String exercisePlanId,
-                required int setNumber,
+                Value<int?> setNumber = const Value.absent(),
                 Value<int?> targetReps = const Value.absent(),
                 Value<double?> targetWeight = const Value.absent(),
                 Value<double?> targetRpe = const Value.absent(),
@@ -15107,13 +15148,13 @@ typedef $$SetSessionsTableCreateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       required String exerciseSessionId,
       Value<String?> setPlanId,
-      required int setNumber,
+      Value<int?> setNumber,
       required int actualReps,
       required double actualWeight,
       Value<double?> actualRpe,
@@ -15125,13 +15166,13 @@ typedef $$SetSessionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<int> version,
+      Value<int?> version,
       Value<DateTime?> deletedAt,
-      Value<bool> isDirty,
+      Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
       Value<String> exerciseSessionId,
       Value<String?> setPlanId,
-      Value<int> setNumber,
+      Value<int?> setNumber,
       Value<int> actualReps,
       Value<double> actualWeight,
       Value<double?> actualRpe,
@@ -15546,13 +15587,13 @@ class $$SetSessionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> exerciseSessionId = const Value.absent(),
                 Value<String?> setPlanId = const Value.absent(),
-                Value<int> setNumber = const Value.absent(),
+                Value<int?> setNumber = const Value.absent(),
                 Value<int> actualReps = const Value.absent(),
                 Value<double> actualWeight = const Value.absent(),
                 Value<double?> actualRpe = const Value.absent(),
@@ -15580,13 +15621,13 @@ class $$SetSessionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> version = const Value.absent(),
+                Value<int?> version = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
+                Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String exerciseSessionId,
                 Value<String?> setPlanId = const Value.absent(),
-                required int setNumber,
+                Value<int?> setNumber = const Value.absent(),
                 required int actualReps,
                 required double actualWeight,
                 Value<double?> actualRpe = const Value.absent(),

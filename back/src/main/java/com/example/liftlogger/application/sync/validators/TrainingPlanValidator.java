@@ -30,16 +30,8 @@ public class TrainingPlanValidator extends BaseValidator implements EntityValida
         requiredString(plan.getName(), "name");
         minLength(plan.getName(), 3, "name");
         maxLength(plan.getName(), 100, "name");
-        required(plan.getStartDate(), "startDate");
-        required(plan.getEndDate(), "endDate");
-        dateRange(plan.getStartDate(), plan.getEndDate(), "dateRange");
-
-        // Status validation
-        if (plan.getStatus() != null &&
-            !List.of("DRAFT", "ACTIVE", "COMPLETED", "ARCHIVED").contains(plan.getStatus())) {
-            errors.add(ValidationError.invalid("status",
-                "Status must be one of: DRAFT, ACTIVE, COMPLETED, ARCHIVED"));
-        }
+        required(plan.getDate(), "date");
+        required(plan.getIsLocked(), "isLocked");
 
         // Ownership validation
         if (plan.getAthleteId() != null && context.currentUserId() != null
@@ -51,20 +43,6 @@ public class TrainingPlanValidator extends BaseValidator implements EntityValida
         // Cross-entity validation
         if (plan.getAthleteId() != null && !userRepository.existsById(plan.getAthleteId())) {
             errors.add(ValidationError.notFound("athleteId", "User"));
-        }
-
-        // Business rule: No overlapping plans
-        if (plan.getStartDate() != null && plan.getEndDate() != null) {
-            boolean hasOverlap = repository.existsOverlappingPlan(
-                plan.getAthleteId(),
-                plan.getStartDate(),
-                plan.getEndDate(),
-                plan.getId()
-            );
-            if (hasOverlap) {
-                errors.add(ValidationError.conflict("dateRange",
-                    "Another training plan exists in this date range"));
-            }
         }
 
         return buildResult();

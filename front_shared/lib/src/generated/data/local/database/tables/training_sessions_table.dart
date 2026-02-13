@@ -5,12 +5,11 @@ import 'users_table.dart';
 
 @TableIndex(name: 'idx_training_sessions_plan', columns: { #trainingPlanId,  })
 @TableIndex(name: 'idx_training_sessions_athlete', columns: { #athleteId,  })
-@TableIndex(name: 'idx_training_sessions_start_time', columns: { #startTime,  })
+@TableIndex(name: 'idx_training_sessions_session_date', columns: { #sessionDate,  })
 @DataClassName('TrainingSessionData')
 class TrainingSessions extends Table with SyncableTable {
   TextColumn get trainingPlanId => text().references(TrainingPlans, #id)();
   TextColumn get athleteId => text().references(Users, #id)();
-  DateTimeColumn get startTime => dateTime()();
-  DateTimeColumn get endTime => dateTime().nullable()();
+  DateTimeColumn get sessionDate => dateTime()();
   TextColumn get notes => text().nullable()();
 }

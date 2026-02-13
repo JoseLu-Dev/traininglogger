@@ -14,7 +14,7 @@ _$ExercisePlanVariantImpl _$$ExercisePlanVariantImplFromJson(
   variantId: json['variantId'] as String,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
-  version: (json['version'] as num).toInt(),
+  version: (json['version'] as num?)?.toInt() ?? 0,
   deletedAt: json['deletedAt'] == null
       ? null
       : DateTime.parse(json['deletedAt'] as String),

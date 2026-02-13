@@ -10,6 +10,6 @@ import 'package:front_shared/src/generated/domain/models/user.dart';
 class Users extends Table with SyncableTable {
   TextColumn get email => text().withLength(min: 1, max: 255).unique()();
   TextColumn get name => text().withLength(min: 1, max: 255)();
-  IntColumn get role => intEnum<UserRole>()();
+  Column get role => textEnum<UserRole>()();
   TextColumn get coachId => text().nullable().references(Users, #id)();
 }

@@ -27,16 +27,22 @@ public class SetPlanValidator extends BaseValidator implements EntityValidator<S
         requiredUUID(plan.getAthleteId(), "athleteId");
         requiredUUID(plan.getExercisePlanId(), "exercisePlanId");
 
-        // Reps validation (1-1000)
-        if (plan.getReps() != null) {
-            min(plan.getReps(), 1, "reps");
-            max(plan.getReps(), 1000, "reps");
+        // Target reps validation (1-1000)
+        if (plan.getTargetReps() != null) {
+            min(plan.getTargetReps(), 1, "targetReps");
+            max(plan.getTargetReps(), 1000, "targetReps");
         }
 
-        // Weight validation (0-1000)
-        if (plan.getWeight() != null) {
-            min(plan.getWeight(), 0.0, "weight");
-            max(plan.getWeight(), 1000.0, "weight");
+        // Target weight validation (0-1000)
+        if (plan.getTargetWeight() != null) {
+            min(plan.getTargetWeight(), 0.0, "targetWeight");
+            max(plan.getTargetWeight(), 1000.0, "targetWeight");
+        }
+
+        // Target RPE validation (0-10)
+        if (plan.getTargetRpe() != null) {
+            min(plan.getTargetRpe(), 0.0, "targetRpe");
+            max(plan.getTargetRpe(), 10.0, "targetRpe");
         }
 
         // Ownership validation

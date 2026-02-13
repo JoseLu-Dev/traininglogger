@@ -18,11 +18,12 @@ import java.util.UUID;
 public class BodyWeightEntry {
     private UUID id;
     private UUID athleteId;
-    private LocalDate date;
+    private LocalDateTime measurementDate;
     private Double weight;
     private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UUID createdBy;
     private UUID updatedBy;
+    private LocalDateTime deletedAt;
 }

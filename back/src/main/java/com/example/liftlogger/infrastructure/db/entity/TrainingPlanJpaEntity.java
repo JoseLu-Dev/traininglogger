@@ -27,15 +27,9 @@ public class TrainingPlanJpaEntity extends BaseJpaEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
-
-    @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
-
     @Column(nullable = false)
-    private String status;
+    private java.time.LocalDateTime date;
+
+    @Column(name = "is_locked", nullable = false)
+    private Boolean isLocked;
 }
