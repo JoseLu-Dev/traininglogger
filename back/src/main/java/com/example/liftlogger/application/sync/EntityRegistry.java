@@ -23,19 +23,42 @@ public class EntityRegistry {
      *
      * @param entityClass The domain entity class
      * @param ownerField The field name that identifies the owner (e.g., "athleteId")
+     * @param ownershipType The ownership type determining visibility rules
      * @param validator The validator for this entity type
      * @return this registry for chaining
      */
     public <T> EntityRegistry register(
         Class<T> entityClass,
         String ownerField,
+        OwnershipType ownershipType,
         EntityValidator<T> validator
     ) {
         String entityName = entityClass.getSimpleName();
+        return register(entityClass, entityName, ownerField, ownershipType, validator);
+    }
+
+    /**
+     * Register an entity type with a custom name (for DTOs that represent domain entities)
+     *
+     * @param entityClass The domain entity class or DTO class
+     * @param entityName Custom name for API (e.g., "User" for UserSyncDto)
+     * @param ownerField The field name that identifies the owner
+     * @param ownershipType The ownership type determining visibility rules
+     * @param validator The validator for this entity type
+     * @return this registry for chaining
+     */
+    public <T> EntityRegistry register(
+        Class<T> entityClass,
+        String entityName,
+        String ownerField,
+        OwnershipType ownershipType,
+        EntityValidator<T> validator
+    ) {
         EntityMetadata<T> metadata = new EntityMetadata<>(
             entityClass,
             entityName,
             ownerField,
+            ownershipType,
             validator
         );
 

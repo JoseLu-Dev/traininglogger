@@ -47,7 +47,7 @@ public class SyncController {
             @ApiResponse(responseCode = "400", description = "Invalid entity type requested"),
             @ApiResponse(responseCode = "401", description = "Not authenticated")
     })
-    @GetMapping("/pull")
+    @PostMapping("/pull") //TODO change to GET with query params if possible, but POST allows for more complex request body if needed in the future
     public ResponseEntity<PullSyncResponseDto> pullSync(
             @AuthenticationPrincipal CurrentUser currentUser,
             @Valid @RequestBody PullSyncRequestDto requestDto

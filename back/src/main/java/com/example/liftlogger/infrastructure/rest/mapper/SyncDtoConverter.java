@@ -46,7 +46,21 @@ public class SyncDtoConverter {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private List<Object> convertToDtoList(String entityType, List<Object> domainEntities) {
         Class entityClass = entityRegistry.getByName(entityType).entityClass();
+
+        // If the entity is already a DTO (e.g., UserSyncDto), return as-is
+        if (isAlreadyDto(entityClass)) {
+            return domainEntities;
+        }
+
         return dtoMapperProvider.toDtoList(domainEntities, entityClass);
+    }
+
+    /**
+     * Check if the class is already a DTO (no conversion needed)
+     * DTOs from application.sync.dto package are already serialization-ready
+     */
+    private boolean isAlreadyDto(Class<?> clazz) {
+        return clazz.getPackageName().startsWith("com.example.liftlogger.application.sync.dto");
     }
 
     /**
@@ -67,6 +81,14 @@ public class SyncDtoConverter {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private List<Object> convertToDomainList(String entityType, List<Object> rawItems) {
         Class entityClass = entityRegistry.getByName(entityType).entityClass();
+
+        // If the entity is already a DTO (e.g., UserSyncDto), convert from raw JSON directly
+        if (isAlreadyDto(entityClass)) {
+            return rawItems.stream()
+                .map(item -> objectMapper.convertValue(item, entityClass))
+                .toList();
+        }
+
         // Convert each raw item (typically LinkedHashMap from JSON) to the proper DTO type
         List typedDtos = rawItems.stream()
             .map(item -> convertToDto(item, entityClass))

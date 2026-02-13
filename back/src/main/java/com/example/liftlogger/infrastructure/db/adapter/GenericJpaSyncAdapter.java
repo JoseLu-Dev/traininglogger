@@ -110,4 +110,51 @@ public abstract class GenericJpaSyncAdapter<D, J> implements GenericSyncReposito
         J jpaEntity = entityManager.find(getJpaEntityClass(), id);
         return jpaEntity != null ? toDomain(jpaEntity) : null;
     }
+
+    @Override
+    public List<D> findByOwners(List<UUID> ownerIds) {
+        if (ownerIds == null || ownerIds.isEmpty()) {
+            return List.of();
+        }
+
+        // Single owner optimization
+        if (ownerIds.size() == 1) {
+            return findByOwner(ownerIds.get(0));
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<J> query = cb.createQuery(getJpaEntityClass());
+        Root<J> root = query.from(getJpaEntityClass());
+
+        query.where(root.get(getOwnerFieldName()).in(ownerIds));
+        query.orderBy(cb.asc(root.get("createdAt")));
+
+        List<J> results = entityManager.createQuery(query).getResultList();
+        return toDomainList(results);
+    }
+
+    @Override
+    public List<D> findByOwnersAndUpdatedAfter(List<UUID> ownerIds, LocalDateTime lastSyncTime) {
+        if (ownerIds == null || ownerIds.isEmpty()) {
+            return List.of();
+        }
+
+        // Single owner optimization
+        if (ownerIds.size() == 1) {
+            return findByOwnerAndUpdatedAfter(ownerIds.get(0), lastSyncTime);
+        }
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<J> query = cb.createQuery(getJpaEntityClass());
+        Root<J> root = query.from(getJpaEntityClass());
+
+        Predicate ownerPredicate = root.get(getOwnerFieldName()).in(ownerIds);
+        Predicate updatedPredicate = cb.greaterThan(root.get("updatedAt"), lastSyncTime);
+
+        query.where(cb.and(ownerPredicate, updatedPredicate));
+        query.orderBy(cb.asc(root.get("updatedAt")));
+
+        List<J> results = entityManager.createQuery(query).getResultList();
+        return toDomainList(results);
+    }
 }

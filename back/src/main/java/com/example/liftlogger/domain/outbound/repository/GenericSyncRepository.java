@@ -39,4 +39,14 @@ public interface GenericSyncRepository<T> {
      * Find entity by ID
      */
     T findById(UUID id);
+
+    /**
+     * Find entities owned by any of the specified owner IDs
+     */
+    List<T> findByOwners(List<UUID> ownerIds);
+
+    /**
+     * Find entities owned by any of the specified owner IDs, updated after timestamp
+     */
+    List<T> findByOwnersAndUpdatedAfter(List<UUID> ownerIds, LocalDateTime lastSyncTime);
 }
