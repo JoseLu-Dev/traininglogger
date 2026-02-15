@@ -4,6 +4,10 @@ entity:
   description: Exercise definition (e.g., Squat, Bench Press)
 
 fields:
+  - name: coachId
+    type: String
+    tableType: text()
+
   - name: name
     type: String
     tableType: text()
@@ -44,6 +48,7 @@ queries:
 
 createFactory:
   params:
+    - coachId
     - name
     - description
     - category

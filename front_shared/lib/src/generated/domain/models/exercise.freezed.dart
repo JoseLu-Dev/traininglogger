@@ -22,6 +22,7 @@ Exercise _$ExerciseFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Exercise {
   String get id => throw _privateConstructorUsedError;
+  String get coachId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get category => throw _privateConstructorUsedError;
@@ -49,6 +50,7 @@ abstract class $ExerciseCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String coachId,
     String name,
     String? description,
     String? category,
@@ -77,6 +79,7 @@ class _$ExerciseCopyWithImpl<$Res, $Val extends Exercise>
   @override
   $Res call({
     Object? id = null,
+    Object? coachId = null,
     Object? name = null,
     Object? description = freezed,
     Object? category = freezed,
@@ -92,6 +95,10 @@ class _$ExerciseCopyWithImpl<$Res, $Val extends Exercise>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            coachId: null == coachId
+                ? _value.coachId
+                : coachId // ignore: cast_nullable_to_non_nullable
                       as String,
             name: null == name
                 ? _value.name
@@ -146,6 +153,7 @@ abstract class _$$ExerciseImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String coachId,
     String name,
     String? description,
     String? category,
@@ -173,6 +181,7 @@ class __$$ExerciseImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? coachId = null,
     Object? name = null,
     Object? description = freezed,
     Object? category = freezed,
@@ -188,6 +197,10 @@ class __$$ExerciseImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        coachId: null == coachId
+            ? _value.coachId
+            : coachId // ignore: cast_nullable_to_non_nullable
                   as String,
         name: null == name
             ? _value.name
@@ -235,6 +248,7 @@ class __$$ExerciseImplCopyWithImpl<$Res>
 class _$ExerciseImpl extends _Exercise {
   const _$ExerciseImpl({
     required this.id,
+    required this.coachId,
     required this.name,
     this.description,
     this.category,
@@ -251,6 +265,8 @@ class _$ExerciseImpl extends _Exercise {
 
   @override
   final String id;
+  @override
+  final String coachId;
   @override
   final String name;
   @override
@@ -274,7 +290,7 @@ class _$ExerciseImpl extends _Exercise {
 
   @override
   String toString() {
-    return 'Exercise(id: $id, name: $name, description: $description, category: $category, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'Exercise(id: $id, coachId: $coachId, name: $name, description: $description, category: $category, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -283,6 +299,7 @@ class _$ExerciseImpl extends _Exercise {
         (other.runtimeType == runtimeType &&
             other is _$ExerciseImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.coachId, coachId) || other.coachId == coachId) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -305,6 +322,7 @@ class _$ExerciseImpl extends _Exercise {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    coachId,
     name,
     description,
     category,
@@ -333,6 +351,7 @@ class _$ExerciseImpl extends _Exercise {
 abstract class _Exercise extends Exercise {
   const factory _Exercise({
     required final String id,
+    required final String coachId,
     required final String name,
     final String? description,
     final String? category,
@@ -350,6 +369,8 @@ abstract class _Exercise extends Exercise {
 
   @override
   String get id;
+  @override
+  String get coachId;
   @override
   String get name;
   @override

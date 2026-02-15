@@ -9,6 +9,7 @@ part of 'variant.dart';
 _$VariantImpl _$$VariantImplFromJson(Map<String, dynamic> json) =>
     _$VariantImpl(
       id: json['id'] as String,
+      coachId: json['coachId'] as String,
       name: json['name'] as String,
       description: json['description'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -26,6 +27,7 @@ _$VariantImpl _$$VariantImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$VariantImplToJson(_$VariantImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'coachId': instance.coachId,
       'name': instance.name,
       'description': instance.description,
       'createdAt': instance.createdAt.toIso8601String(),

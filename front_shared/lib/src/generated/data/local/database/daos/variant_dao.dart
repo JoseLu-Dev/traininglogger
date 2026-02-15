@@ -81,6 +81,7 @@ class VariantDao extends BaseDao<Variants, VariantData>
     await into(variants).insert(
       VariantsCompanion.insert(
         id: Value(entity.id),
+        coachId: entity.coachId,
         name: entity.name,
         description: Value(entity.description),
         isDirty: const Value(true),
@@ -93,6 +94,7 @@ class VariantDao extends BaseDao<Variants, VariantData>
   Variant toDomain(VariantData data) {
     return Variant(
       id: data.id,
+      coachId: data.coachId,
       name: data.name,
       description: data.description,
       createdAt: data.createdAt,

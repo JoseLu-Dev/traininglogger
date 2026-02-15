@@ -2107,6 +2107,17 @@ class $ExercisesTable extends Exercises
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _coachIdMeta = const VerificationMeta(
+    'coachId',
+  );
+  @override
+  late final GeneratedColumn<String> coachId = GeneratedColumn<String>(
+    'coach_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -2152,6 +2163,7 @@ class $ExercisesTable extends Exercises
     deletedAt,
     isDirty,
     lastSyncedAt,
+    coachId,
     name,
     description,
     category,
@@ -2209,6 +2221,14 @@ class $ExercisesTable extends Exercises
           _lastSyncedAtMeta,
         ),
       );
+    }
+    if (data.containsKey('coach_id')) {
+      context.handle(
+        _coachIdMeta,
+        coachId.isAcceptableOrUnknown(data['coach_id']!, _coachIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_coachIdMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -2270,6 +2290,10 @@ class $ExercisesTable extends Exercises
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      coachId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}coach_id'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -2299,6 +2323,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String coachId;
   final String name;
   final String? description;
   final String? category;
@@ -2310,6 +2335,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.coachId,
     required this.name,
     this.description,
     this.category,
@@ -2332,6 +2358,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['coach_id'] = Variable<String>(coachId);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -2359,6 +2386,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      coachId: Value(coachId),
       name: Value(name),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -2382,6 +2410,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      coachId: serializer.fromJson<String>(json['coachId']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String?>(json['description']),
       category: serializer.fromJson<String?>(json['category']),
@@ -2398,6 +2427,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'coachId': serializer.toJson<String>(coachId),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String?>(description),
       'category': serializer.toJson<String?>(category),
@@ -2412,6 +2442,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? coachId,
     String? name,
     Value<String?> description = const Value.absent(),
     Value<String?> category = const Value.absent(),
@@ -2423,6 +2454,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    coachId: coachId ?? this.coachId,
     name: name ?? this.name,
     description: description.present ? description.value : this.description,
     category: category.present ? category.value : this.category,
@@ -2438,6 +2470,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      coachId: data.coachId.present ? data.coachId.value : this.coachId,
       name: data.name.present ? data.name.value : this.name,
       description: data.description.present
           ? data.description.value
@@ -2456,6 +2489,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('coachId: $coachId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
           ..write('category: $category')
@@ -2472,6 +2506,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
     deletedAt,
     isDirty,
     lastSyncedAt,
+    coachId,
     name,
     description,
     category,
@@ -2487,6 +2522,7 @@ class ExerciseData extends DataClass implements Insertable<ExerciseData> {
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.coachId == this.coachId &&
           other.name == this.name &&
           other.description == this.description &&
           other.category == this.category);
@@ -2500,6 +2536,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> coachId;
   final Value<String> name;
   final Value<String?> description;
   final Value<String?> category;
@@ -2512,6 +2549,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.coachId = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
     this.category = const Value.absent(),
@@ -2525,11 +2563,13 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String coachId,
     required String name,
     this.description = const Value.absent(),
     this.category = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : name = Value(name);
+  }) : coachId = Value(coachId),
+       name = Value(name);
   static Insertable<ExerciseData> custom({
     Expression<String>? id,
     Expression<DateTime>? createdAt,
@@ -2538,6 +2578,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? coachId,
     Expression<String>? name,
     Expression<String>? description,
     Expression<String>? category,
@@ -2551,6 +2592,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (coachId != null) 'coach_id': coachId,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (category != null) 'category': category,
@@ -2566,6 +2608,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? coachId,
     Value<String>? name,
     Value<String?>? description,
     Value<String?>? category,
@@ -2579,6 +2622,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      coachId: coachId ?? this.coachId,
       name: name ?? this.name,
       description: description ?? this.description,
       category: category ?? this.category,
@@ -2610,6 +2654,9 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
     }
+    if (coachId.present) {
+      map['coach_id'] = Variable<String>(coachId.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
@@ -2635,6 +2682,7 @@ class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('coachId: $coachId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
           ..write('category: $category, ')
@@ -3412,6 +3460,17 @@ class $VariantsTable extends Variants
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _coachIdMeta = const VerificationMeta(
+    'coachId',
+  );
+  @override
+  late final GeneratedColumn<String> coachId = GeneratedColumn<String>(
+    'coach_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -3445,6 +3504,7 @@ class $VariantsTable extends Variants
     deletedAt,
     isDirty,
     lastSyncedAt,
+    coachId,
     name,
     description,
   ];
@@ -3502,6 +3562,14 @@ class $VariantsTable extends Variants
         ),
       );
     }
+    if (data.containsKey('coach_id')) {
+      context.handle(
+        _coachIdMeta,
+        coachId.isAcceptableOrUnknown(data['coach_id']!, _coachIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_coachIdMeta);
+    }
     if (data.containsKey('name')) {
       context.handle(
         _nameMeta,
@@ -3556,6 +3624,10 @@ class $VariantsTable extends Variants
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      coachId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}coach_id'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -3581,6 +3653,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String coachId;
   final String name;
   final String? description;
   const VariantData({
@@ -3591,6 +3664,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.coachId,
     required this.name,
     this.description,
   });
@@ -3612,6 +3686,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['coach_id'] = Variable<String>(coachId);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -3636,6 +3711,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      coachId: Value(coachId),
       name: Value(name),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -3656,6 +3732,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      coachId: serializer.fromJson<String>(json['coachId']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String?>(json['description']),
     );
@@ -3671,6 +3748,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'coachId': serializer.toJson<String>(coachId),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String?>(description),
     };
@@ -3684,6 +3762,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? coachId,
     String? name,
     Value<String?> description = const Value.absent(),
   }) => VariantData(
@@ -3694,6 +3773,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    coachId: coachId ?? this.coachId,
     name: name ?? this.name,
     description: description.present ? description.value : this.description,
   );
@@ -3708,6 +3788,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      coachId: data.coachId.present ? data.coachId.value : this.coachId,
       name: data.name.present ? data.name.value : this.name,
       description: data.description.present
           ? data.description.value
@@ -3725,6 +3806,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('coachId: $coachId, ')
           ..write('name: $name, ')
           ..write('description: $description')
           ..write(')'))
@@ -3740,6 +3822,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
     deletedAt,
     isDirty,
     lastSyncedAt,
+    coachId,
     name,
     description,
   );
@@ -3754,6 +3837,7 @@ class VariantData extends DataClass implements Insertable<VariantData> {
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.coachId == this.coachId &&
           other.name == this.name &&
           other.description == this.description);
 }
@@ -3766,6 +3850,7 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> coachId;
   final Value<String> name;
   final Value<String?> description;
   final Value<int> rowid;
@@ -3777,6 +3862,7 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.coachId = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3789,10 +3875,12 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String coachId,
     required String name,
     this.description = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : name = Value(name);
+  }) : coachId = Value(coachId),
+       name = Value(name);
   static Insertable<VariantData> custom({
     Expression<String>? id,
     Expression<DateTime>? createdAt,
@@ -3801,6 +3889,7 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? coachId,
     Expression<String>? name,
     Expression<String>? description,
     Expression<int>? rowid,
@@ -3813,6 +3902,7 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (coachId != null) 'coach_id': coachId,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (rowid != null) 'rowid': rowid,
@@ -3827,6 +3917,7 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? coachId,
     Value<String>? name,
     Value<String?>? description,
     Value<int>? rowid,
@@ -3839,6 +3930,7 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      coachId: coachId ?? this.coachId,
       name: name ?? this.name,
       description: description ?? this.description,
       rowid: rowid ?? this.rowid,
@@ -3869,6 +3961,9 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
     }
+    if (coachId.present) {
+      map['coach_id'] = Variable<String>(coachId.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
@@ -3891,6 +3986,7 @@ class VariantsCompanion extends UpdateCompanion<VariantData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('coachId: $coachId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
           ..write('rowid: $rowid')
@@ -10162,6 +10258,7 @@ typedef $$ExercisesTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String coachId,
       required String name,
       Value<String?> description,
       Value<String?> category,
@@ -10176,6 +10273,7 @@ typedef $$ExercisesTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> coachId,
       Value<String> name,
       Value<String?> description,
       Value<String?> category,
@@ -10272,6 +10370,11 @@ class $$ExercisesTableFilterComposer
 
   ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
     column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get coachId => $composableBuilder(
+    column: $table.coachId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10385,6 +10488,11 @@ class $$ExercisesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get coachId => $composableBuilder(
+    column: $table.coachId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -10432,6 +10540,9 @@ class $$ExercisesTableAnnotationComposer
     column: $table.lastSyncedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get coachId =>
+      $composableBuilder(column: $table.coachId, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -10533,6 +10644,7 @@ class $$ExercisesTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> coachId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<String?> category = const Value.absent(),
@@ -10545,6 +10657,7 @@ class $$ExercisesTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                coachId: coachId,
                 name: name,
                 description: description,
                 category: category,
@@ -10559,6 +10672,7 @@ class $$ExercisesTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String coachId,
                 required String name,
                 Value<String?> description = const Value.absent(),
                 Value<String?> category = const Value.absent(),
@@ -10571,6 +10685,7 @@ class $$ExercisesTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                coachId: coachId,
                 name: name,
                 description: description,
                 category: category,
@@ -11518,6 +11633,7 @@ typedef $$VariantsTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String coachId,
       required String name,
       Value<String?> description,
       Value<int> rowid,
@@ -11531,6 +11647,7 @@ typedef $$VariantsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> coachId,
       Value<String> name,
       Value<String?> description,
       Value<int> rowid,
@@ -11641,6 +11758,11 @@ class $$VariantsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get coachId => $composableBuilder(
+    column: $table.coachId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnFilters(column),
@@ -11747,6 +11869,11 @@ class $$VariantsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get coachId => $composableBuilder(
+    column: $table.coachId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -11789,6 +11916,9 @@ class $$VariantsTableAnnotationComposer
     column: $table.lastSyncedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get coachId =>
+      $composableBuilder(column: $table.coachId, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -11890,6 +12020,7 @@ class $$VariantsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> coachId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -11901,6 +12032,7 @@ class $$VariantsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                coachId: coachId,
                 name: name,
                 description: description,
                 rowid: rowid,
@@ -11914,6 +12046,7 @@ class $$VariantsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String coachId,
                 required String name,
                 Value<String?> description = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -11925,6 +12058,7 @@ class $$VariantsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                coachId: coachId,
                 name: name,
                 description: description,
                 rowid: rowid,

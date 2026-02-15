@@ -4,6 +4,10 @@ entity:
   description: Exercise variant (e.g., Low Bar, High Bar)
 
 fields:
+  - name: coachId
+    type: String
+    tableType: text()
+
   - name: name
     type: String
     tableType: text()
@@ -28,5 +32,6 @@ queries:
 
 createFactory:
   params:
+    - coachId
     - name
     - description

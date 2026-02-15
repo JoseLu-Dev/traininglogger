@@ -18,6 +18,7 @@ void main() {
   group('VariantDao', () {
     test('create and find by id', () async {
       final entity = Variant.create(
+        coachId: 'test-coachId',
         name: 'test-name',
         description: 'test-description',
       );
@@ -32,6 +33,7 @@ void main() {
 
     test('mark dirty sets isDirty flag', () async {
       final entity = Variant.create(
+        coachId: 'test-coachId',
         name: 'test-name',
         description: 'test-description',
       );
@@ -49,6 +51,7 @@ void main() {
 
     test('soft delete sets deletedAt', () async {
       final entity = Variant.create(
+        coachId: 'test-coachId',
         name: 'test-name',
         description: 'test-description',
       );

@@ -10,6 +10,7 @@ part 'variant.g.dart';
 class Variant with _$Variant implements SyncableEntity {
   const factory Variant({
     required String id,
+    required String coachId,
     required String name,
     String? description,
     required DateTime createdAt,
@@ -27,12 +28,14 @@ class Variant with _$Variant implements SyncableEntity {
 
   /// Factory for creating a new variant
   factory Variant.create({
+    required String coachId,
     required String name,
     String? description,
   }) {
     final now = DateTime.now();
     return Variant(
       id: const Uuid().v4(),
+      coachId: coachId,
       name: name,
       description: description,
       createdAt: now,

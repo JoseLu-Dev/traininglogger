@@ -22,6 +22,7 @@ Variant _$VariantFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Variant {
   String get id => throw _privateConstructorUsedError;
+  String get coachId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $VariantCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String coachId,
     String name,
     String? description,
     DateTime createdAt,
@@ -74,6 +76,7 @@ class _$VariantCopyWithImpl<$Res, $Val extends Variant>
   @override
   $Res call({
     Object? id = null,
+    Object? coachId = null,
     Object? name = null,
     Object? description = freezed,
     Object? createdAt = null,
@@ -88,6 +91,10 @@ class _$VariantCopyWithImpl<$Res, $Val extends Variant>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            coachId: null == coachId
+                ? _value.coachId
+                : coachId // ignore: cast_nullable_to_non_nullable
                       as String,
             name: null == name
                 ? _value.name
@@ -137,6 +144,7 @@ abstract class _$$VariantImplCopyWith<$Res> implements $VariantCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String coachId,
     String name,
     String? description,
     DateTime createdAt,
@@ -163,6 +171,7 @@ class __$$VariantImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? coachId = null,
     Object? name = null,
     Object? description = freezed,
     Object? createdAt = null,
@@ -177,6 +186,10 @@ class __$$VariantImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        coachId: null == coachId
+            ? _value.coachId
+            : coachId // ignore: cast_nullable_to_non_nullable
                   as String,
         name: null == name
             ? _value.name
@@ -220,6 +233,7 @@ class __$$VariantImplCopyWithImpl<$Res>
 class _$VariantImpl extends _Variant {
   const _$VariantImpl({
     required this.id,
+    required this.coachId,
     required this.name,
     this.description,
     required this.createdAt,
@@ -235,6 +249,8 @@ class _$VariantImpl extends _Variant {
 
   @override
   final String id;
+  @override
+  final String coachId;
   @override
   final String name;
   @override
@@ -256,7 +272,7 @@ class _$VariantImpl extends _Variant {
 
   @override
   String toString() {
-    return 'Variant(id: $id, name: $name, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'Variant(id: $id, coachId: $coachId, name: $name, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -265,6 +281,7 @@ class _$VariantImpl extends _Variant {
         (other.runtimeType == runtimeType &&
             other is _$VariantImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.coachId, coachId) || other.coachId == coachId) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -285,6 +302,7 @@ class _$VariantImpl extends _Variant {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    coachId,
     name,
     description,
     createdAt,
@@ -312,6 +330,7 @@ class _$VariantImpl extends _Variant {
 abstract class _Variant extends Variant {
   const factory _Variant({
     required final String id,
+    required final String coachId,
     required final String name,
     final String? description,
     required final DateTime createdAt,
@@ -327,6 +346,8 @@ abstract class _Variant extends Variant {
 
   @override
   String get id;
+  @override
+  String get coachId;
   @override
   String get name;
   @override
