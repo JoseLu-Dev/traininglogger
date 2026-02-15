@@ -34,6 +34,23 @@ class SecureStorageService {
     return await _storage.read(key: 'user_role');
   }
 
+  // Last sync timestamp
+  Future<void> saveLastSyncTime(DateTime timestamp) async {
+    // Always store as UTC to ensure proper ISO 8601 format with 'Z' suffix
+    await _storage.write(key: 'last_sync_time', value: timestamp.toUtc().toIso8601String());
+  }
+
+  Future<DateTime?> getLastSyncTime() async {
+    final timestampStr = await _storage.read(key: 'last_sync_time');
+    if (timestampStr == null) return null;
+    try {
+      // Parse and return as UTC
+      return DateTime.parse(timestampStr).toUtc();
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Generic read method
   Future<String?> read({required String key}) async {
     return await _storage.read(key: key);

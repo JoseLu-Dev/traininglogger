@@ -34,7 +34,7 @@ public class TestDataCleaner {
      * Used in tests to set specific timestamps for incremental sync testing.
      */
     @Transactional
-    public void forceUpdatedAt(Class<?> entityClass, java.util.UUID id, java.time.LocalDateTime updatedAt) {
+    public void forceUpdatedAt(Class<?> entityClass, java.util.UUID id, java.time.Instant updatedAt) {
         String jpql = "UPDATE " + entityClass.getSimpleName() + " e SET e.updatedAt = :updatedAt WHERE e.id = :id";
         entityManager.createQuery(jpql)
                 .setParameter("updatedAt", updatedAt)

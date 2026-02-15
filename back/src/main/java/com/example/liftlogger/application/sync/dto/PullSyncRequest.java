@@ -1,6 +1,6 @@
 package com.example.liftlogger.application.sync.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public record PullSyncRequest(
     List<String> entityTypes,
-    LocalDateTime lastSyncTime  // null means fetch all
+    Instant lastSyncTime  // null means fetch all
 ) {
     public boolean isFullSync() {
         return lastSyncTime == null;

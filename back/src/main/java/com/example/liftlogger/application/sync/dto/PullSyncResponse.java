@@ -1,6 +1,6 @@
 package com.example.liftlogger.application.sync.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +13,6 @@ import java.util.Map;
  */
 public record PullSyncResponse(
     Map<String, List<Object>> entities,
-    LocalDateTime syncTimestamp,
+    Instant syncTimestamp,
     int totalEntities
 ) {}

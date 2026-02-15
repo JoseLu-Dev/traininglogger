@@ -18,7 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -63,12 +63,12 @@ class SyncControllerTest {
     void pullSync_returnsEntities() throws Exception {
         PullSyncResponseDto mockResponseDto = new PullSyncResponseDto(
                 Map.of("TrainingPlan", List.of()),
-                LocalDateTime.now(),
+                Instant.now(),
                 0
         );
 
         when(pullSyncUseCase.pullEntities(any(), any())).thenReturn(
-                new PullSyncResponse(Map.of("TrainingPlan", List.of()), LocalDateTime.now(), 0)
+                new PullSyncResponse(Map.of("TrainingPlan", List.of()), Instant.now(), 0)
         );
         when(syncDtoConverter.toPullResponseDto(any())).thenReturn(mockResponseDto);
 
@@ -93,7 +93,7 @@ class SyncControllerTest {
                 5,
                 0,
                 List.of(),
-                LocalDateTime.now()
+                Instant.now()
         );
 
         when(pushSyncUseCase.pushEntities(any(), any())).thenReturn(mockResponse);

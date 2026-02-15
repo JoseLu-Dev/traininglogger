@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -52,7 +52,7 @@ public class PushSyncService implements PushSyncUseCase {
             );
         });
 
-        LocalDateTime syncTimestamp = LocalDateTime.now();
+        Instant syncTimestamp = Instant.now();
         int failureCount = failures.size();
 
         log.info("Push sync completed for user {}: {} succeeded, {} failed",

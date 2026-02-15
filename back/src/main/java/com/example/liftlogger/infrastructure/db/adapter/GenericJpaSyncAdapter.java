@@ -8,7 +8,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +37,7 @@ public abstract class GenericJpaSyncAdapter<D, J> implements GenericSyncReposito
     protected abstract List<D> toDomainList(List<J> jpaEntities);
 
     @Override
-    public List<D> findByOwnerAndUpdatedAfter(UUID ownerId, LocalDateTime lastSyncTime) {
+    public List<D> findByOwnerAndUpdatedAfter(UUID ownerId, Instant lastSyncTime) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<J> query = cb.createQuery(getJpaEntityClass());
         Root<J> root = query.from(getJpaEntityClass());
@@ -134,7 +134,7 @@ public abstract class GenericJpaSyncAdapter<D, J> implements GenericSyncReposito
     }
 
     @Override
-    public List<D> findByOwnersAndUpdatedAfter(List<UUID> ownerIds, LocalDateTime lastSyncTime) {
+    public List<D> findByOwnersAndUpdatedAfter(List<UUID> ownerIds, Instant lastSyncTime) {
         if (ownerIds == null || ownerIds.isEmpty()) {
             return List.of();
         }

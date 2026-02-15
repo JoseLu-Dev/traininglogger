@@ -5,9 +5,8 @@ import com.example.liftlogger.infrastructure.security.CurrentUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +92,6 @@ class PushSyncIntegrationTest extends SyncIntegrationTestBase {
                 .andExpect(jsonPath("$.failureCount", is(1)));
     }
 
-    private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
     private Map<String, Object> buildBodyWeightEntry(UUID id, UUID athleteId, Double weight) {
         Map<String, Object> entry = new LinkedHashMap<>();
         entry.put("id", id.toString());
@@ -102,8 +99,8 @@ class PushSyncIntegrationTest extends SyncIntegrationTestBase {
         entry.put("date", LocalDate.now().toString());
         entry.put("weight", weight);
         entry.put("notes", "Test entry");
-        entry.put("createdAt", LocalDateTime.now().format(DT_FMT));
-        entry.put("updatedAt", LocalDateTime.now().format(DT_FMT));
+        entry.put("createdAt", Instant.now().toString());
+        entry.put("updatedAt", Instant.now().toString());
         entry.put("createdBy", athleteId.toString());
         entry.put("updatedBy", athleteId.toString());
         return entry;
@@ -116,8 +113,8 @@ class PushSyncIntegrationTest extends SyncIntegrationTestBase {
         entry.put("date", null);
         entry.put("weight", weight);
         entry.put("notes", "Test entry");
-        entry.put("createdAt", LocalDateTime.now().format(DT_FMT));
-        entry.put("updatedAt", LocalDateTime.now().format(DT_FMT));
+        entry.put("createdAt", Instant.now().toString());
+        entry.put("updatedAt", Instant.now().toString());
         entry.put("createdBy", athleteId.toString());
         entry.put("updatedBy", athleteId.toString());
         return entry;

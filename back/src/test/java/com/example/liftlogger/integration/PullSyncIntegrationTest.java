@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,8 +53,8 @@ class PullSyncIntegrationTest extends SyncIntegrationTestBase {
         UUID userId = UUID.randomUUID();
         CurrentUser currentUser = createTestUser(userId);
 
-        LocalDateTime twoHoursAgo = LocalDateTime.now().minusHours(2);
-        LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+        Instant twoHoursAgo = Instant.now().minusSeconds(7200);
+        Instant oneHourAgo = Instant.now().minusSeconds(3600);
 
         TrainingPlanJpaEntity oldPlan = createTrainingPlan(userId, "Old Plan");
         TrainingPlanJpaEntity newPlan = createTrainingPlan(userId, "New Plan");
@@ -64,7 +64,7 @@ class PullSyncIntegrationTest extends SyncIntegrationTestBase {
 
         // Force the timestamps after persist (bypasses @PrePersist/@PreUpdate)
         testDataCleaner.forceUpdatedAt(TrainingPlanJpaEntity.class, oldPlan.getId(), twoHoursAgo);
-        testDataCleaner.forceUpdatedAt(TrainingPlanJpaEntity.class, newPlan.getId(), LocalDateTime.now());
+        testDataCleaner.forceUpdatedAt(TrainingPlanJpaEntity.class, newPlan.getId(), Instant.now());
 
         PullSyncRequestDto request = new PullSyncRequestDto(
                 List.of("TrainingPlan"),
@@ -102,14 +102,13 @@ class PullSyncIntegrationTest extends SyncIntegrationTestBase {
         TrainingPlanJpaEntity plan = TrainingPlanJpaEntity.builder()
                 .athleteId(athleteId)
                 .name(name)
-                .description("Description")
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(30))
                 .status("ACTIVE")
                 .build();
         plan.setId(UUID.randomUUID());
-        plan.setCreatedAt(LocalDateTime.now());
-        plan.setUpdatedAt(LocalDateTime.now());
+        plan.setCreatedAt(Instant.now());
+        plan.setUpdatedAt(Instant.now());
         return plan;
     }
 }

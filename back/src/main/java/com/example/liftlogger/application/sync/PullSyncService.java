@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class PullSyncService implements PullSyncUseCase {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-        LocalDateTime syncTimestamp = LocalDateTime.now();
+        Instant syncTimestamp = Instant.now();
         Map<String, List<Object>> entitiesMap = new ConcurrentHashMap<>();
 
         // Process entity types in parallel
@@ -74,7 +74,7 @@ public class PullSyncService implements PullSyncUseCase {
     private List<Object> fetchEntitiesForType(
         String entityType,
         User user,
-        LocalDateTime lastSyncTime
+        Instant lastSyncTime
     ) {
         try {
             EntityMetadata<?> metadata = entityRegistry.getByName(entityType);

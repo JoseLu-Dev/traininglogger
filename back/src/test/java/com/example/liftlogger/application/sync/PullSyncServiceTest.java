@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,13 +71,13 @@ class PullSyncServiceTest {
     @Test
     void pullEntities_incrementalSync_returnsOnlyUpdatedEntities() {
         UUID userId = UUID.randomUUID();
-        LocalDateTime lastSyncTime = LocalDateTime.now().minusHours(1);
+        Instant lastSyncTime = Instant.now().minusSeconds(3600);
 
         TrainingPlan recentPlan = TrainingPlan.builder()
             .id(UUID.randomUUID())
             .athleteId(userId)
             .name("Recent Plan")
-            .updatedAt(LocalDateTime.now())
+            .updatedAt(Instant.now())
             .build();
 
         when(repositoryProvider.getRepository(TrainingPlan.class))

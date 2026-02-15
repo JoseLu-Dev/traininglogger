@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,11 +64,12 @@ public abstract class SyncIntegrationTestBase {
         UserJpaEntity userEntity = new UserJpaEntity(
                 userId,
                 userId + "@test.com",
+                "Test User",
                 "$2a$10$aAHXQfNDDwTtQHPuML6k3.hbGwbr5jyoYNcVzoLX4slrkTPyCH206",
                 UserRole.ATHLETE,
                 null,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
+                Instant.now(),
+                Instant.now(),
                 1,
                 null
         );

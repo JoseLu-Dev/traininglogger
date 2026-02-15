@@ -55,11 +55,14 @@ class SyncManager {
       // Get athleteId from storage if not provided
       final effectiveAthleteId = athleteId ?? await _getCurrentAthleteId();
 
+      // Get last sync time from storage if not provided
+      final effectiveSince = since ?? await _storage.getLastSyncTime();
+
       // Phase 1: PULL - Get changes from server
       _updateState(const SyncState.syncing(phase: 'Pulling changes from server'));
       final pullCount = await _pullStrategy.execute(
         athleteId: effectiveAthleteId,
-        since: since,
+        since: effectiveSince,
         entityTypes: entityTypes,
       );
 
@@ -73,6 +76,9 @@ class SyncManager {
 
       // Build final result
       final finalResult = _buildFinalResult(pushResult, pullCount, retryCount);
+
+      // Save current timestamp as last sync time on success (in UTC)
+      await _storage.saveLastSyncTime(DateTime.now().toUtc());
 
       _updateState(SyncState.completed(finalResult));
       return finalResult;

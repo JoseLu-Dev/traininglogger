@@ -1,6 +1,6 @@
 package com.example.liftlogger.application.sync.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -15,7 +15,7 @@ public record PushSyncResponse(
     int successCount,
     int failureCount,
     List<EntityFailure> failures,
-    LocalDateTime syncTimestamp
+    Instant syncTimestamp
 ) {
     public boolean hasFailures() {
         return failureCount > 0;

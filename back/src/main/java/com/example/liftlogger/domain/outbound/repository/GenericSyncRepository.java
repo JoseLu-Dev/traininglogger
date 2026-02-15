@@ -1,6 +1,6 @@
 package com.example.liftlogger.domain.outbound.repository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,7 +13,7 @@ public interface GenericSyncRepository<T> {
     /**
      * Find entities owned by user, updated after lastSyncTime
      */
-    List<T> findByOwnerAndUpdatedAfter(UUID ownerId, LocalDateTime lastSyncTime);
+    List<T> findByOwnerAndUpdatedAfter(UUID ownerId, Instant lastSyncTime);
 
     /**
      * Find entities owned by user, all records
@@ -48,5 +48,5 @@ public interface GenericSyncRepository<T> {
     /**
      * Find entities owned by any of the specified owner IDs, updated after timestamp
      */
-    List<T> findByOwnersAndUpdatedAfter(List<UUID> ownerIds, LocalDateTime lastSyncTime);
+    List<T> findByOwnersAndUpdatedAfter(List<UUID> ownerIds, Instant lastSyncTime);
 }

@@ -25,7 +25,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,7 +54,7 @@ public class SyncController {
     public ResponseEntity<PullSyncResponseDto> pullSync(
             @AuthenticationPrincipal CurrentUser currentUser,
             @RequestParam List<String> entityTypes,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastSyncTime
+            @RequestParam(required = false) Instant lastSyncTime
     ) {
         UUID userId = currentUser.getId();
         log.info("Pull sync requested by user {} for entity types: {}", userId, entityTypes);
