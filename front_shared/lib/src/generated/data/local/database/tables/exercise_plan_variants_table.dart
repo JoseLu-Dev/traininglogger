@@ -8,6 +8,7 @@ import 'variants_table.dart';
 @TableIndex(name: 'idx_exercise_plan_variants_unique', columns: { #exercisePlanId, #variantId,  })
 @DataClassName('ExercisePlanVariantData')
 class ExercisePlanVariants extends Table with SyncableTable {
+  TextColumn get athleteId => text()();
   TextColumn get exercisePlanId => text().references(ExercisePlans, #id)();
   TextColumn get variantId => text().references(Variants, #id)();
 }

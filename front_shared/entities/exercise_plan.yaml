@@ -4,6 +4,10 @@ entity:
   description: Planned exercise in a training plan
 
 fields:
+  - name: athleteId
+    type: String
+    tableType: text()
+
   - name: trainingPlanId
     type: String
     tableType: text()
@@ -46,6 +50,7 @@ queries:
 
 createFactory:
   params:
+    - athleteId
     - trainingPlanId
     - exerciseId
     - orderIndex

@@ -4,6 +4,10 @@ entity:
   description: Join table linking variants to exercise plans
 
 fields:
+  - name: athleteId
+    type: String
+    tableType: text()
+
   - name: exercisePlanId
     type: String
     tableType: text()
@@ -43,5 +47,6 @@ queries:
 
 createFactory:
   params:
+    - athleteId
     - exercisePlanId
     - variantId

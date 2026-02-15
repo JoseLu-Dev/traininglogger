@@ -93,6 +93,7 @@ class ExerciseSessionVariantDao extends BaseDao<ExerciseSessionVariants, Exercis
     await into(exerciseSessionVariants).insert(
       ExerciseSessionVariantsCompanion.insert(
         id: Value(entity.id),
+        athleteId: entity.athleteId,
         exerciseSessionId: entity.exerciseSessionId,
         variantId: entity.variantId,
         isDirty: const Value(true),
@@ -105,6 +106,7 @@ class ExerciseSessionVariantDao extends BaseDao<ExerciseSessionVariants, Exercis
   ExerciseSessionVariant toDomain(ExerciseSessionVariantData data) {
     return ExerciseSessionVariant(
       id: data.id,
+      athleteId: data.athleteId,
       exerciseSessionId: data.exerciseSessionId,
       variantId: data.variantId,
       createdAt: data.createdAt,

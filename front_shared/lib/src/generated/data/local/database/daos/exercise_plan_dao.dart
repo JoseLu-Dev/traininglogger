@@ -86,6 +86,7 @@ class ExercisePlanDao extends BaseDao<ExercisePlans, ExercisePlanData>
     await into(exercisePlans).insert(
       ExercisePlansCompanion.insert(
         id: Value(entity.id),
+        athleteId: entity.athleteId,
         trainingPlanId: entity.trainingPlanId,
         exerciseId: entity.exerciseId,
         orderIndex: entity.orderIndex,
@@ -100,6 +101,7 @@ class ExercisePlanDao extends BaseDao<ExercisePlans, ExercisePlanData>
   ExercisePlan toDomain(ExercisePlanData data) {
     return ExercisePlan(
       id: data.id,
+      athleteId: data.athleteId,
       trainingPlanId: data.trainingPlanId,
       exerciseId: data.exerciseId,
       orderIndex: data.orderIndex,

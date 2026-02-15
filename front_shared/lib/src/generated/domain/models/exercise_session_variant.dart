@@ -10,6 +10,7 @@ part 'exercise_session_variant.g.dart';
 class ExerciseSessionVariant with _$ExerciseSessionVariant implements SyncableEntity {
   const factory ExerciseSessionVariant({
     required String id,
+    required String athleteId,
     required String exerciseSessionId,
     required String variantId,
     required DateTime createdAt,
@@ -27,12 +28,14 @@ class ExerciseSessionVariant with _$ExerciseSessionVariant implements SyncableEn
 
   /// Factory for creating a new exerciseSessionVariant
   factory ExerciseSessionVariant.create({
+    required String athleteId,
     required String exerciseSessionId,
     required String variantId,
   }) {
     final now = DateTime.now();
     return ExerciseSessionVariant(
       id: const Uuid().v4(),
+      athleteId: athleteId,
       exerciseSessionId: exerciseSessionId,
       variantId: variantId,
       createdAt: now,

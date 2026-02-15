@@ -22,6 +22,7 @@ ExercisePlanVariant _$ExercisePlanVariantFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ExercisePlanVariant {
   String get id => throw _privateConstructorUsedError;
+  String get athleteId => throw _privateConstructorUsedError;
   String get exercisePlanId => throw _privateConstructorUsedError;
   String get variantId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -50,6 +51,7 @@ abstract class $ExercisePlanVariantCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exercisePlanId,
     String variantId,
     DateTime createdAt,
@@ -77,6 +79,7 @@ class _$ExercisePlanVariantCopyWithImpl<$Res, $Val extends ExercisePlanVariant>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exercisePlanId = null,
     Object? variantId = null,
     Object? createdAt = null,
@@ -91,6 +94,10 @@ class _$ExercisePlanVariantCopyWithImpl<$Res, $Val extends ExercisePlanVariant>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            athleteId: null == athleteId
+                ? _value.athleteId
+                : athleteId // ignore: cast_nullable_to_non_nullable
                       as String,
             exercisePlanId: null == exercisePlanId
                 ? _value.exercisePlanId
@@ -141,6 +148,7 @@ abstract class _$$ExercisePlanVariantImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exercisePlanId,
     String variantId,
     DateTime createdAt,
@@ -167,6 +175,7 @@ class __$$ExercisePlanVariantImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exercisePlanId = null,
     Object? variantId = null,
     Object? createdAt = null,
@@ -181,6 +190,10 @@ class __$$ExercisePlanVariantImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        athleteId: null == athleteId
+            ? _value.athleteId
+            : athleteId // ignore: cast_nullable_to_non_nullable
                   as String,
         exercisePlanId: null == exercisePlanId
             ? _value.exercisePlanId
@@ -224,6 +237,7 @@ class __$$ExercisePlanVariantImplCopyWithImpl<$Res>
 class _$ExercisePlanVariantImpl extends _ExercisePlanVariant {
   const _$ExercisePlanVariantImpl({
     required this.id,
+    required this.athleteId,
     required this.exercisePlanId,
     required this.variantId,
     required this.createdAt,
@@ -239,6 +253,8 @@ class _$ExercisePlanVariantImpl extends _ExercisePlanVariant {
 
   @override
   final String id;
+  @override
+  final String athleteId;
   @override
   final String exercisePlanId;
   @override
@@ -260,7 +276,7 @@ class _$ExercisePlanVariantImpl extends _ExercisePlanVariant {
 
   @override
   String toString() {
-    return 'ExercisePlanVariant(id: $id, exercisePlanId: $exercisePlanId, variantId: $variantId, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'ExercisePlanVariant(id: $id, athleteId: $athleteId, exercisePlanId: $exercisePlanId, variantId: $variantId, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -269,6 +285,8 @@ class _$ExercisePlanVariantImpl extends _ExercisePlanVariant {
         (other.runtimeType == runtimeType &&
             other is _$ExercisePlanVariantImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.athleteId, athleteId) ||
+                other.athleteId == athleteId) &&
             (identical(other.exercisePlanId, exercisePlanId) ||
                 other.exercisePlanId == exercisePlanId) &&
             (identical(other.variantId, variantId) ||
@@ -290,6 +308,7 @@ class _$ExercisePlanVariantImpl extends _ExercisePlanVariant {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    athleteId,
     exercisePlanId,
     variantId,
     createdAt,
@@ -320,6 +339,7 @@ class _$ExercisePlanVariantImpl extends _ExercisePlanVariant {
 abstract class _ExercisePlanVariant extends ExercisePlanVariant {
   const factory _ExercisePlanVariant({
     required final String id,
+    required final String athleteId,
     required final String exercisePlanId,
     required final String variantId,
     required final DateTime createdAt,
@@ -336,6 +356,8 @@ abstract class _ExercisePlanVariant extends ExercisePlanVariant {
 
   @override
   String get id;
+  @override
+  String get athleteId;
   @override
   String get exercisePlanId;
   @override

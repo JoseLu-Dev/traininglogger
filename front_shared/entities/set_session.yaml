@@ -4,6 +4,10 @@ entity:
   description: Actual set performed in an exercise
 
 fields:
+  - name: athleteId
+    type: String
+    tableType: text()
+
   - name: exerciseSessionId
     type: String
     tableType: text()
@@ -61,6 +65,7 @@ queries:
 
 createFactory:
   params:
+    - athleteId
     - exerciseSessionId
     - setPlanId
     - setNumber

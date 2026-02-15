@@ -93,6 +93,7 @@ class ExercisePlanVariantDao extends BaseDao<ExercisePlanVariants, ExercisePlanV
     await into(exercisePlanVariants).insert(
       ExercisePlanVariantsCompanion.insert(
         id: Value(entity.id),
+        athleteId: entity.athleteId,
         exercisePlanId: entity.exercisePlanId,
         variantId: entity.variantId,
         isDirty: const Value(true),
@@ -105,6 +106,7 @@ class ExercisePlanVariantDao extends BaseDao<ExercisePlanVariants, ExercisePlanV
   ExercisePlanVariant toDomain(ExercisePlanVariantData data) {
     return ExercisePlanVariant(
       id: data.id,
+      athleteId: data.athleteId,
       exercisePlanId: data.exercisePlanId,
       variantId: data.variantId,
       createdAt: data.createdAt,

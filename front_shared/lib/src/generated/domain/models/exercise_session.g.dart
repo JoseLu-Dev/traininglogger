@@ -10,6 +10,7 @@ _$ExerciseSessionImpl _$$ExerciseSessionImplFromJson(
   Map<String, dynamic> json,
 ) => _$ExerciseSessionImpl(
   id: json['id'] as String,
+  athleteId: json['athleteId'] as String,
   trainingSessionId: json['trainingSessionId'] as String,
   exercisePlanId: json['exercisePlanId'] as String?,
   exerciseId: json['exerciseId'] as String,
@@ -31,6 +32,7 @@ Map<String, dynamic> _$$ExerciseSessionImplToJson(
   _$ExerciseSessionImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
+  'athleteId': instance.athleteId,
   'trainingSessionId': instance.trainingSessionId,
   'exercisePlanId': instance.exercisePlanId,
   'exerciseId': instance.exerciseId,

@@ -9,6 +9,7 @@ part of 'exercise_plan.dart';
 _$ExercisePlanImpl _$$ExercisePlanImplFromJson(Map<String, dynamic> json) =>
     _$ExercisePlanImpl(
       id: json['id'] as String,
+      athleteId: json['athleteId'] as String,
       trainingPlanId: json['trainingPlanId'] as String,
       exerciseId: json['exerciseId'] as String,
       orderIndex: (json['orderIndex'] as num).toInt(),
@@ -28,6 +29,7 @@ _$ExercisePlanImpl _$$ExercisePlanImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$ExercisePlanImplToJson(_$ExercisePlanImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'athleteId': instance.athleteId,
       'trainingPlanId': instance.trainingPlanId,
       'exerciseId': instance.exerciseId,
       'orderIndex': instance.orderIndex,

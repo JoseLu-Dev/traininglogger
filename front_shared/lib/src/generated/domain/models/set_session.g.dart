@@ -9,6 +9,7 @@ part of 'set_session.dart';
 _$SetSessionImpl _$$SetSessionImplFromJson(Map<String, dynamic> json) =>
     _$SetSessionImpl(
       id: json['id'] as String,
+      athleteId: json['athleteId'] as String,
       exerciseSessionId: json['exerciseSessionId'] as String,
       setPlanId: json['setPlanId'] as String?,
       setNumber: (json['setNumber'] as num?)?.toInt(),
@@ -31,6 +32,7 @@ _$SetSessionImpl _$$SetSessionImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$SetSessionImplToJson(_$SetSessionImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'athleteId': instance.athleteId,
       'exerciseSessionId': instance.exerciseSessionId,
       'setPlanId': instance.setPlanId,
       'setNumber': instance.setNumber,

@@ -22,6 +22,7 @@ SetPlan _$SetPlanFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$SetPlan {
   String get id => throw _privateConstructorUsedError;
+  String get athleteId => throw _privateConstructorUsedError;
   String get exercisePlanId => throw _privateConstructorUsedError;
   int? get setNumber => throw _privateConstructorUsedError;
   int? get targetReps => throw _privateConstructorUsedError;
@@ -51,6 +52,7 @@ abstract class $SetPlanCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exercisePlanId,
     int? setNumber,
     int? targetReps,
@@ -82,6 +84,7 @@ class _$SetPlanCopyWithImpl<$Res, $Val extends SetPlan>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exercisePlanId = null,
     Object? setNumber = freezed,
     Object? targetReps = freezed,
@@ -100,6 +103,10 @@ class _$SetPlanCopyWithImpl<$Res, $Val extends SetPlan>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            athleteId: null == athleteId
+                ? _value.athleteId
+                : athleteId // ignore: cast_nullable_to_non_nullable
                       as String,
             exercisePlanId: null == exercisePlanId
                 ? _value.exercisePlanId
@@ -165,6 +172,7 @@ abstract class _$$SetPlanImplCopyWith<$Res> implements $SetPlanCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exercisePlanId,
     int? setNumber,
     int? targetReps,
@@ -195,6 +203,7 @@ class __$$SetPlanImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exercisePlanId = null,
     Object? setNumber = freezed,
     Object? targetReps = freezed,
@@ -213,6 +222,10 @@ class __$$SetPlanImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        athleteId: null == athleteId
+            ? _value.athleteId
+            : athleteId // ignore: cast_nullable_to_non_nullable
                   as String,
         exercisePlanId: null == exercisePlanId
             ? _value.exercisePlanId
@@ -272,6 +285,7 @@ class __$$SetPlanImplCopyWithImpl<$Res>
 class _$SetPlanImpl extends _SetPlan {
   const _$SetPlanImpl({
     required this.id,
+    required this.athleteId,
     required this.exercisePlanId,
     this.setNumber,
     this.targetReps,
@@ -291,6 +305,8 @@ class _$SetPlanImpl extends _SetPlan {
 
   @override
   final String id;
+  @override
+  final String athleteId;
   @override
   final String exercisePlanId;
   @override
@@ -320,7 +336,7 @@ class _$SetPlanImpl extends _SetPlan {
 
   @override
   String toString() {
-    return 'SetPlan(id: $id, exercisePlanId: $exercisePlanId, setNumber: $setNumber, targetReps: $targetReps, targetWeight: $targetWeight, targetRpe: $targetRpe, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'SetPlan(id: $id, athleteId: $athleteId, exercisePlanId: $exercisePlanId, setNumber: $setNumber, targetReps: $targetReps, targetWeight: $targetWeight, targetRpe: $targetRpe, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -329,6 +345,8 @@ class _$SetPlanImpl extends _SetPlan {
         (other.runtimeType == runtimeType &&
             other is _$SetPlanImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.athleteId, athleteId) ||
+                other.athleteId == athleteId) &&
             (identical(other.exercisePlanId, exercisePlanId) ||
                 other.exercisePlanId == exercisePlanId) &&
             (identical(other.setNumber, setNumber) ||
@@ -357,6 +375,7 @@ class _$SetPlanImpl extends _SetPlan {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    athleteId,
     exercisePlanId,
     setNumber,
     targetReps,
@@ -388,6 +407,7 @@ class _$SetPlanImpl extends _SetPlan {
 abstract class _SetPlan extends SetPlan {
   const factory _SetPlan({
     required final String id,
+    required final String athleteId,
     required final String exercisePlanId,
     final int? setNumber,
     final int? targetReps,
@@ -407,6 +427,8 @@ abstract class _SetPlan extends SetPlan {
 
   @override
   String get id;
+  @override
+  String get athleteId;
   @override
   String get exercisePlanId;
   @override

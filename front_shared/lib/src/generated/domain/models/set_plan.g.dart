@@ -9,6 +9,7 @@ part of 'set_plan.dart';
 _$SetPlanImpl _$$SetPlanImplFromJson(Map<String, dynamic> json) =>
     _$SetPlanImpl(
       id: json['id'] as String,
+      athleteId: json['athleteId'] as String,
       exercisePlanId: json['exercisePlanId'] as String,
       setNumber: (json['setNumber'] as num?)?.toInt(),
       targetReps: (json['targetReps'] as num?)?.toInt(),
@@ -30,6 +31,7 @@ _$SetPlanImpl _$$SetPlanImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$SetPlanImplToJson(_$SetPlanImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'athleteId': instance.athleteId,
       'exercisePlanId': instance.exercisePlanId,
       'setNumber': instance.setNumber,
       'targetReps': instance.targetReps,

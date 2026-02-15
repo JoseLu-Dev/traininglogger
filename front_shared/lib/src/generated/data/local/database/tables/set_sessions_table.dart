@@ -8,6 +8,7 @@ import 'set_plans_table.dart';
 @TableIndex(name: 'idx_set_sessions_order', columns: { #exerciseSessionId, #setNumber,  })
 @DataClassName('SetSessionData')
 class SetSessions extends Table with SyncableTable {
+  TextColumn get athleteId => text()();
   TextColumn get exerciseSessionId => text().references(ExerciseSessions, #id)();
   TextColumn get setPlanId => text().nullable().references(SetPlans, #id)();
   IntColumn get setNumber => integer().nullable()();

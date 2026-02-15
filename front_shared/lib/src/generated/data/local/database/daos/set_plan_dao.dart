@@ -86,6 +86,7 @@ class SetPlanDao extends BaseDao<SetPlans, SetPlanData>
     await into(setPlans).insert(
       SetPlansCompanion.insert(
         id: Value(entity.id),
+        athleteId: entity.athleteId,
         exercisePlanId: entity.exercisePlanId,
         setNumber: Value(entity.setNumber),
         targetReps: Value(entity.targetReps),
@@ -102,6 +103,7 @@ class SetPlanDao extends BaseDao<SetPlans, SetPlanData>
   SetPlan toDomain(SetPlanData data) {
     return SetPlan(
       id: data.id,
+      athleteId: data.athleteId,
       exercisePlanId: data.exercisePlanId,
       setNumber: data.setNumber,
       targetReps: data.targetReps,

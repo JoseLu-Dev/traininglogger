@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -28,7 +28,7 @@ public class TrainingSessionJpaEntity extends BaseJpaEntity {
     private UUID trainingPlanId;
 
     @Column(name = "session_date")
-    private LocalDateTime sessionDate;
+    private Instant sessionDate;
 
     @Column
     private String notes;

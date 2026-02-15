@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -28,7 +28,7 @@ public class TrainingPlanJpaEntity extends BaseJpaEntity {
     private String name;
 
     @Column(nullable = false)
-    private java.time.LocalDateTime date;
+    private Instant date;
 
     @Column(name = "is_locked", nullable = false)
     private Boolean isLocked;

@@ -10,6 +10,7 @@ part 'set_session.g.dart';
 class SetSession with _$SetSession implements SyncableEntity {
   const factory SetSession({
     required String id,
+    required String athleteId,
     required String exerciseSessionId,
     String? setPlanId,
     int? setNumber,
@@ -32,6 +33,7 @@ class SetSession with _$SetSession implements SyncableEntity {
 
   /// Factory for creating a new setSession
   factory SetSession.create({
+    required String athleteId,
     required String exerciseSessionId,
     String? setPlanId,
     int? setNumber,
@@ -43,6 +45,7 @@ class SetSession with _$SetSession implements SyncableEntity {
     final now = DateTime.now();
     return SetSession(
       id: const Uuid().v4(),
+      athleteId: athleteId,
       exerciseSessionId: exerciseSessionId,
       setPlanId: setPlanId,
       setNumber: setNumber,

@@ -86,6 +86,7 @@ class SetSessionDao extends BaseDao<SetSessions, SetSessionData>
     await into(setSessions).insert(
       SetSessionsCompanion.insert(
         id: Value(entity.id),
+        athleteId: entity.athleteId,
         exerciseSessionId: entity.exerciseSessionId,
         setPlanId: Value(entity.setPlanId),
         setNumber: Value(entity.setNumber),
@@ -103,6 +104,7 @@ class SetSessionDao extends BaseDao<SetSessions, SetSessionData>
   SetSession toDomain(SetSessionData data) {
     return SetSession(
       id: data.id,
+      athleteId: data.athleteId,
       exerciseSessionId: data.exerciseSessionId,
       setPlanId: data.setPlanId,
       setNumber: data.setNumber,

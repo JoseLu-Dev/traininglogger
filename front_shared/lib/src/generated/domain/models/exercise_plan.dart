@@ -10,6 +10,7 @@ part 'exercise_plan.g.dart';
 class ExercisePlan with _$ExercisePlan implements SyncableEntity {
   const factory ExercisePlan({
     required String id,
+    required String athleteId,
     required String trainingPlanId,
     required String exerciseId,
     required int orderIndex,
@@ -29,6 +30,7 @@ class ExercisePlan with _$ExercisePlan implements SyncableEntity {
 
   /// Factory for creating a new exercisePlan
   factory ExercisePlan.create({
+    required String athleteId,
     required String trainingPlanId,
     required String exerciseId,
     required int orderIndex,
@@ -37,6 +39,7 @@ class ExercisePlan with _$ExercisePlan implements SyncableEntity {
     final now = DateTime.now();
     return ExercisePlan(
       id: const Uuid().v4(),
+      athleteId: athleteId,
       trainingPlanId: trainingPlanId,
       exerciseId: exerciseId,
       orderIndex: orderIndex,

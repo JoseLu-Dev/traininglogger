@@ -22,6 +22,7 @@ SetSession _$SetSessionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$SetSession {
   String get id => throw _privateConstructorUsedError;
+  String get athleteId => throw _privateConstructorUsedError;
   String get exerciseSessionId => throw _privateConstructorUsedError;
   String? get setPlanId => throw _privateConstructorUsedError;
   int? get setNumber => throw _privateConstructorUsedError;
@@ -55,6 +56,7 @@ abstract class $SetSessionCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exerciseSessionId,
     String? setPlanId,
     int? setNumber,
@@ -87,6 +89,7 @@ class _$SetSessionCopyWithImpl<$Res, $Val extends SetSession>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exerciseSessionId = null,
     Object? setPlanId = freezed,
     Object? setNumber = freezed,
@@ -106,6 +109,10 @@ class _$SetSessionCopyWithImpl<$Res, $Val extends SetSession>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            athleteId: null == athleteId
+                ? _value.athleteId
+                : athleteId // ignore: cast_nullable_to_non_nullable
                       as String,
             exerciseSessionId: null == exerciseSessionId
                 ? _value.exerciseSessionId
@@ -176,6 +183,7 @@ abstract class _$$SetSessionImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exerciseSessionId,
     String? setPlanId,
     int? setNumber,
@@ -207,6 +215,7 @@ class __$$SetSessionImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exerciseSessionId = null,
     Object? setPlanId = freezed,
     Object? setNumber = freezed,
@@ -226,6 +235,10 @@ class __$$SetSessionImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        athleteId: null == athleteId
+            ? _value.athleteId
+            : athleteId // ignore: cast_nullable_to_non_nullable
                   as String,
         exerciseSessionId: null == exerciseSessionId
             ? _value.exerciseSessionId
@@ -289,6 +302,7 @@ class __$$SetSessionImplCopyWithImpl<$Res>
 class _$SetSessionImpl extends _SetSession {
   const _$SetSessionImpl({
     required this.id,
+    required this.athleteId,
     required this.exerciseSessionId,
     this.setPlanId,
     this.setNumber,
@@ -309,6 +323,8 @@ class _$SetSessionImpl extends _SetSession {
 
   @override
   final String id;
+  @override
+  final String athleteId;
   @override
   final String exerciseSessionId;
   @override
@@ -340,7 +356,7 @@ class _$SetSessionImpl extends _SetSession {
 
   @override
   String toString() {
-    return 'SetSession(id: $id, exerciseSessionId: $exerciseSessionId, setPlanId: $setPlanId, setNumber: $setNumber, actualReps: $actualReps, actualWeight: $actualWeight, actualRpe: $actualRpe, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'SetSession(id: $id, athleteId: $athleteId, exerciseSessionId: $exerciseSessionId, setPlanId: $setPlanId, setNumber: $setNumber, actualReps: $actualReps, actualWeight: $actualWeight, actualRpe: $actualRpe, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -349,6 +365,8 @@ class _$SetSessionImpl extends _SetSession {
         (other.runtimeType == runtimeType &&
             other is _$SetSessionImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.athleteId, athleteId) ||
+                other.athleteId == athleteId) &&
             (identical(other.exerciseSessionId, exerciseSessionId) ||
                 other.exerciseSessionId == exerciseSessionId) &&
             (identical(other.setPlanId, setPlanId) ||
@@ -379,6 +397,7 @@ class _$SetSessionImpl extends _SetSession {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    athleteId,
     exerciseSessionId,
     setPlanId,
     setNumber,
@@ -411,6 +430,7 @@ class _$SetSessionImpl extends _SetSession {
 abstract class _SetSession extends SetSession {
   const factory _SetSession({
     required final String id,
+    required final String athleteId,
     required final String exerciseSessionId,
     final String? setPlanId,
     final int? setNumber,
@@ -432,6 +452,8 @@ abstract class _SetSession extends SetSession {
 
   @override
   String get id;
+  @override
+  String get athleteId;
   @override
   String get exerciseSessionId;
   @override

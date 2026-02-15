@@ -22,6 +22,7 @@ ExerciseSession _$ExerciseSessionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ExerciseSession {
   String get id => throw _privateConstructorUsedError;
+  String get athleteId => throw _privateConstructorUsedError;
   String get trainingSessionId => throw _privateConstructorUsedError;
   String? get exercisePlanId => throw _privateConstructorUsedError;
   String get exerciseId => throw _privateConstructorUsedError;
@@ -53,6 +54,7 @@ abstract class $ExerciseSessionCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String trainingSessionId,
     String? exercisePlanId,
     String exerciseId,
@@ -83,6 +85,7 @@ class _$ExerciseSessionCopyWithImpl<$Res, $Val extends ExerciseSession>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? trainingSessionId = null,
     Object? exercisePlanId = freezed,
     Object? exerciseId = null,
@@ -100,6 +103,10 @@ class _$ExerciseSessionCopyWithImpl<$Res, $Val extends ExerciseSession>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            athleteId: null == athleteId
+                ? _value.athleteId
+                : athleteId // ignore: cast_nullable_to_non_nullable
                       as String,
             trainingSessionId: null == trainingSessionId
                 ? _value.trainingSessionId
@@ -162,6 +169,7 @@ abstract class _$$ExerciseSessionImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String trainingSessionId,
     String? exercisePlanId,
     String exerciseId,
@@ -191,6 +199,7 @@ class __$$ExerciseSessionImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? trainingSessionId = null,
     Object? exercisePlanId = freezed,
     Object? exerciseId = null,
@@ -208,6 +217,10 @@ class __$$ExerciseSessionImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        athleteId: null == athleteId
+            ? _value.athleteId
+            : athleteId // ignore: cast_nullable_to_non_nullable
                   as String,
         trainingSessionId: null == trainingSessionId
             ? _value.trainingSessionId
@@ -263,6 +276,7 @@ class __$$ExerciseSessionImplCopyWithImpl<$Res>
 class _$ExerciseSessionImpl extends _ExerciseSession {
   const _$ExerciseSessionImpl({
     required this.id,
+    required this.athleteId,
     required this.trainingSessionId,
     this.exercisePlanId,
     required this.exerciseId,
@@ -281,6 +295,8 @@ class _$ExerciseSessionImpl extends _ExerciseSession {
 
   @override
   final String id;
+  @override
+  final String athleteId;
   @override
   final String trainingSessionId;
   @override
@@ -308,7 +324,7 @@ class _$ExerciseSessionImpl extends _ExerciseSession {
 
   @override
   String toString() {
-    return 'ExerciseSession(id: $id, trainingSessionId: $trainingSessionId, exercisePlanId: $exercisePlanId, exerciseId: $exerciseId, orderIndex: $orderIndex, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'ExerciseSession(id: $id, athleteId: $athleteId, trainingSessionId: $trainingSessionId, exercisePlanId: $exercisePlanId, exerciseId: $exerciseId, orderIndex: $orderIndex, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -317,6 +333,8 @@ class _$ExerciseSessionImpl extends _ExerciseSession {
         (other.runtimeType == runtimeType &&
             other is _$ExerciseSessionImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.athleteId, athleteId) ||
+                other.athleteId == athleteId) &&
             (identical(other.trainingSessionId, trainingSessionId) ||
                 other.trainingSessionId == trainingSessionId) &&
             (identical(other.exercisePlanId, exercisePlanId) ||
@@ -343,6 +361,7 @@ class _$ExerciseSessionImpl extends _ExerciseSession {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    athleteId,
     trainingSessionId,
     exercisePlanId,
     exerciseId,
@@ -376,6 +395,7 @@ class _$ExerciseSessionImpl extends _ExerciseSession {
 abstract class _ExerciseSession extends ExerciseSession {
   const factory _ExerciseSession({
     required final String id,
+    required final String athleteId,
     required final String trainingSessionId,
     final String? exercisePlanId,
     required final String exerciseId,
@@ -395,6 +415,8 @@ abstract class _ExerciseSession extends ExerciseSession {
 
   @override
   String get id;
+  @override
+  String get athleteId;
   @override
   String get trainingSessionId;
   @override

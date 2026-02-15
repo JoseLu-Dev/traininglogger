@@ -24,6 +24,7 @@ ExerciseSessionVariant _$ExerciseSessionVariantFromJson(
 /// @nodoc
 mixin _$ExerciseSessionVariant {
   String get id => throw _privateConstructorUsedError;
+  String get athleteId => throw _privateConstructorUsedError;
   String get exerciseSessionId => throw _privateConstructorUsedError;
   String get variantId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -52,6 +53,7 @@ abstract class $ExerciseSessionVariantCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exerciseSessionId,
     String variantId,
     DateTime createdAt,
@@ -82,6 +84,7 @@ class _$ExerciseSessionVariantCopyWithImpl<
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exerciseSessionId = null,
     Object? variantId = null,
     Object? createdAt = null,
@@ -96,6 +99,10 @@ class _$ExerciseSessionVariantCopyWithImpl<
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            athleteId: null == athleteId
+                ? _value.athleteId
+                : athleteId // ignore: cast_nullable_to_non_nullable
                       as String,
             exerciseSessionId: null == exerciseSessionId
                 ? _value.exerciseSessionId
@@ -146,6 +153,7 @@ abstract class _$$ExerciseSessionVariantImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
+    String athleteId,
     String exerciseSessionId,
     String variantId,
     DateTime createdAt,
@@ -173,6 +181,7 @@ class __$$ExerciseSessionVariantImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? athleteId = null,
     Object? exerciseSessionId = null,
     Object? variantId = null,
     Object? createdAt = null,
@@ -187,6 +196,10 @@ class __$$ExerciseSessionVariantImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        athleteId: null == athleteId
+            ? _value.athleteId
+            : athleteId // ignore: cast_nullable_to_non_nullable
                   as String,
         exerciseSessionId: null == exerciseSessionId
             ? _value.exerciseSessionId
@@ -230,6 +243,7 @@ class __$$ExerciseSessionVariantImplCopyWithImpl<$Res>
 class _$ExerciseSessionVariantImpl extends _ExerciseSessionVariant {
   const _$ExerciseSessionVariantImpl({
     required this.id,
+    required this.athleteId,
     required this.exerciseSessionId,
     required this.variantId,
     required this.createdAt,
@@ -245,6 +259,8 @@ class _$ExerciseSessionVariantImpl extends _ExerciseSessionVariant {
 
   @override
   final String id;
+  @override
+  final String athleteId;
   @override
   final String exerciseSessionId;
   @override
@@ -266,7 +282,7 @@ class _$ExerciseSessionVariantImpl extends _ExerciseSessionVariant {
 
   @override
   String toString() {
-    return 'ExerciseSessionVariant(id: $id, exerciseSessionId: $exerciseSessionId, variantId: $variantId, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
+    return 'ExerciseSessionVariant(id: $id, athleteId: $athleteId, exerciseSessionId: $exerciseSessionId, variantId: $variantId, createdAt: $createdAt, updatedAt: $updatedAt, version: $version, deletedAt: $deletedAt, isDirty: $isDirty, lastSyncedAt: $lastSyncedAt)';
   }
 
   @override
@@ -275,6 +291,8 @@ class _$ExerciseSessionVariantImpl extends _ExerciseSessionVariant {
         (other.runtimeType == runtimeType &&
             other is _$ExerciseSessionVariantImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.athleteId, athleteId) ||
+                other.athleteId == athleteId) &&
             (identical(other.exerciseSessionId, exerciseSessionId) ||
                 other.exerciseSessionId == exerciseSessionId) &&
             (identical(other.variantId, variantId) ||
@@ -296,6 +314,7 @@ class _$ExerciseSessionVariantImpl extends _ExerciseSessionVariant {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    athleteId,
     exerciseSessionId,
     variantId,
     createdAt,
@@ -327,6 +346,7 @@ class _$ExerciseSessionVariantImpl extends _ExerciseSessionVariant {
 abstract class _ExerciseSessionVariant extends ExerciseSessionVariant {
   const factory _ExerciseSessionVariant({
     required final String id,
+    required final String athleteId,
     required final String exerciseSessionId,
     required final String variantId,
     required final DateTime createdAt,
@@ -343,6 +363,8 @@ abstract class _ExerciseSessionVariant extends ExerciseSessionVariant {
 
   @override
   String get id;
+  @override
+  String get athleteId;
   @override
   String get exerciseSessionId;
   @override

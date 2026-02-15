@@ -18,6 +18,7 @@ void main() {
   group('SetPlanDao', () {
     test('create and find by id', () async {
       final entity = SetPlan.create(
+        athleteId: 'test-athleteId',
         exercisePlanId: 'test-exercisePlanId',
         setNumber: 1,
         targetReps: 1,
@@ -36,6 +37,7 @@ void main() {
 
     test('mark dirty sets isDirty flag', () async {
       final entity = SetPlan.create(
+        athleteId: 'test-athleteId',
         exercisePlanId: 'test-exercisePlanId',
         setNumber: 1,
         targetReps: 1,
@@ -57,6 +59,7 @@ void main() {
 
     test('soft delete sets deletedAt', () async {
       final entity = SetPlan.create(
+        athleteId: 'test-athleteId',
         exercisePlanId: 'test-exercisePlanId',
         setNumber: 1,
         targetReps: 1,

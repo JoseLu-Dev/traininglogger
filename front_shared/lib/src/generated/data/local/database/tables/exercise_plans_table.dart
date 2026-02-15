@@ -8,6 +8,7 @@ import 'exercises_table.dart';
 @TableIndex(name: 'idx_exercise_plans_order', columns: { #trainingPlanId, #orderIndex,  })
 @DataClassName('ExercisePlanData')
 class ExercisePlans extends Table with SyncableTable {
+  TextColumn get athleteId => text()();
   TextColumn get trainingPlanId => text().references(TrainingPlans, #id)();
   TextColumn get exerciseId => text().references(Exercises, #id)();
   IntColumn get orderIndex => integer()();

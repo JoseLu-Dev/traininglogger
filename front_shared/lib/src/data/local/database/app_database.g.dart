@@ -2781,6 +2781,17 @@ class $ExercisePlansTable extends ExercisePlans
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<String> athleteId = GeneratedColumn<String>(
+    'athlete_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _trainingPlanIdMeta = const VerificationMeta(
     'trainingPlanId',
   );
@@ -2838,6 +2849,7 @@ class $ExercisePlansTable extends ExercisePlans
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     trainingPlanId,
     exerciseId,
     orderIndex,
@@ -2896,6 +2908,14 @@ class $ExercisePlansTable extends ExercisePlans
           _lastSyncedAtMeta,
         ),
       );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_athleteIdMeta);
     }
     if (data.containsKey('training_plan_id')) {
       context.handle(
@@ -2967,6 +2987,10 @@ class $ExercisePlansTable extends ExercisePlans
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}athlete_id'],
+      )!,
       trainingPlanId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}training_plan_id'],
@@ -3001,6 +3025,7 @@ class ExercisePlanData extends DataClass
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String athleteId;
   final String trainingPlanId;
   final String exerciseId;
   final int orderIndex;
@@ -3013,6 +3038,7 @@ class ExercisePlanData extends DataClass
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.athleteId,
     required this.trainingPlanId,
     required this.exerciseId,
     required this.orderIndex,
@@ -3036,6 +3062,7 @@ class ExercisePlanData extends DataClass
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['athlete_id'] = Variable<String>(athleteId);
     map['training_plan_id'] = Variable<String>(trainingPlanId);
     map['exercise_id'] = Variable<String>(exerciseId);
     map['order_index'] = Variable<int>(orderIndex);
@@ -3062,6 +3089,7 @@ class ExercisePlanData extends DataClass
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      athleteId: Value(athleteId),
       trainingPlanId: Value(trainingPlanId),
       exerciseId: Value(exerciseId),
       orderIndex: Value(orderIndex),
@@ -3084,6 +3112,7 @@ class ExercisePlanData extends DataClass
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      athleteId: serializer.fromJson<String>(json['athleteId']),
       trainingPlanId: serializer.fromJson<String>(json['trainingPlanId']),
       exerciseId: serializer.fromJson<String>(json['exerciseId']),
       orderIndex: serializer.fromJson<int>(json['orderIndex']),
@@ -3101,6 +3130,7 @@ class ExercisePlanData extends DataClass
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'athleteId': serializer.toJson<String>(athleteId),
       'trainingPlanId': serializer.toJson<String>(trainingPlanId),
       'exerciseId': serializer.toJson<String>(exerciseId),
       'orderIndex': serializer.toJson<int>(orderIndex),
@@ -3116,6 +3146,7 @@ class ExercisePlanData extends DataClass
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? athleteId,
     String? trainingPlanId,
     String? exerciseId,
     int? orderIndex,
@@ -3128,6 +3159,7 @@ class ExercisePlanData extends DataClass
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    athleteId: athleteId ?? this.athleteId,
     trainingPlanId: trainingPlanId ?? this.trainingPlanId,
     exerciseId: exerciseId ?? this.exerciseId,
     orderIndex: orderIndex ?? this.orderIndex,
@@ -3144,6 +3176,7 @@ class ExercisePlanData extends DataClass
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
       trainingPlanId: data.trainingPlanId.present
           ? data.trainingPlanId.value
           : this.trainingPlanId,
@@ -3167,6 +3200,7 @@ class ExercisePlanData extends DataClass
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('trainingPlanId: $trainingPlanId, ')
           ..write('exerciseId: $exerciseId, ')
           ..write('orderIndex: $orderIndex, ')
@@ -3184,6 +3218,7 @@ class ExercisePlanData extends DataClass
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     trainingPlanId,
     exerciseId,
     orderIndex,
@@ -3200,6 +3235,7 @@ class ExercisePlanData extends DataClass
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.athleteId == this.athleteId &&
           other.trainingPlanId == this.trainingPlanId &&
           other.exerciseId == this.exerciseId &&
           other.orderIndex == this.orderIndex &&
@@ -3214,6 +3250,7 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> athleteId;
   final Value<String> trainingPlanId;
   final Value<String> exerciseId;
   final Value<int> orderIndex;
@@ -3227,6 +3264,7 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.athleteId = const Value.absent(),
     this.trainingPlanId = const Value.absent(),
     this.exerciseId = const Value.absent(),
     this.orderIndex = const Value.absent(),
@@ -3241,12 +3279,14 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String athleteId,
     required String trainingPlanId,
     required String exerciseId,
     required int orderIndex,
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : trainingPlanId = Value(trainingPlanId),
+  }) : athleteId = Value(athleteId),
+       trainingPlanId = Value(trainingPlanId),
        exerciseId = Value(exerciseId),
        orderIndex = Value(orderIndex);
   static Insertable<ExercisePlanData> custom({
@@ -3257,6 +3297,7 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? athleteId,
     Expression<String>? trainingPlanId,
     Expression<String>? exerciseId,
     Expression<int>? orderIndex,
@@ -3271,6 +3312,7 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (athleteId != null) 'athlete_id': athleteId,
       if (trainingPlanId != null) 'training_plan_id': trainingPlanId,
       if (exerciseId != null) 'exercise_id': exerciseId,
       if (orderIndex != null) 'order_index': orderIndex,
@@ -3287,6 +3329,7 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? athleteId,
     Value<String>? trainingPlanId,
     Value<String>? exerciseId,
     Value<int>? orderIndex,
@@ -3301,6 +3344,7 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      athleteId: athleteId ?? this.athleteId,
       trainingPlanId: trainingPlanId ?? this.trainingPlanId,
       exerciseId: exerciseId ?? this.exerciseId,
       orderIndex: orderIndex ?? this.orderIndex,
@@ -3333,6 +3377,9 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
     }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<String>(athleteId.value);
+    }
     if (trainingPlanId.present) {
       map['training_plan_id'] = Variable<String>(trainingPlanId.value);
     }
@@ -3361,6 +3408,7 @@ class ExercisePlansCompanion extends UpdateCompanion<ExercisePlanData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('trainingPlanId: $trainingPlanId, ')
           ..write('exerciseId: $exerciseId, ')
           ..write('orderIndex: $orderIndex, ')
@@ -4084,6 +4132,17 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<String> athleteId = GeneratedColumn<String>(
+    'athlete_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _exercisePlanIdMeta = const VerificationMeta(
     'exercisePlanId',
   );
@@ -4121,6 +4180,7 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exercisePlanId,
     variantId,
   ];
@@ -4177,6 +4237,14 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
           _lastSyncedAtMeta,
         ),
       );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_athleteIdMeta);
     }
     if (data.containsKey('exercise_plan_id')) {
       context.handle(
@@ -4237,6 +4305,10 @@ class $ExercisePlanVariantsTable extends ExercisePlanVariants
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}athlete_id'],
+      )!,
       exercisePlanId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}exercise_plan_id'],
@@ -4263,6 +4335,7 @@ class ExercisePlanVariantData extends DataClass
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String athleteId;
   final String exercisePlanId;
   final String variantId;
   const ExercisePlanVariantData({
@@ -4273,6 +4346,7 @@ class ExercisePlanVariantData extends DataClass
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.athleteId,
     required this.exercisePlanId,
     required this.variantId,
   });
@@ -4294,6 +4368,7 @@ class ExercisePlanVariantData extends DataClass
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['athlete_id'] = Variable<String>(athleteId);
     map['exercise_plan_id'] = Variable<String>(exercisePlanId);
     map['variant_id'] = Variable<String>(variantId);
     return map;
@@ -4316,6 +4391,7 @@ class ExercisePlanVariantData extends DataClass
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      athleteId: Value(athleteId),
       exercisePlanId: Value(exercisePlanId),
       variantId: Value(variantId),
     );
@@ -4334,6 +4410,7 @@ class ExercisePlanVariantData extends DataClass
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      athleteId: serializer.fromJson<String>(json['athleteId']),
       exercisePlanId: serializer.fromJson<String>(json['exercisePlanId']),
       variantId: serializer.fromJson<String>(json['variantId']),
     );
@@ -4349,6 +4426,7 @@ class ExercisePlanVariantData extends DataClass
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'athleteId': serializer.toJson<String>(athleteId),
       'exercisePlanId': serializer.toJson<String>(exercisePlanId),
       'variantId': serializer.toJson<String>(variantId),
     };
@@ -4362,6 +4440,7 @@ class ExercisePlanVariantData extends DataClass
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? athleteId,
     String? exercisePlanId,
     String? variantId,
   }) => ExercisePlanVariantData(
@@ -4372,6 +4451,7 @@ class ExercisePlanVariantData extends DataClass
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    athleteId: athleteId ?? this.athleteId,
     exercisePlanId: exercisePlanId ?? this.exercisePlanId,
     variantId: variantId ?? this.variantId,
   );
@@ -4388,6 +4468,7 @@ class ExercisePlanVariantData extends DataClass
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
       exercisePlanId: data.exercisePlanId.present
           ? data.exercisePlanId.value
           : this.exercisePlanId,
@@ -4405,6 +4486,7 @@ class ExercisePlanVariantData extends DataClass
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exercisePlanId: $exercisePlanId, ')
           ..write('variantId: $variantId')
           ..write(')'))
@@ -4420,6 +4502,7 @@ class ExercisePlanVariantData extends DataClass
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exercisePlanId,
     variantId,
   );
@@ -4434,6 +4517,7 @@ class ExercisePlanVariantData extends DataClass
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.athleteId == this.athleteId &&
           other.exercisePlanId == this.exercisePlanId &&
           other.variantId == this.variantId);
 }
@@ -4447,6 +4531,7 @@ class ExercisePlanVariantsCompanion
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> athleteId;
   final Value<String> exercisePlanId;
   final Value<String> variantId;
   final Value<int> rowid;
@@ -4458,6 +4543,7 @@ class ExercisePlanVariantsCompanion
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.athleteId = const Value.absent(),
     this.exercisePlanId = const Value.absent(),
     this.variantId = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4470,10 +4556,12 @@ class ExercisePlanVariantsCompanion
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String athleteId,
     required String exercisePlanId,
     required String variantId,
     this.rowid = const Value.absent(),
-  }) : exercisePlanId = Value(exercisePlanId),
+  }) : athleteId = Value(athleteId),
+       exercisePlanId = Value(exercisePlanId),
        variantId = Value(variantId);
   static Insertable<ExercisePlanVariantData> custom({
     Expression<String>? id,
@@ -4483,6 +4571,7 @@ class ExercisePlanVariantsCompanion
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? athleteId,
     Expression<String>? exercisePlanId,
     Expression<String>? variantId,
     Expression<int>? rowid,
@@ -4495,6 +4584,7 @@ class ExercisePlanVariantsCompanion
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (athleteId != null) 'athlete_id': athleteId,
       if (exercisePlanId != null) 'exercise_plan_id': exercisePlanId,
       if (variantId != null) 'variant_id': variantId,
       if (rowid != null) 'rowid': rowid,
@@ -4509,6 +4599,7 @@ class ExercisePlanVariantsCompanion
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? athleteId,
     Value<String>? exercisePlanId,
     Value<String>? variantId,
     Value<int>? rowid,
@@ -4521,6 +4612,7 @@ class ExercisePlanVariantsCompanion
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      athleteId: athleteId ?? this.athleteId,
       exercisePlanId: exercisePlanId ?? this.exercisePlanId,
       variantId: variantId ?? this.variantId,
       rowid: rowid ?? this.rowid,
@@ -4551,6 +4643,9 @@ class ExercisePlanVariantsCompanion
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
     }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<String>(athleteId.value);
+    }
     if (exercisePlanId.present) {
       map['exercise_plan_id'] = Variable<String>(exercisePlanId.value);
     }
@@ -4573,6 +4668,7 @@ class ExercisePlanVariantsCompanion
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exercisePlanId: $exercisePlanId, ')
           ..write('variantId: $variantId, ')
           ..write('rowid: $rowid')
@@ -5350,6 +5446,17 @@ class $ExerciseSessionsTable extends ExerciseSessions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<String> athleteId = GeneratedColumn<String>(
+    'athlete_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _trainingSessionIdMeta = const VerificationMeta(
     'trainingSessionId',
   );
@@ -5422,6 +5529,7 @@ class $ExerciseSessionsTable extends ExerciseSessions
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     trainingSessionId,
     exercisePlanId,
     exerciseId,
@@ -5481,6 +5589,14 @@ class $ExerciseSessionsTable extends ExerciseSessions
           _lastSyncedAtMeta,
         ),
       );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_athleteIdMeta);
     }
     if (data.containsKey('training_session_id')) {
       context.handle(
@@ -5561,6 +5677,10 @@ class $ExerciseSessionsTable extends ExerciseSessions
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}athlete_id'],
+      )!,
       trainingSessionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}training_session_id'],
@@ -5599,6 +5719,7 @@ class ExerciseSessionData extends DataClass
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String athleteId;
   final String trainingSessionId;
   final String? exercisePlanId;
   final String exerciseId;
@@ -5612,6 +5733,7 @@ class ExerciseSessionData extends DataClass
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.athleteId,
     required this.trainingSessionId,
     this.exercisePlanId,
     required this.exerciseId,
@@ -5636,6 +5758,7 @@ class ExerciseSessionData extends DataClass
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['athlete_id'] = Variable<String>(athleteId);
     map['training_session_id'] = Variable<String>(trainingSessionId);
     if (!nullToAbsent || exercisePlanId != null) {
       map['exercise_plan_id'] = Variable<String>(exercisePlanId);
@@ -5665,6 +5788,7 @@ class ExerciseSessionData extends DataClass
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      athleteId: Value(athleteId),
       trainingSessionId: Value(trainingSessionId),
       exercisePlanId: exercisePlanId == null && nullToAbsent
           ? const Value.absent()
@@ -5690,6 +5814,7 @@ class ExerciseSessionData extends DataClass
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      athleteId: serializer.fromJson<String>(json['athleteId']),
       trainingSessionId: serializer.fromJson<String>(json['trainingSessionId']),
       exercisePlanId: serializer.fromJson<String?>(json['exercisePlanId']),
       exerciseId: serializer.fromJson<String>(json['exerciseId']),
@@ -5708,6 +5833,7 @@ class ExerciseSessionData extends DataClass
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'athleteId': serializer.toJson<String>(athleteId),
       'trainingSessionId': serializer.toJson<String>(trainingSessionId),
       'exercisePlanId': serializer.toJson<String?>(exercisePlanId),
       'exerciseId': serializer.toJson<String>(exerciseId),
@@ -5724,6 +5850,7 @@ class ExerciseSessionData extends DataClass
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? athleteId,
     String? trainingSessionId,
     Value<String?> exercisePlanId = const Value.absent(),
     String? exerciseId,
@@ -5737,6 +5864,7 @@ class ExerciseSessionData extends DataClass
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    athleteId: athleteId ?? this.athleteId,
     trainingSessionId: trainingSessionId ?? this.trainingSessionId,
     exercisePlanId: exercisePlanId.present
         ? exercisePlanId.value
@@ -5756,6 +5884,7 @@ class ExerciseSessionData extends DataClass
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
       trainingSessionId: data.trainingSessionId.present
           ? data.trainingSessionId.value
           : this.trainingSessionId,
@@ -5782,6 +5911,7 @@ class ExerciseSessionData extends DataClass
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('trainingSessionId: $trainingSessionId, ')
           ..write('exercisePlanId: $exercisePlanId, ')
           ..write('exerciseId: $exerciseId, ')
@@ -5800,6 +5930,7 @@ class ExerciseSessionData extends DataClass
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     trainingSessionId,
     exercisePlanId,
     exerciseId,
@@ -5817,6 +5948,7 @@ class ExerciseSessionData extends DataClass
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.athleteId == this.athleteId &&
           other.trainingSessionId == this.trainingSessionId &&
           other.exercisePlanId == this.exercisePlanId &&
           other.exerciseId == this.exerciseId &&
@@ -5832,6 +5964,7 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> athleteId;
   final Value<String> trainingSessionId;
   final Value<String?> exercisePlanId;
   final Value<String> exerciseId;
@@ -5846,6 +5979,7 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.athleteId = const Value.absent(),
     this.trainingSessionId = const Value.absent(),
     this.exercisePlanId = const Value.absent(),
     this.exerciseId = const Value.absent(),
@@ -5861,13 +5995,15 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String athleteId,
     required String trainingSessionId,
     this.exercisePlanId = const Value.absent(),
     required String exerciseId,
     required int orderIndex,
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : trainingSessionId = Value(trainingSessionId),
+  }) : athleteId = Value(athleteId),
+       trainingSessionId = Value(trainingSessionId),
        exerciseId = Value(exerciseId),
        orderIndex = Value(orderIndex);
   static Insertable<ExerciseSessionData> custom({
@@ -5878,6 +6014,7 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? athleteId,
     Expression<String>? trainingSessionId,
     Expression<String>? exercisePlanId,
     Expression<String>? exerciseId,
@@ -5893,6 +6030,7 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (athleteId != null) 'athlete_id': athleteId,
       if (trainingSessionId != null) 'training_session_id': trainingSessionId,
       if (exercisePlanId != null) 'exercise_plan_id': exercisePlanId,
       if (exerciseId != null) 'exercise_id': exerciseId,
@@ -5910,6 +6048,7 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? athleteId,
     Value<String>? trainingSessionId,
     Value<String?>? exercisePlanId,
     Value<String>? exerciseId,
@@ -5925,6 +6064,7 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      athleteId: athleteId ?? this.athleteId,
       trainingSessionId: trainingSessionId ?? this.trainingSessionId,
       exercisePlanId: exercisePlanId ?? this.exercisePlanId,
       exerciseId: exerciseId ?? this.exerciseId,
@@ -5958,6 +6098,9 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
     }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<String>(athleteId.value);
+    }
     if (trainingSessionId.present) {
       map['training_session_id'] = Variable<String>(trainingSessionId.value);
     }
@@ -5989,6 +6132,7 @@ class ExerciseSessionsCompanion extends UpdateCompanion<ExerciseSessionData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('trainingSessionId: $trainingSessionId, ')
           ..write('exercisePlanId: $exercisePlanId, ')
           ..write('exerciseId: $exerciseId, ')
@@ -6089,6 +6233,17 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<String> athleteId = GeneratedColumn<String>(
+    'athlete_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _exerciseSessionIdMeta = const VerificationMeta(
     'exerciseSessionId',
   );
@@ -6127,6 +6282,7 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exerciseSessionId,
     variantId,
   ];
@@ -6183,6 +6339,14 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
           _lastSyncedAtMeta,
         ),
       );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_athleteIdMeta);
     }
     if (data.containsKey('exercise_session_id')) {
       context.handle(
@@ -6243,6 +6407,10 @@ class $ExerciseSessionVariantsTable extends ExerciseSessionVariants
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}athlete_id'],
+      )!,
       exerciseSessionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}exercise_session_id'],
@@ -6269,6 +6437,7 @@ class ExerciseSessionVariantData extends DataClass
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String athleteId;
   final String exerciseSessionId;
   final String variantId;
   const ExerciseSessionVariantData({
@@ -6279,6 +6448,7 @@ class ExerciseSessionVariantData extends DataClass
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.athleteId,
     required this.exerciseSessionId,
     required this.variantId,
   });
@@ -6300,6 +6470,7 @@ class ExerciseSessionVariantData extends DataClass
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['athlete_id'] = Variable<String>(athleteId);
     map['exercise_session_id'] = Variable<String>(exerciseSessionId);
     map['variant_id'] = Variable<String>(variantId);
     return map;
@@ -6322,6 +6493,7 @@ class ExerciseSessionVariantData extends DataClass
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      athleteId: Value(athleteId),
       exerciseSessionId: Value(exerciseSessionId),
       variantId: Value(variantId),
     );
@@ -6340,6 +6512,7 @@ class ExerciseSessionVariantData extends DataClass
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      athleteId: serializer.fromJson<String>(json['athleteId']),
       exerciseSessionId: serializer.fromJson<String>(json['exerciseSessionId']),
       variantId: serializer.fromJson<String>(json['variantId']),
     );
@@ -6355,6 +6528,7 @@ class ExerciseSessionVariantData extends DataClass
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'athleteId': serializer.toJson<String>(athleteId),
       'exerciseSessionId': serializer.toJson<String>(exerciseSessionId),
       'variantId': serializer.toJson<String>(variantId),
     };
@@ -6368,6 +6542,7 @@ class ExerciseSessionVariantData extends DataClass
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? athleteId,
     String? exerciseSessionId,
     String? variantId,
   }) => ExerciseSessionVariantData(
@@ -6378,6 +6553,7 @@ class ExerciseSessionVariantData extends DataClass
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    athleteId: athleteId ?? this.athleteId,
     exerciseSessionId: exerciseSessionId ?? this.exerciseSessionId,
     variantId: variantId ?? this.variantId,
   );
@@ -6394,6 +6570,7 @@ class ExerciseSessionVariantData extends DataClass
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
       exerciseSessionId: data.exerciseSessionId.present
           ? data.exerciseSessionId.value
           : this.exerciseSessionId,
@@ -6411,6 +6588,7 @@ class ExerciseSessionVariantData extends DataClass
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exerciseSessionId: $exerciseSessionId, ')
           ..write('variantId: $variantId')
           ..write(')'))
@@ -6426,6 +6604,7 @@ class ExerciseSessionVariantData extends DataClass
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exerciseSessionId,
     variantId,
   );
@@ -6440,6 +6619,7 @@ class ExerciseSessionVariantData extends DataClass
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.athleteId == this.athleteId &&
           other.exerciseSessionId == this.exerciseSessionId &&
           other.variantId == this.variantId);
 }
@@ -6453,6 +6633,7 @@ class ExerciseSessionVariantsCompanion
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> athleteId;
   final Value<String> exerciseSessionId;
   final Value<String> variantId;
   final Value<int> rowid;
@@ -6464,6 +6645,7 @@ class ExerciseSessionVariantsCompanion
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.athleteId = const Value.absent(),
     this.exerciseSessionId = const Value.absent(),
     this.variantId = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -6476,10 +6658,12 @@ class ExerciseSessionVariantsCompanion
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String athleteId,
     required String exerciseSessionId,
     required String variantId,
     this.rowid = const Value.absent(),
-  }) : exerciseSessionId = Value(exerciseSessionId),
+  }) : athleteId = Value(athleteId),
+       exerciseSessionId = Value(exerciseSessionId),
        variantId = Value(variantId);
   static Insertable<ExerciseSessionVariantData> custom({
     Expression<String>? id,
@@ -6489,6 +6673,7 @@ class ExerciseSessionVariantsCompanion
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? athleteId,
     Expression<String>? exerciseSessionId,
     Expression<String>? variantId,
     Expression<int>? rowid,
@@ -6501,6 +6686,7 @@ class ExerciseSessionVariantsCompanion
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (athleteId != null) 'athlete_id': athleteId,
       if (exerciseSessionId != null) 'exercise_session_id': exerciseSessionId,
       if (variantId != null) 'variant_id': variantId,
       if (rowid != null) 'rowid': rowid,
@@ -6515,6 +6701,7 @@ class ExerciseSessionVariantsCompanion
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? athleteId,
     Value<String>? exerciseSessionId,
     Value<String>? variantId,
     Value<int>? rowid,
@@ -6527,6 +6714,7 @@ class ExerciseSessionVariantsCompanion
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      athleteId: athleteId ?? this.athleteId,
       exerciseSessionId: exerciseSessionId ?? this.exerciseSessionId,
       variantId: variantId ?? this.variantId,
       rowid: rowid ?? this.rowid,
@@ -6557,6 +6745,9 @@ class ExerciseSessionVariantsCompanion
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
     }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<String>(athleteId.value);
+    }
     if (exerciseSessionId.present) {
       map['exercise_session_id'] = Variable<String>(exerciseSessionId.value);
     }
@@ -6579,6 +6770,7 @@ class ExerciseSessionVariantsCompanion
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exerciseSessionId: $exerciseSessionId, ')
           ..write('variantId: $variantId, ')
           ..write('rowid: $rowid')
@@ -6676,6 +6868,17 @@ class $SetPlansTable extends SetPlans
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<String> athleteId = GeneratedColumn<String>(
+    'athlete_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _exercisePlanIdMeta = const VerificationMeta(
     'exercisePlanId',
   );
@@ -6752,6 +6955,7 @@ class $SetPlansTable extends SetPlans
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exercisePlanId,
     setNumber,
     targetReps,
@@ -6812,6 +7016,14 @@ class $SetPlansTable extends SetPlans
           _lastSyncedAtMeta,
         ),
       );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_athleteIdMeta);
     }
     if (data.containsKey('exercise_plan_id')) {
       context.handle(
@@ -6894,6 +7106,10 @@ class $SetPlansTable extends SetPlans
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}athlete_id'],
+      )!,
       exercisePlanId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}exercise_plan_id'],
@@ -6935,6 +7151,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String athleteId;
   final String exercisePlanId;
   final int? setNumber;
   final int? targetReps;
@@ -6949,6 +7166,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.athleteId,
     required this.exercisePlanId,
     this.setNumber,
     this.targetReps,
@@ -6974,6 +7192,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['athlete_id'] = Variable<String>(athleteId);
     map['exercise_plan_id'] = Variable<String>(exercisePlanId);
     if (!nullToAbsent || setNumber != null) {
       map['set_number'] = Variable<int>(setNumber);
@@ -7010,6 +7229,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      athleteId: Value(athleteId),
       exercisePlanId: Value(exercisePlanId),
       setNumber: setNumber == null && nullToAbsent
           ? const Value.absent()
@@ -7042,6 +7262,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      athleteId: serializer.fromJson<String>(json['athleteId']),
       exercisePlanId: serializer.fromJson<String>(json['exercisePlanId']),
       setNumber: serializer.fromJson<int?>(json['setNumber']),
       targetReps: serializer.fromJson<int?>(json['targetReps']),
@@ -7061,6 +7282,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'athleteId': serializer.toJson<String>(athleteId),
       'exercisePlanId': serializer.toJson<String>(exercisePlanId),
       'setNumber': serializer.toJson<int?>(setNumber),
       'targetReps': serializer.toJson<int?>(targetReps),
@@ -7078,6 +7300,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? athleteId,
     String? exercisePlanId,
     Value<int?> setNumber = const Value.absent(),
     Value<int?> targetReps = const Value.absent(),
@@ -7092,6 +7315,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    athleteId: athleteId ?? this.athleteId,
     exercisePlanId: exercisePlanId ?? this.exercisePlanId,
     setNumber: setNumber.present ? setNumber.value : this.setNumber,
     targetReps: targetReps.present ? targetReps.value : this.targetReps,
@@ -7110,6 +7334,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
       exercisePlanId: data.exercisePlanId.present
           ? data.exercisePlanId.value
           : this.exercisePlanId,
@@ -7135,6 +7360,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exercisePlanId: $exercisePlanId, ')
           ..write('setNumber: $setNumber, ')
           ..write('targetReps: $targetReps, ')
@@ -7154,6 +7380,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exercisePlanId,
     setNumber,
     targetReps,
@@ -7172,6 +7399,7 @@ class SetPlanData extends DataClass implements Insertable<SetPlanData> {
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.athleteId == this.athleteId &&
           other.exercisePlanId == this.exercisePlanId &&
           other.setNumber == this.setNumber &&
           other.targetReps == this.targetReps &&
@@ -7188,6 +7416,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> athleteId;
   final Value<String> exercisePlanId;
   final Value<int?> setNumber;
   final Value<int?> targetReps;
@@ -7203,6 +7432,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.athleteId = const Value.absent(),
     this.exercisePlanId = const Value.absent(),
     this.setNumber = const Value.absent(),
     this.targetReps = const Value.absent(),
@@ -7219,6 +7449,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String athleteId,
     required String exercisePlanId,
     this.setNumber = const Value.absent(),
     this.targetReps = const Value.absent(),
@@ -7226,7 +7457,8 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     this.targetRpe = const Value.absent(),
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : exercisePlanId = Value(exercisePlanId);
+  }) : athleteId = Value(athleteId),
+       exercisePlanId = Value(exercisePlanId);
   static Insertable<SetPlanData> custom({
     Expression<String>? id,
     Expression<DateTime>? createdAt,
@@ -7235,6 +7467,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? athleteId,
     Expression<String>? exercisePlanId,
     Expression<int>? setNumber,
     Expression<int>? targetReps,
@@ -7251,6 +7484,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (athleteId != null) 'athlete_id': athleteId,
       if (exercisePlanId != null) 'exercise_plan_id': exercisePlanId,
       if (setNumber != null) 'set_number': setNumber,
       if (targetReps != null) 'target_reps': targetReps,
@@ -7269,6 +7503,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? athleteId,
     Value<String>? exercisePlanId,
     Value<int?>? setNumber,
     Value<int?>? targetReps,
@@ -7285,6 +7520,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      athleteId: athleteId ?? this.athleteId,
       exercisePlanId: exercisePlanId ?? this.exercisePlanId,
       setNumber: setNumber ?? this.setNumber,
       targetReps: targetReps ?? this.targetReps,
@@ -7318,6 +7554,9 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
     }
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<String>(athleteId.value);
     }
     if (exercisePlanId.present) {
       map['exercise_plan_id'] = Variable<String>(exercisePlanId.value);
@@ -7353,6 +7592,7 @@ class SetPlansCompanion extends UpdateCompanion<SetPlanData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exercisePlanId: $exercisePlanId, ')
           ..write('setNumber: $setNumber, ')
           ..write('targetReps: $targetReps, ')
@@ -7454,6 +7694,17 @@ class $SetSessionsTable extends SetSessions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<String> athleteId = GeneratedColumn<String>(
+    'athlete_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _exerciseSessionIdMeta = const VerificationMeta(
     'exerciseSessionId',
   );
@@ -7545,6 +7796,7 @@ class $SetSessionsTable extends SetSessions
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exerciseSessionId,
     setPlanId,
     setNumber,
@@ -7606,6 +7858,14 @@ class $SetSessionsTable extends SetSessions
           _lastSyncedAtMeta,
         ),
       );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_athleteIdMeta);
     }
     if (data.containsKey('exercise_session_id')) {
       context.handle(
@@ -7698,6 +7958,10 @@ class $SetSessionsTable extends SetSessions
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_synced_at'],
       ),
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}athlete_id'],
+      )!,
       exerciseSessionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}exercise_session_id'],
@@ -7743,6 +8007,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
   final DateTime? deletedAt;
   final bool? isDirty;
   final DateTime? lastSyncedAt;
+  final String athleteId;
   final String exerciseSessionId;
   final String? setPlanId;
   final int? setNumber;
@@ -7758,6 +8023,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     this.deletedAt,
     this.isDirty,
     this.lastSyncedAt,
+    required this.athleteId,
     required this.exerciseSessionId,
     this.setPlanId,
     this.setNumber,
@@ -7784,6 +8050,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     if (!nullToAbsent || lastSyncedAt != null) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
     }
+    map['athlete_id'] = Variable<String>(athleteId);
     map['exercise_session_id'] = Variable<String>(exerciseSessionId);
     if (!nullToAbsent || setPlanId != null) {
       map['set_plan_id'] = Variable<String>(setPlanId);
@@ -7819,6 +8086,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       lastSyncedAt: lastSyncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncedAt),
+      athleteId: Value(athleteId),
       exerciseSessionId: Value(exerciseSessionId),
       setPlanId: setPlanId == null && nullToAbsent
           ? const Value.absent()
@@ -7850,6 +8118,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       isDirty: serializer.fromJson<bool?>(json['isDirty']),
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      athleteId: serializer.fromJson<String>(json['athleteId']),
       exerciseSessionId: serializer.fromJson<String>(json['exerciseSessionId']),
       setPlanId: serializer.fromJson<String?>(json['setPlanId']),
       setNumber: serializer.fromJson<int?>(json['setNumber']),
@@ -7870,6 +8139,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'isDirty': serializer.toJson<bool?>(isDirty),
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'athleteId': serializer.toJson<String>(athleteId),
       'exerciseSessionId': serializer.toJson<String>(exerciseSessionId),
       'setPlanId': serializer.toJson<String?>(setPlanId),
       'setNumber': serializer.toJson<int?>(setNumber),
@@ -7888,6 +8158,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     Value<DateTime?> deletedAt = const Value.absent(),
     Value<bool?> isDirty = const Value.absent(),
     Value<DateTime?> lastSyncedAt = const Value.absent(),
+    String? athleteId,
     String? exerciseSessionId,
     Value<String?> setPlanId = const Value.absent(),
     Value<int?> setNumber = const Value.absent(),
@@ -7903,6 +8174,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     isDirty: isDirty.present ? isDirty.value : this.isDirty,
     lastSyncedAt: lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+    athleteId: athleteId ?? this.athleteId,
     exerciseSessionId: exerciseSessionId ?? this.exerciseSessionId,
     setPlanId: setPlanId.present ? setPlanId.value : this.setPlanId,
     setNumber: setNumber.present ? setNumber.value : this.setNumber,
@@ -7922,6 +8194,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
       lastSyncedAt: data.lastSyncedAt.present
           ? data.lastSyncedAt.value
           : this.lastSyncedAt,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
       exerciseSessionId: data.exerciseSessionId.present
           ? data.exerciseSessionId.value
           : this.exerciseSessionId,
@@ -7948,6 +8221,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exerciseSessionId: $exerciseSessionId, ')
           ..write('setPlanId: $setPlanId, ')
           ..write('setNumber: $setNumber, ')
@@ -7968,6 +8242,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
     deletedAt,
     isDirty,
     lastSyncedAt,
+    athleteId,
     exerciseSessionId,
     setPlanId,
     setNumber,
@@ -7987,6 +8262,7 @@ class SetSessionData extends DataClass implements Insertable<SetSessionData> {
           other.deletedAt == this.deletedAt &&
           other.isDirty == this.isDirty &&
           other.lastSyncedAt == this.lastSyncedAt &&
+          other.athleteId == this.athleteId &&
           other.exerciseSessionId == this.exerciseSessionId &&
           other.setPlanId == this.setPlanId &&
           other.setNumber == this.setNumber &&
@@ -8004,6 +8280,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
   final Value<DateTime?> deletedAt;
   final Value<bool?> isDirty;
   final Value<DateTime?> lastSyncedAt;
+  final Value<String> athleteId;
   final Value<String> exerciseSessionId;
   final Value<String?> setPlanId;
   final Value<int?> setNumber;
@@ -8020,6 +8297,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    this.athleteId = const Value.absent(),
     this.exerciseSessionId = const Value.absent(),
     this.setPlanId = const Value.absent(),
     this.setNumber = const Value.absent(),
@@ -8037,6 +8315,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     this.deletedAt = const Value.absent(),
     this.isDirty = const Value.absent(),
     this.lastSyncedAt = const Value.absent(),
+    required String athleteId,
     required String exerciseSessionId,
     this.setPlanId = const Value.absent(),
     this.setNumber = const Value.absent(),
@@ -8045,7 +8324,8 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     this.actualRpe = const Value.absent(),
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : exerciseSessionId = Value(exerciseSessionId),
+  }) : athleteId = Value(athleteId),
+       exerciseSessionId = Value(exerciseSessionId),
        actualReps = Value(actualReps),
        actualWeight = Value(actualWeight);
   static Insertable<SetSessionData> custom({
@@ -8056,6 +8336,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     Expression<DateTime>? deletedAt,
     Expression<bool>? isDirty,
     Expression<DateTime>? lastSyncedAt,
+    Expression<String>? athleteId,
     Expression<String>? exerciseSessionId,
     Expression<String>? setPlanId,
     Expression<int>? setNumber,
@@ -8073,6 +8354,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (isDirty != null) 'is_dirty': isDirty,
       if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (athleteId != null) 'athlete_id': athleteId,
       if (exerciseSessionId != null) 'exercise_session_id': exerciseSessionId,
       if (setPlanId != null) 'set_plan_id': setPlanId,
       if (setNumber != null) 'set_number': setNumber,
@@ -8092,6 +8374,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     Value<DateTime?>? deletedAt,
     Value<bool?>? isDirty,
     Value<DateTime?>? lastSyncedAt,
+    Value<String>? athleteId,
     Value<String>? exerciseSessionId,
     Value<String?>? setPlanId,
     Value<int?>? setNumber,
@@ -8109,6 +8392,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
       deletedAt: deletedAt ?? this.deletedAt,
       isDirty: isDirty ?? this.isDirty,
       lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      athleteId: athleteId ?? this.athleteId,
       exerciseSessionId: exerciseSessionId ?? this.exerciseSessionId,
       setPlanId: setPlanId ?? this.setPlanId,
       setNumber: setNumber ?? this.setNumber,
@@ -8143,6 +8427,9 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
     }
     if (lastSyncedAt.present) {
       map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<String>(athleteId.value);
     }
     if (exerciseSessionId.present) {
       map['exercise_session_id'] = Variable<String>(exerciseSessionId.value);
@@ -8181,6 +8468,7 @@ class SetSessionsCompanion extends UpdateCompanion<SetSessionData> {
           ..write('deletedAt: $deletedAt, ')
           ..write('isDirty: $isDirty, ')
           ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('athleteId: $athleteId, ')
           ..write('exerciseSessionId: $exerciseSessionId, ')
           ..write('setPlanId: $setPlanId, ')
           ..write('setNumber: $setNumber, ')
@@ -10786,6 +11074,7 @@ typedef $$ExercisePlansTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String athleteId,
       required String trainingPlanId,
       required String exerciseId,
       required int orderIndex,
@@ -10801,6 +11090,7 @@ typedef $$ExercisePlansTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> athleteId,
       Value<String> trainingPlanId,
       Value<String> exerciseId,
       Value<int> orderIndex,
@@ -10972,6 +11262,11 @@ class $$ExercisePlansTableFilterComposer
 
   ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
     column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11151,6 +11446,11 @@ class $$ExercisePlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get orderIndex => $composableBuilder(
     column: $table.orderIndex,
     builder: (column) => ColumnOrderings(column),
@@ -11239,6 +11539,9 @@ class $$ExercisePlansTableAnnotationComposer
     column: $table.lastSyncedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
 
   GeneratedColumn<int> get orderIndex => $composableBuilder(
     column: $table.orderIndex,
@@ -11412,6 +11715,7 @@ class $$ExercisePlansTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> athleteId = const Value.absent(),
                 Value<String> trainingPlanId = const Value.absent(),
                 Value<String> exerciseId = const Value.absent(),
                 Value<int> orderIndex = const Value.absent(),
@@ -11425,6 +11729,7 @@ class $$ExercisePlansTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 trainingPlanId: trainingPlanId,
                 exerciseId: exerciseId,
                 orderIndex: orderIndex,
@@ -11440,6 +11745,7 @@ class $$ExercisePlansTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String athleteId,
                 required String trainingPlanId,
                 required String exerciseId,
                 required int orderIndex,
@@ -11453,6 +11759,7 @@ class $$ExercisePlansTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 trainingPlanId: trainingPlanId,
                 exerciseId: exerciseId,
                 orderIndex: orderIndex,
@@ -12161,6 +12468,7 @@ typedef $$ExercisePlanVariantsTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String athleteId,
       required String exercisePlanId,
       required String variantId,
       Value<int> rowid,
@@ -12174,6 +12482,7 @@ typedef $$ExercisePlanVariantsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> athleteId,
       Value<String> exercisePlanId,
       Value<String> variantId,
       Value<int> rowid,
@@ -12278,6 +12587,11 @@ class $$ExercisePlanVariantsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$ExercisePlansTableFilterComposer get exercisePlanId {
     final $$ExercisePlansTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -12369,6 +12683,11 @@ class $$ExercisePlanVariantsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ExercisePlansTableOrderingComposer get exercisePlanId {
     final $$ExercisePlansTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -12447,6 +12766,9 @@ class $$ExercisePlanVariantsTableAnnotationComposer
     column: $table.lastSyncedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
 
   $$ExercisePlansTableAnnotationComposer get exercisePlanId {
     final $$ExercisePlansTableAnnotationComposer composer = $composerBuilder(
@@ -12538,6 +12860,7 @@ class $$ExercisePlanVariantsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> athleteId = const Value.absent(),
                 Value<String> exercisePlanId = const Value.absent(),
                 Value<String> variantId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -12549,6 +12872,7 @@ class $$ExercisePlanVariantsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exercisePlanId: exercisePlanId,
                 variantId: variantId,
                 rowid: rowid,
@@ -12562,6 +12886,7 @@ class $$ExercisePlanVariantsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String athleteId,
                 required String exercisePlanId,
                 required String variantId,
                 Value<int> rowid = const Value.absent(),
@@ -12573,6 +12898,7 @@ class $$ExercisePlanVariantsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exercisePlanId: exercisePlanId,
                 variantId: variantId,
                 rowid: rowid,
@@ -13322,6 +13648,7 @@ typedef $$ExerciseSessionsTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String athleteId,
       required String trainingSessionId,
       Value<String?> exercisePlanId,
       required String exerciseId,
@@ -13338,6 +13665,7 @@ typedef $$ExerciseSessionsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> athleteId,
       Value<String> trainingSessionId,
       Value<String?> exercisePlanId,
       Value<String> exerciseId,
@@ -13519,6 +13847,11 @@ class $$ExerciseSessionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get orderIndex => $composableBuilder(
     column: $table.orderIndex,
     builder: (column) => ColumnFilters(column),
@@ -13694,6 +14027,11 @@ class $$ExerciseSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get orderIndex => $composableBuilder(
     column: $table.orderIndex,
     builder: (column) => ColumnOrderings(column),
@@ -13805,6 +14143,9 @@ class $$ExerciseSessionsTableAnnotationComposer
     column: $table.lastSyncedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
 
   GeneratedColumn<int> get orderIndex => $composableBuilder(
     column: $table.orderIndex,
@@ -13979,6 +14320,7 @@ class $$ExerciseSessionsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> athleteId = const Value.absent(),
                 Value<String> trainingSessionId = const Value.absent(),
                 Value<String?> exercisePlanId = const Value.absent(),
                 Value<String> exerciseId = const Value.absent(),
@@ -13993,6 +14335,7 @@ class $$ExerciseSessionsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 trainingSessionId: trainingSessionId,
                 exercisePlanId: exercisePlanId,
                 exerciseId: exerciseId,
@@ -14009,6 +14352,7 @@ class $$ExerciseSessionsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String athleteId,
                 required String trainingSessionId,
                 Value<String?> exercisePlanId = const Value.absent(),
                 required String exerciseId,
@@ -14023,6 +14367,7 @@ class $$ExerciseSessionsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 trainingSessionId: trainingSessionId,
                 exercisePlanId: exercisePlanId,
                 exerciseId: exerciseId,
@@ -14197,6 +14542,7 @@ typedef $$ExerciseSessionVariantsTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String athleteId,
       required String exerciseSessionId,
       required String variantId,
       Value<int> rowid,
@@ -14210,6 +14556,7 @@ typedef $$ExerciseSessionVariantsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> athleteId,
       Value<String> exerciseSessionId,
       Value<String> variantId,
       Value<int> rowid,
@@ -14317,6 +14664,11 @@ class $$ExerciseSessionVariantsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$ExerciseSessionsTableFilterComposer get exerciseSessionId {
     final $$ExerciseSessionsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -14408,6 +14760,11 @@ class $$ExerciseSessionVariantsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ExerciseSessionsTableOrderingComposer get exerciseSessionId {
     final $$ExerciseSessionsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -14486,6 +14843,9 @@ class $$ExerciseSessionVariantsTableAnnotationComposer
     column: $table.lastSyncedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
 
   $$ExerciseSessionsTableAnnotationComposer get exerciseSessionId {
     final $$ExerciseSessionsTableAnnotationComposer composer = $composerBuilder(
@@ -14583,6 +14943,7 @@ class $$ExerciseSessionVariantsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> athleteId = const Value.absent(),
                 Value<String> exerciseSessionId = const Value.absent(),
                 Value<String> variantId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -14594,6 +14955,7 @@ class $$ExerciseSessionVariantsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exerciseSessionId: exerciseSessionId,
                 variantId: variantId,
                 rowid: rowid,
@@ -14607,6 +14969,7 @@ class $$ExerciseSessionVariantsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String athleteId,
                 required String exerciseSessionId,
                 required String variantId,
                 Value<int> rowid = const Value.absent(),
@@ -14618,6 +14981,7 @@ class $$ExerciseSessionVariantsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exerciseSessionId: exerciseSessionId,
                 variantId: variantId,
                 rowid: rowid,
@@ -14716,6 +15080,7 @@ typedef $$SetPlansTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String athleteId,
       required String exercisePlanId,
       Value<int?> setNumber,
       Value<int?> targetReps,
@@ -14733,6 +15098,7 @@ typedef $$SetPlansTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> athleteId,
       Value<String> exercisePlanId,
       Value<int?> setNumber,
       Value<int?> targetReps,
@@ -14825,6 +15191,11 @@ class $$SetPlansTableFilterComposer
 
   ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
     column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14946,6 +15317,11 @@ class $$SetPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get setNumber => $composableBuilder(
     column: $table.setNumber,
     builder: (column) => ColumnOrderings(column),
@@ -15026,6 +15402,9 @@ class $$SetPlansTableAnnotationComposer
     column: $table.lastSyncedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
 
   GeneratedColumn<int> get setNumber =>
       $composableBuilder(column: $table.setNumber, builder: (column) => column);
@@ -15130,6 +15509,7 @@ class $$SetPlansTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> athleteId = const Value.absent(),
                 Value<String> exercisePlanId = const Value.absent(),
                 Value<int?> setNumber = const Value.absent(),
                 Value<int?> targetReps = const Value.absent(),
@@ -15145,6 +15525,7 @@ class $$SetPlansTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exercisePlanId: exercisePlanId,
                 setNumber: setNumber,
                 targetReps: targetReps,
@@ -15162,6 +15543,7 @@ class $$SetPlansTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String athleteId,
                 required String exercisePlanId,
                 Value<int?> setNumber = const Value.absent(),
                 Value<int?> targetReps = const Value.absent(),
@@ -15177,6 +15559,7 @@ class $$SetPlansTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exercisePlanId: exercisePlanId,
                 setNumber: setNumber,
                 targetReps: targetReps,
@@ -15286,6 +15669,7 @@ typedef $$SetSessionsTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      required String athleteId,
       required String exerciseSessionId,
       Value<String?> setPlanId,
       Value<int?> setNumber,
@@ -15304,6 +15688,7 @@ typedef $$SetSessionsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<bool?> isDirty,
       Value<DateTime?> lastSyncedAt,
+      Value<String> athleteId,
       Value<String> exerciseSessionId,
       Value<String?> setPlanId,
       Value<int?> setNumber,
@@ -15401,6 +15786,11 @@ class $$SetSessionsTableFilterComposer
 
   ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
     column: $table.lastSyncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15520,6 +15910,11 @@ class $$SetSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get setNumber => $composableBuilder(
     column: $table.setNumber,
     builder: (column) => ColumnOrderings(column),
@@ -15624,6 +16019,9 @@ class $$SetSessionsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
+
   GeneratedColumn<int> get setNumber =>
       $composableBuilder(column: $table.setNumber, builder: (column) => column);
 
@@ -15725,6 +16123,7 @@ class $$SetSessionsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                Value<String> athleteId = const Value.absent(),
                 Value<String> exerciseSessionId = const Value.absent(),
                 Value<String?> setPlanId = const Value.absent(),
                 Value<int?> setNumber = const Value.absent(),
@@ -15741,6 +16140,7 @@ class $$SetSessionsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exerciseSessionId: exerciseSessionId,
                 setPlanId: setPlanId,
                 setNumber: setNumber,
@@ -15759,6 +16159,7 @@ class $$SetSessionsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<bool?> isDirty = const Value.absent(),
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
+                required String athleteId,
                 required String exerciseSessionId,
                 Value<String?> setPlanId = const Value.absent(),
                 Value<int?> setNumber = const Value.absent(),
@@ -15775,6 +16176,7 @@ class $$SetSessionsTableTableManager
                 deletedAt: deletedAt,
                 isDirty: isDirty,
                 lastSyncedAt: lastSyncedAt,
+                athleteId: athleteId,
                 exerciseSessionId: exerciseSessionId,
                 setPlanId: setPlanId,
                 setNumber: setNumber,
