@@ -55,7 +55,12 @@ class VariantDao extends BaseDao<Variants, VariantData>
 
   @override
   Future<void> upsertFromServer(VariantData entity) async {
-    await into(variants).insertOnConflictUpdate(entity);
+    await into(variants).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

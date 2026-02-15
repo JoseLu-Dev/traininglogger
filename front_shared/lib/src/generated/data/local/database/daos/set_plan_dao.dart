@@ -55,7 +55,12 @@ class SetPlanDao extends BaseDao<SetPlans, SetPlanData>
 
   @override
   Future<void> upsertFromServer(SetPlanData entity) async {
-    await into(setPlans).insertOnConflictUpdate(entity);
+    await into(setPlans).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

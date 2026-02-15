@@ -55,7 +55,12 @@ class ExerciseSessionVariantDao extends BaseDao<ExerciseSessionVariants, Exercis
 
   @override
   Future<void> upsertFromServer(ExerciseSessionVariantData entity) async {
-    await into(exerciseSessionVariants).insertOnConflictUpdate(entity);
+    await into(exerciseSessionVariants).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

@@ -55,7 +55,12 @@ class {{name}}Dao extends BaseDao<{{pluralName}}, {{name}}Data>
 
   @override
   Future<void> upsertFromServer({{name}}Data entity) async {
-    await into({{camelPluralName}}).insertOnConflictUpdate(entity);
+    await into({{camelPluralName}}).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

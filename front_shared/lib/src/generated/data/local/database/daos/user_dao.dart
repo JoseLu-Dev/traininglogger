@@ -55,7 +55,12 @@ class UserDao extends BaseDao<Users, UserData>
 
   @override
   Future<void> upsertFromServer(UserData entity) async {
-    await into(users).insertOnConflictUpdate(entity);
+    await into(users).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

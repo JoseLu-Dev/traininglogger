@@ -55,7 +55,12 @@ class SetSessionDao extends BaseDao<SetSessions, SetSessionData>
 
   @override
   Future<void> upsertFromServer(SetSessionData entity) async {
-    await into(setSessions).insertOnConflictUpdate(entity);
+    await into(setSessions).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

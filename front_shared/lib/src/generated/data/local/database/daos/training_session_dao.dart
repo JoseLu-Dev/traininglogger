@@ -55,7 +55,12 @@ class TrainingSessionDao extends BaseDao<TrainingSessions, TrainingSessionData>
 
   @override
   Future<void> upsertFromServer(TrainingSessionData entity) async {
-    await into(trainingSessions).insertOnConflictUpdate(entity);
+    await into(trainingSessions).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

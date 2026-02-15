@@ -55,7 +55,12 @@ class ExercisePlanVariantDao extends BaseDao<ExercisePlanVariants, ExercisePlanV
 
   @override
   Future<void> upsertFromServer(ExercisePlanVariantData entity) async {
-    await into(exercisePlanVariants).insertOnConflictUpdate(entity);
+    await into(exercisePlanVariants).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override

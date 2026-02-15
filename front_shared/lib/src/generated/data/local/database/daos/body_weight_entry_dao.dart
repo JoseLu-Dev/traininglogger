@@ -55,7 +55,12 @@ class BodyWeightEntryDao extends BaseDao<BodyWeightEntries, BodyWeightEntryData>
 
   @override
   Future<void> upsertFromServer(BodyWeightEntryData entity) async {
-    await into(bodyWeightEntries).insertOnConflictUpdate(entity);
+    await into(bodyWeightEntries).insertOnConflictUpdate(
+      entity.copyWith(
+        lastSyncedAt: Value(DateTime.now()),
+        isDirty: const Value(false),
+      ),
+    );
   }
 
   @override
