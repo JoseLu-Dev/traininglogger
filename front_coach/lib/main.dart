@@ -1,127 +1,349 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
+import 'package:front_shared/front_shared.dart';
 
-void main() {
+// Hardcoded credentials for POC testing
+const _hardcodedEmail = 'coach@example.com';
+const _hardcodedPassword = 'password123';
+
+void main() async {
+  // MarionetteBinding handles WidgetsFlutterBinding initialization
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized();
+  } else {
+    WidgetsFlutterBinding.ensureInitialized();
   }
-  runApp(const MyApp());
+
+  runApp(const ProviderScope(child: CoachApp()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CoachApp extends ConsumerWidget {
+  const CoachApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Initialize auto-sync service
+    ref.watch(autoSyncServiceProvider);
+
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'LiftLogger Coach - POC',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const AuthGate(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+/// Auth gate - automatically attempts login with hardcoded credentials
+class AuthGate extends ConsumerStatefulWidget {
+  const AuthGate({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<AuthGate> createState() => _AuthGateState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+class _AuthGateState extends ConsumerState<AuthGate> {
+  @override
+  void initState() {
+    super.initState();
+    // Auto-login with hardcoded credentials on startup
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _attemptAutoLogin();
     });
+  }
+
+  Future<void> _attemptAutoLogin() async {
+    final authNotifier = ref.read(authNotifierProvider.notifier);
+    await authNotifier.login(_hardcodedEmail, _hardcodedPassword);
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+    final authState = ref.watch(authNotifierProvider);
+
+    return authState.when(
+      initial: () => _buildLoadingScreen('Initializing...'),
+      loading: () => _buildLoadingScreen('Logging in...'),
+      authenticated: (id, email, role, coachId, isOffline) {
+        return HomePage(
+          userId: id,
+          email: email,
+          role: UserRole.COACH,
+          isOffline: isOffline,
+        );
+      },
+      unauthenticated: () => _buildErrorScreen(
+        'Authentication required',
+        'Failed to login with hardcoded credentials',
       ),
+      error: (message) => _buildErrorScreen('Authentication Error', message),
+    );
+  }
+
+  Widget _buildLoadingScreen(String message) {
+    return Scaffold(
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const CircularProgressIndicator(),
+            const SizedBox(height: 24),
+            Text(message, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 8),
+            const Text(
+              'Email: $_hardcodedEmail',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+
+  Widget _buildErrorScreen(String title, String message) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, color: Colors.red, size: 64),
+              const SizedBox(height: 24),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                style: const TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Hardcoded credentials:',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Email: $_hardcodedEmail',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(
+                'Password: $_hardcodedPassword',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => _attemptAutoLogin(),
+                child: const Text('Retry Login'),
+              ),
+            ],
+          ),
+        ),
       ),
+    );
+  }
+}
+
+/// Home page - shown after successful authentication
+class HomePage extends StatelessWidget {
+  final String userId;
+  final String email;
+  final UserRole role;
+  final bool isOffline;
+
+  const HomePage({
+    super.key,
+    required this.userId,
+    required this.email,
+    required this.role,
+    required this.isOffline,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('LiftLogger Coach - POC'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: const [
+          // These are the front_shared UI widgets
+          OfflineIndicator(),
+          SizedBox(width: 8),
+          SyncButton(),
+          SizedBox(width: 8),
+          SyncIndicator(),
+          SizedBox(width: 16),
+        ],
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.fitness_center, size: 80, color: Colors.blue),
+              const SizedBox(height: 24),
+              const Text(
+                'LiftLogger Coach',
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Proof of Concept',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+              const SizedBox(height: 32),
+
+              // Auth info card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green[600],
+                            size: 28,
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Authenticated',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInfoRow('User ID', userId),
+                      _buildInfoRow('Email', email),
+                      _buildInfoRow('Role', role.name),
+                      _buildInfoRow(
+                        'Mode',
+                        isOffline ? 'Offline' : 'Online',
+                        valueColor: isOffline ? Colors.orange : Colors.green,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Widgets info card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Integrated Widgets',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildWidgetInfo(
+                        'OfflineIndicator',
+                        'Shows when app is offline',
+                        Icons.cloud_off,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildWidgetInfo(
+                        'SyncButton',
+                        'Manually trigger sync',
+                        Icons.sync,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildWidgetInfo(
+                        'SyncIndicator',
+                        'Shows sync status and progress',
+                        Icons.info_outline,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+              const Text(
+                'Check the AppBar to see the sync widgets!\nTry tapping the sync button or toggling airplane mode.',
+                style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, {Color? valueColor}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                color: valueColor ?? Colors.black87,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWidgetInfo(String name, String description, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 24, color: Colors.blue),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                description,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
