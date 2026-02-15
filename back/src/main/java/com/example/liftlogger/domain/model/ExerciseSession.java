@@ -20,7 +20,6 @@ public class ExerciseSession {
     private UUID trainingSessionId;
     private UUID exercisePlanId;
     private UUID exerciseId;
-    private UUID variantId;
     private Integer orderIndex;
     private String notes;
     private LocalDateTime createdAt;

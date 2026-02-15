@@ -12,20 +12,20 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "variants")
+@Table(name = "exercise_plan_variants")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class VariantJpaEntity extends BaseJpaEntity {
+public class ExercisePlanVariantJpaEntity extends BaseJpaEntity {
 
-    @Column(name = "coach_id", nullable = false)
-    private UUID coachId;
+    @Column(name = "athlete_id", nullable = false)
+    private UUID athleteId;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "exercise_plan_id", nullable = false)
+    private UUID exercisePlanId;
 
-    @Column
-    private String description;
+    @Column(name = "variant_id", nullable = false)
+    private UUID variantId;
 }

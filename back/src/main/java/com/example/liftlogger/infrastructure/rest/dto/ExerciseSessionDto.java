@@ -11,7 +11,6 @@ public record ExerciseSessionDto(
     UUID trainingSessionId,
     UUID exercisePlanId,
     UUID exerciseId,
-    UUID variantId,
     Integer orderIndex,
     String notes,
 

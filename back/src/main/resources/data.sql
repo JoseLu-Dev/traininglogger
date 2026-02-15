@@ -1,7 +1,9 @@
 -- Clear all tables (child to parent order to avoid FK constraint violations)
 DELETE FROM set_sessions;
+DELETE FROM exercise_session_variants;
 DELETE FROM exercise_sessions;
 DELETE FROM set_plans;
+DELETE FROM exercise_plan_variants;
 DELETE FROM exercise_plans;
 DELETE FROM training_sessions;
 DELETE FROM training_plans;
@@ -30,10 +32,10 @@ ON CONFLICT (id) DO NOTHING;
 -- ===========================
 -- Step 2: Add Variants
 -- ===========================
-INSERT INTO variants (id, coach_id, exercise_id, name, description, created_at, updated_at, created_by, updated_by, deleted_at)
+INSERT INTO variants (id, coach_id, name, description, created_at, updated_at, created_by, updated_by, deleted_at)
 VALUES
-    ('00000000-0000-0000-0002-000000000001', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0001-000000000001', 'Close Grip', 'Bench press variation with narrow hand placement emphasizing triceps', NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL),
-    ('00000000-0000-0000-0002-000000000002', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0001-000000000002', 'Front Squat', 'Squat variation with bar positioned on front deltoids, emphasizing quads', NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL)
+    ('00000000-0000-0000-0002-000000000001', '00000000-0000-0000-0000-000000000001', 'Close Grip', 'Bench press variation with narrow hand placement emphasizing triceps', NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL),
+    ('00000000-0000-0000-0002-000000000002', '00000000-0000-0000-0000-000000000001', 'Front Squat', 'Squat variation with bar positioned on front deltoids, emphasizing quads', NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL)
 ON CONFLICT (id) DO NOTHING;
 
 -- ===========================
@@ -47,10 +49,19 @@ ON CONFLICT (id) DO NOTHING;
 -- ===========================
 -- Step 4: Add Exercise Plans
 -- ===========================
-INSERT INTO exercise_plans (id, athlete_id, training_plan_id, exercise_id, variant_id, order_index, notes, created_at, updated_at, created_by, updated_by, deleted_at)
+INSERT INTO exercise_plans (id, athlete_id, training_plan_id, exercise_id, order_index, notes, created_at, updated_at, created_by, updated_by, deleted_at)
 VALUES
-    ('00000000-0000-0000-0004-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0003-000000000001', '00000000-0000-0000-0001-000000000001', NULL, 0, 'Focus on form', NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL),
-    ('00000000-0000-0000-0004-000000000002', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0003-000000000001', '00000000-0000-0000-0001-000000000002', '00000000-0000-0000-0002-000000000002', 1, NULL, NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL)
+    ('00000000-0000-0000-0004-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0003-000000000001', '00000000-0000-0000-0001-000000000001', 0, 'Focus on form', NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL),
+    ('00000000-0000-0000-0004-000000000002', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0003-000000000001', '00000000-0000-0000-0001-000000000002', 1, NULL, NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL)
+ON CONFLICT (id) DO NOTHING;
+
+-- ===========================
+-- Step 4b: Add Exercise Plan Variants
+-- ===========================
+INSERT INTO exercise_plan_variants (id, athlete_id, exercise_plan_id, variant_id, created_at, updated_at, created_by, updated_by, deleted_at)
+VALUES
+    -- Link Front Squat exercise plan with Front Squat variant
+    ('00000000-0000-0000-000a-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0004-000000000002', '00000000-0000-0000-0002-000000000002', NOW(), NOW(), '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', NULL)
 ON CONFLICT (id) DO NOTHING;
 
 -- ===========================
@@ -77,10 +88,21 @@ ON CONFLICT (id) DO NOTHING;
 -- ===========================
 -- Step 7: Add Exercise Sessions
 -- ===========================
-INSERT INTO exercise_sessions (id, athlete_id, training_session_id, exercise_plan_id, exercise_id, variant_id, order_index, notes, created_at, updated_at, created_by, updated_by, deleted_at)
+INSERT INTO exercise_sessions (id, athlete_id, training_session_id, exercise_plan_id, exercise_id, order_index, notes, created_at, updated_at, created_by, updated_by, deleted_at)
 VALUES
-    ('00000000-0000-0000-0007-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0006-000000000001', '00000000-0000-0000-0004-000000000001', '00000000-0000-0000-0001-000000000001', '00000000-0000-0000-0002-000000000001', 0, NULL, NOW(), NOW(), '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', NULL),
-    ('00000000-0000-0000-0007-000000000002', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0006-000000000001', '00000000-0000-0000-0004-000000000002', '00000000-0000-0000-0001-000000000002', '00000000-0000-0000-0002-000000000002', 1, NULL, NOW(), NOW(), '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', NULL)
+    ('00000000-0000-0000-0007-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0006-000000000001', '00000000-0000-0000-0004-000000000001', '00000000-0000-0000-0001-000000000001', 0, NULL, NOW(), NOW(), '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', NULL),
+    ('00000000-0000-0000-0007-000000000002', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0006-000000000001', '00000000-0000-0000-0004-000000000002', '00000000-0000-0000-0001-000000000002', 1, NULL, NOW(), NOW(), '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', NULL)
+ON CONFLICT (id) DO NOTHING;
+
+-- ===========================
+-- Step 7b: Add Exercise Session Variants
+-- ===========================
+INSERT INTO exercise_session_variants (id, athlete_id, exercise_session_id, variant_id, created_at, updated_at, created_by, updated_by, deleted_at)
+VALUES
+    -- Link first exercise session (Bench Press) with Close Grip variant
+    ('00000000-0000-0000-000b-000000000001', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0007-000000000001', '00000000-0000-0000-0002-000000000001', NOW(), NOW(), '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', NULL),
+    -- Link second exercise session (Front Squat) with Front Squat variant
+    ('00000000-0000-0000-000b-000000000002', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0007-000000000002', '00000000-0000-0000-0002-000000000002', NOW(), NOW(), '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000002', NULL)
 ON CONFLICT (id) DO NOTHING;
 
 -- ===========================

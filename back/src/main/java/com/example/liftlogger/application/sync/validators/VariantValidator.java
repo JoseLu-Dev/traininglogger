@@ -29,7 +29,6 @@ public class VariantValidator extends BaseValidator implements EntityValidator<V
         minLength(variant.getName(), 2, "name");
         maxLength(variant.getName(), 100, "name");
         maxLength(variant.getDescription(), 1000, "description");
-        requiredUUID(variant.getExerciseId(), "exerciseId");
 
         // Ownership validation (only coaches can create variants)
         if (!context.isCoach()) {
@@ -46,10 +45,6 @@ public class VariantValidator extends BaseValidator implements EntityValidator<V
         // Cross-entity validation
         if (variant.getCoachId() != null && !userRepository.existsById(variant.getCoachId())) {
             errors.add(ValidationError.notFound("coachId", "User"));
-        }
-
-        if (variant.getExerciseId() != null && !exerciseRepository.existsById(variant.getExerciseId())) {
-            errors.add(ValidationError.notFound("exerciseId", "Exercise"));
         }
 
         return buildResult();

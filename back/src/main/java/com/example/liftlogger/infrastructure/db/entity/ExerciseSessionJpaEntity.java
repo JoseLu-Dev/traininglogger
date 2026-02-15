@@ -32,9 +32,6 @@ public class ExerciseSessionJpaEntity extends BaseJpaEntity {
     @Column(name = "exercise_id", nullable = false)
     private UUID exerciseId;
 
-    @Column(name = "variant_id")
-    private UUID variantId;
-
     @Column(name = "order_index")
     private Integer orderIndex;
 

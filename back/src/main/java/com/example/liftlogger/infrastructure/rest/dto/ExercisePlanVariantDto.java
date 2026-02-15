@@ -5,13 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record ExercisePlanDto(
+public record ExercisePlanVariantDto(
     UUID id,
     UUID athleteId,
-    UUID trainingPlanId,
-    UUID exerciseId,
-    Integer orderIndex,
-    String notes,
+    UUID exercisePlanId,
+    UUID variantId,
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime createdAt,

@@ -3,7 +3,9 @@ package com.example.liftlogger.application.sync;
 import com.example.liftlogger.application.sync.dto.UserSyncDto;
 import com.example.liftlogger.application.sync.validators.BodyWeightEntryValidator;
 import com.example.liftlogger.application.sync.validators.ExercisePlanValidator;
+import com.example.liftlogger.application.sync.validators.ExercisePlanVariantValidator;
 import com.example.liftlogger.application.sync.validators.ExerciseSessionValidator;
+import com.example.liftlogger.application.sync.validators.ExerciseSessionVariantValidator;
 import com.example.liftlogger.application.sync.validators.ExerciseValidator;
 import com.example.liftlogger.application.sync.validators.SetPlanValidator;
 import com.example.liftlogger.application.sync.validators.SetSessionValidator;
@@ -15,7 +17,9 @@ import com.example.liftlogger.application.sync.validators.VariantValidator;
 import com.example.liftlogger.domain.model.BodyWeightEntry;
 import com.example.liftlogger.domain.model.Exercise;
 import com.example.liftlogger.domain.model.ExercisePlan;
+import com.example.liftlogger.domain.model.ExercisePlanVariant;
 import com.example.liftlogger.domain.model.ExerciseSession;
+import com.example.liftlogger.domain.model.ExerciseSessionVariant;
 import com.example.liftlogger.domain.model.SetPlan;
 import com.example.liftlogger.domain.model.SetSession;
 import com.example.liftlogger.domain.model.TrainingPlan;
@@ -42,9 +46,11 @@ public class EntitySyncConfiguration {
     @Autowired private VariantValidator variantValidator;
     @Autowired private TrainingPlanValidator trainingPlanValidator;
     @Autowired private ExercisePlanValidator exercisePlanValidator;
+    @Autowired private ExercisePlanVariantValidator exercisePlanVariantValidator;
     @Autowired private SetPlanValidator setPlanValidator;
     @Autowired private TrainingSessionValidator trainingSessionValidator;
     @Autowired private ExerciseSessionValidator exerciseSessionValidator;
+    @Autowired private ExerciseSessionVariantValidator exerciseSessionVariantValidator;
     @Autowired private SetSessionValidator setSessionValidator;
     @Autowired private BodyWeightEntryValidator bodyWeightEntryValidator;
 
@@ -52,7 +58,7 @@ public class EntitySyncConfiguration {
     public EntityRegistry entityRegistry() {
         EntityRegistry registry = new EntityRegistry();
 
-        // Register all 10 entity types
+        // Register all 12 entity types
         // Format: .register(EntityClass.class, "ownerField", ownershipType, validator)
         // Note: User uses UserSyncDto to exclude password from sync
 
@@ -61,9 +67,11 @@ public class EntitySyncConfiguration {
         registry.register(Variant.class, "coachId", OwnershipType.COACH, variantValidator);
         registry.register(TrainingPlan.class, "athleteId", OwnershipType.ATHLETE, trainingPlanValidator);
         registry.register(ExercisePlan.class, "athleteId", OwnershipType.ATHLETE, exercisePlanValidator);
+        registry.register(ExercisePlanVariant.class, "athleteId", OwnershipType.ATHLETE, exercisePlanVariantValidator);
         registry.register(SetPlan.class, "athleteId", OwnershipType.ATHLETE, setPlanValidator);
         registry.register(TrainingSession.class, "athleteId", OwnershipType.ATHLETE, trainingSessionValidator);
         registry.register(ExerciseSession.class, "athleteId", OwnershipType.ATHLETE, exerciseSessionValidator);
+        registry.register(ExerciseSessionVariant.class, "athleteId", OwnershipType.ATHLETE, exerciseSessionVariantValidator);
         registry.register(SetSession.class, "athleteId", OwnershipType.ATHLETE, setSessionValidator);
         registry.register(BodyWeightEntry.class, "athleteId", OwnershipType.ATHLETE, bodyWeightEntryValidator);
 

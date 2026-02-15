@@ -17,7 +17,6 @@ import java.util.UUID;
 public class Variant {
     private UUID id;
     private UUID coachId;
-    private UUID exerciseId;
     private String name;
     private String description;
     private LocalDateTime createdAt;

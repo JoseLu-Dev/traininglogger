@@ -94,7 +94,10 @@ public class DtoMapperProvider {
 
         Map<String, ?> beans = applicationContext.getBeansOfType(Object.class);
         for (Map.Entry<String, ?> entry : beans.entrySet()) {
-            if (entry.getKey().toLowerCase().contains(mapperName.toLowerCase())) {
+            String beanName = entry.getKey();
+            // Match exact name or name with "Impl" suffix (MapStruct generated)
+            if (beanName.equalsIgnoreCase(mapperName) ||
+                beanName.equalsIgnoreCase(mapperName + "Impl")) {
                 return entry.getValue();
             }
         }

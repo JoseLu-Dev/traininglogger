@@ -14,13 +14,11 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExercisePlan {
+public class ExercisePlanVariant {
     private UUID id;
     private UUID athleteId;
-    private UUID trainingPlanId;
-    private UUID exerciseId;
-    private Integer orderIndex;
-    private String notes;
+    private UUID exercisePlanId;
+    private UUID variantId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private UUID createdBy;

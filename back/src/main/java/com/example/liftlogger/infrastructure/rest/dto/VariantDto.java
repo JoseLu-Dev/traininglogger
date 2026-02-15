@@ -8,7 +8,6 @@ import java.util.UUID;
 public record VariantDto(
     UUID id,
     UUID coachId,
-    UUID exerciseId,
     String name,
     String description,
 
