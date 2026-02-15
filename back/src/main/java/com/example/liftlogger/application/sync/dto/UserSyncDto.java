@@ -1,9 +1,8 @@
 package com.example.liftlogger.application.sync.dto;
 
 import com.example.liftlogger.domain.model.UserRole;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -17,13 +16,7 @@ public record UserSyncDto(
     String name,
     UserRole role,
     UUID coachId,
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime createdAt,
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime updatedAt,
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    LocalDateTime deletedAt
+    Instant createdAt,
+    Instant updatedAt,
+    Instant deletedAt
 ) {}

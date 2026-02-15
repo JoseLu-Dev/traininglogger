@@ -11,8 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -43,8 +42,8 @@ public class RegisterUserService implements RegisterUserUseCase {
                 .passwordHash(passwordEncoder.encode(rawPassword))
                 .role(role)
                 .coachId(coachId)
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
-                .updatedAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .version(1)
                 .build();
 

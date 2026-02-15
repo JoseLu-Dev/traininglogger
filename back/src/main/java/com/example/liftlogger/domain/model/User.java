@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -19,8 +19,8 @@ public class User {
     private String passwordHash;
     private UserRole role;
     private UUID coachId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private Integer version;
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }
