@@ -57,7 +57,6 @@ public class SyncController {
             @RequestParam(required = false) Instant lastSyncTime
     ) {
         UUID userId = currentUser.getId();
-        log.info("Pull sync requested by user {} for entity types: {}", userId, entityTypes);
 
         PullSyncRequest request = new PullSyncRequest(
                 entityTypes,
@@ -67,8 +66,6 @@ public class SyncController {
         PullSyncResponse response = pullSyncUseCase.pullEntities(userId, request);
 
         PullSyncResponseDto responseDto = syncDtoConverter.toPullResponseDto(response);
-
-        log.info("Pull sync completed for user {}: {} entities", userId, responseDto.totalEntities());
 
         return ResponseEntity.ok(responseDto);
     }
@@ -87,7 +84,6 @@ public class SyncController {
             @Valid @RequestBody PushSyncRequestDto requestDto
     ) {
         UUID userId = currentUser.getId();
-        log.info("Push sync requested by user {} with {} entity types", userId, requestDto.entities().size());
 
         var domainEntities = syncDtoConverter.toDomainEntities(requestDto.entities());
 
@@ -101,9 +97,6 @@ public class SyncController {
                 response.failures(),
                 response.syncTimestamp()
         );
-
-        log.info("Push sync completed for user {}: {} succeeded, {} failed",
-                userId, response.successCount(), response.failureCount());
 
         return ResponseEntity.ok(responseDto);
     }

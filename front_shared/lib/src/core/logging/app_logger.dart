@@ -5,8 +5,8 @@ import 'log_service.dart';
 ///
 /// Log levels:
 /// - ERROR: Unexpected exceptions, system failures, crashes
-/// - WARN: Recoverable issues, deprecated features, validation failures
-/// - INFO: State-changing operations ONLY (create, update, delete data)
+/// - WARN: Recoverable issues, deprecated features
+/// - INFO: State-changing operations ONLY (create, update, delete data), validation failures
 /// - DEBUG: Read operations, detailed flow, navigation events
 class AppLogger {
   final String _className;
@@ -32,6 +32,12 @@ class AppLogger {
   }
 
   void error(String message, [dynamic error, StackTrace? stackTrace]) {
-    _log.then((logger) => logger.e('[$_className] $message', error: error, stackTrace: stackTrace));
+    _log.then(
+      (logger) => logger.e(
+        '[$_className] $message',
+        error: error,
+        stackTrace: stackTrace,
+      ),
+    );
   }
 }

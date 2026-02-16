@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:intl/intl.dart';
+import 'compact_log_printer.dart';
 
 class LogService {
   static Logger? _instance;
@@ -26,14 +27,7 @@ class LogService {
 
     return Logger(
       filter: ProductionFilter(),
-      printer: PrettyPrinter(
-        methodCount: 2,
-        errorMethodCount: 8,
-        lineLength: 120,
-        colors: false, // No colors for file output
-        printEmojis: false,
-        printTime: true,
-      ),
+      printer: CompactLogPrinter(),
       output: MultiOutput([
         ConsoleOutput(),
         _FileOutput(file: logFile),
