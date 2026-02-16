@@ -63,7 +63,7 @@ part 'app_database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase(String appIdentifier) : super(_openConnection(appIdentifier));
 
   // Test constructor for in-memory database
   AppDatabase.withConnection(QueryExecutor connection) : super(connection);
@@ -82,10 +82,10 @@ class AppDatabase extends _$AppDatabase {
       );
 }
 
-LazyDatabase _openConnection() {
+LazyDatabase _openConnection(String appIdentifier) {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'liftlogger', 'liftlogger.db')); //TODO make this parametrizable as has to be different for each front
+    final file = File(p.join(dbFolder.path, 'liftlogger-$appIdentifier', 'liftlogger.db'));
     return NativeDatabase(file);
   });
 }

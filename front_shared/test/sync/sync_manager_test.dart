@@ -10,6 +10,7 @@ import 'package:front_shared/src/sync/strategies/push_strategy.dart';
 import 'package:front_shared/src/sync/core/sync_queue.dart';
 import 'package:front_shared/src/core/network/network_info.dart';
 import 'package:front_shared/src/data/local/secure_storage/secure_storage_service.dart';
+import 'package:front_shared/src/core/logging/log_service.dart';
 
 @GenerateMocks([
   PullStrategy,
@@ -39,6 +40,9 @@ void main() {
       }
       return null;
     });
+
+    // Configure LogService for tests
+    LogService.configure('test');
 
     mockPullStrategy = MockPullStrategy();
     mockPushStrategy = MockPushStrategy();

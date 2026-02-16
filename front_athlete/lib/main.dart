@@ -1,12 +1,28 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:front_shared/front_shared.dart';
 
-void main() {
+void main() async {
+  // MarionetteBinding handles WidgetsFlutterBinding initialization
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized();
+  } else {
+    WidgetsFlutterBinding.ensureInitialized();
   }
-  runApp(const MyApp());
+
+  // Configure shared services for athlete app
+  LogService.configure('athlete');
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        appIdentifierProvider.overrideWithValue('athlete'),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

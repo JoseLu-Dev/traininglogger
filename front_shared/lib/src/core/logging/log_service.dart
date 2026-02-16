@@ -9,8 +9,21 @@ class LogService {
   static Logger? _instance;
   static String? _currentDate;
   static String? _userId;
+  static String? _appIdentifier;
+
+  /// Configure LogService with app identifier ('athlete' or 'coach')
+  /// Must be called in main() before using any logging
+  static void configure(String appIdentifier) {
+    _appIdentifier = appIdentifier;
+  }
 
   static Future<Logger> get instance async {
+    if (_appIdentifier == null) {
+      throw StateError(
+        'LogService not configured. Call LogService.configure("athlete"|"coach") in main() before using logging.'
+      );
+    }
+
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     // Rotate log file if new day
@@ -38,7 +51,7 @@ class LogService {
   static Future<File> _getDailyLogFile() async {
     // Store logs in same directory as database, under /logs subdirectory
     final dbFolder = await getApplicationDocumentsDirectory();
-    final logsDir = Directory(p.join(dbFolder.path, 'liftlogger', 'logs')); //TODO make this parametrizable as has to be different for each front
+    final logsDir = Directory(p.join(dbFolder.path, 'liftlogger-$_appIdentifier', 'logs'));
     await logsDir.create(recursive: true);
 
     final fileName = 'app_${DateFormat('yyyy-MM-dd').format(DateTime.now())}.log';

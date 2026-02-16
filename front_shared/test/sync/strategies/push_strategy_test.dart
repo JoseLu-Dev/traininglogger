@@ -12,6 +12,7 @@ import 'package:front_shared/src/sync/core/sync_state.dart' as sync_state;
 import 'package:front_shared/src/data/remote/dto/sync_dtos.dart' as dto;
 import 'package:front_shared/src/data/local/database/daos/base_dao.dart';
 import 'package:front_shared/src/data/remote/api_client.dart';
+import 'package:front_shared/src/core/logging/log_service.dart';
 
 @GenerateMocks([SyncApiService, NetworkInfo, SyncQueue, EntityRegistry, BaseDao])
 import 'push_strategy_test.mocks.dart';
@@ -34,6 +35,9 @@ void main() {
       }
       return null;
     });
+
+    // Configure LogService for tests
+    LogService.configure('test');
 
     mockSyncApi = MockSyncApiService();
     mockNetworkInfo = MockNetworkInfo();

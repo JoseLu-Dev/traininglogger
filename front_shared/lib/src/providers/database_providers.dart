@@ -3,8 +3,13 @@ import '../sync/core/entity_registry.dart';
 import '../sync/core/entity_registry_setup.dart';
 import '../data/local/database/app_database.dart';
 
+final appIdentifierProvider = Provider<String>((ref) {
+  throw UnimplementedError('appIdentifierProvider must be overridden in ProviderScope');
+});
+
 final databaseProvider = Provider<AppDatabase>((ref) {
-  final db = AppDatabase();
+  final appIdentifier = ref.watch(appIdentifierProvider);
+  final db = AppDatabase(appIdentifier);
   ref.onDispose(() => db.close());
   return db;
 });

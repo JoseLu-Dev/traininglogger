@@ -16,7 +16,17 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
   }
 
-  runApp(const ProviderScope(child: CoachApp()));
+  // Configure shared services for coach app
+  LogService.configure('coach');
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        appIdentifierProvider.overrideWithValue('coach'),
+      ],
+      child: const CoachApp(),
+    ),
+  );
 }
 
 class CoachApp extends ConsumerWidget {

@@ -8,6 +8,7 @@ import 'package:front_shared/src/sync/core/auto_sync_service.dart';
 import 'package:front_shared/src/sync/core/sync_manager.dart';
 import 'package:front_shared/src/sync/core/sync_state.dart';
 import 'package:front_shared/src/core/network/network_info.dart';
+import 'package:front_shared/src/core/logging/log_service.dart';
 
 @GenerateMocks([
   SyncManager,
@@ -32,6 +33,9 @@ void main() {
       }
       return null;
     });
+
+    // Configure LogService for tests
+    LogService.configure('test');
 
     mockSyncManager = MockSyncManager();
     mockNetworkInfo = MockNetworkInfo();

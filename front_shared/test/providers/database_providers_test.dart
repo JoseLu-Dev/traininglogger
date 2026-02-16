@@ -7,7 +7,11 @@ import 'package:front_shared/src/sync/core/entity_registry.dart';
 void main() {
   group('databaseProvider', () {
     test('provides AppDatabase instance', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final db = container.read(databaseProvider);
@@ -17,7 +21,11 @@ void main() {
     });
 
     test('disposes database when container is disposed', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
 
       final db = container.read(databaseProvider);
       expect(db, isNotNull);
@@ -31,7 +39,11 @@ void main() {
     });
 
     test('provides same instance within same container', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final db1 = container.read(databaseProvider);
@@ -41,8 +53,16 @@ void main() {
     });
 
     test('provides different instances for different containers', () {
-      final container1 = ProviderContainer();
-      final container2 = ProviderContainer();
+      final container1 = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
+      final container2 = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(() {
         container1.dispose();
         container2.dispose();
@@ -57,7 +77,11 @@ void main() {
 
   group('entityRegistryProvider', () {
     test('provides EntityRegistry instance', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final registry = container.read(entityRegistryProvider);
@@ -67,7 +91,11 @@ void main() {
     });
 
     test('entity registry depends on database provider', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       // Reading entityRegistryProvider should also initialize databaseProvider
@@ -79,7 +107,11 @@ void main() {
     });
 
     test('provides same instance within same container', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final registry1 = container.read(entityRegistryProvider);
@@ -89,8 +121,16 @@ void main() {
     });
 
     test('provides different instances for different containers', () {
-      final container1 = ProviderContainer();
-      final container2 = ProviderContainer();
+      final container1 = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
+      final container2 = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(() {
         container1.dispose();
         container2.dispose();
@@ -103,7 +143,11 @@ void main() {
     });
 
     test('entity registry is properly initialized with entities', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final registry = container.read(entityRegistryProvider);
@@ -115,7 +159,11 @@ void main() {
     });
 
     test('entity registry can be used independently after initialization', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final registry = container.read(entityRegistryProvider);
@@ -128,7 +176,11 @@ void main() {
 
   group('provider integration', () {
     test('both providers work together correctly', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final db = container.read(databaseProvider);
@@ -143,7 +195,11 @@ void main() {
     test('providers can be overridden for testing', () {
       // This test verifies that we can override providers for testing purposes
       // We don't actually use the mock here, just verify the override mechanism works
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
       addTearDown(container.dispose);
 
       final db = container.read(databaseProvider);
@@ -151,7 +207,11 @@ void main() {
     });
 
     test('container disposal closes database properly', () {
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appIdentifierProvider.overrideWithValue('test'),
+        ],
+      );
 
       // Read the provider to initialize it
       container.read(databaseProvider);

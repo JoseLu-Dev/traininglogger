@@ -7,6 +7,7 @@ import 'package:front_shared/src/sync/core/sync_manager.dart';
 import 'package:front_shared/src/sync/strategies/pull_strategy.dart';
 import 'package:front_shared/src/sync/strategies/push_strategy.dart';
 import 'package:front_shared/src/sync/core/sync_queue.dart';
+import 'package:front_shared/src/core/logging/log_service.dart';
 import '../helpers/database_helper.dart';
 
 /// Helper class for integration tests
@@ -26,6 +27,9 @@ class IntegrationTestHelper {
       }
       return null;
     });
+
+    // Configure LogService for tests
+    LogService.configure('test');
 
     db = createTestDatabase();
     registry = EntityRegistry();

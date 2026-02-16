@@ -5,6 +5,7 @@ import 'package:front_shared/src/sync/core/entity_registry.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:front_shared/src/data/local/database/daos/base_dao.dart';
+import 'package:front_shared/src/core/logging/log_service.dart';
 
 @GenerateMocks([BaseDao])
 import 'entity_registry_test.mocks.dart';
@@ -23,6 +24,9 @@ void main() {
       }
       return null;
     });
+
+    // Configure LogService for tests
+    LogService.configure('test');
 
     registry = EntityRegistry();
   });
