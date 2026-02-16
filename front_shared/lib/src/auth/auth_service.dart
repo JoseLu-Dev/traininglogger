@@ -22,10 +22,12 @@ class AuthService {
   /// If online: authenticates with server and caches credentials
   /// If offline: validates against cached password hash
   Future<AuthState> login(String email, String password) async {
+    _log.info('Login attempt for email: $email');
     try {
       if (await _networkInfo.isConnected) {
         // Online login
         final response = await _authApi.login(email, password);
+        _log.info('Online login successful for user ${response.id} with role ${response.role}');
 
         // Cache credentials for offline use
         await _secureStorage.savePasswordHash(_hashPassword(password));
@@ -44,6 +46,7 @@ class AuthService {
         );
       } else {
         // Offline login - validate against cached hash
+        _log.info('Attempting offline login for email: $email');
         final cachedHash = await _secureStorage.getPasswordHash();
         if (cachedHash == null) {
           return const AuthState.error(
@@ -65,6 +68,7 @@ class AuthService {
           return const AuthState.error('Cached credentials incomplete');
         }
 
+        _log.info('Offline login successful for user $userId');
         return AuthState.authenticated(
           id: userId,
           email: email,  // Use the email provided during offline login
@@ -82,6 +86,7 @@ class AuthService {
 
   /// Logout - clear all cached credentials
   Future<void> logout() async {
+    _log.info('Logout initiated');
     try {
       if (await _networkInfo.isConnected) {
         await _authApi.logout();
@@ -92,6 +97,7 @@ class AuthService {
     } finally {
       // Always clear local credentials
       await _secureStorage.clearAll();
+      _log.info('Logout completed and credentials cleared');
     }
   }
 
@@ -101,6 +107,7 @@ class AuthService {
     final userRole = await _secureStorage.getUserRole();
 
     if (userId == null || userRole == null) {
+      _log.debug('Auth status check: user not authenticated');
       return const AuthState.unauthenticated();
     }
 
@@ -109,6 +116,7 @@ class AuthService {
 
     // Note: email is not cached for offline login, only verified via password hash
     // For a full implementation, consider caching email as well
+    _log.debug('Auth status check: user $userId authenticated (offline: $isOffline)');
     return AuthState.authenticated(
       id: userId,
       email: '', // TODO: Cache email during login for offline status checks
