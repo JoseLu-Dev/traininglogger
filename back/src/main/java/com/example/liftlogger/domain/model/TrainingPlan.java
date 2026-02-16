@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -18,7 +19,7 @@ public class TrainingPlan {
     private UUID id;
     private UUID athleteId;
     private String name;
-    private Instant date;
+    private LocalDate date;
     private Boolean isLocked;
     private Instant createdAt;
     private Instant updatedAt;

@@ -20,7 +20,7 @@ void main() {
       final entity = BodyWeightEntry.create(
         athleteId: 'test-athleteId',
         weight: 70.5,
-        measurementDate: DateTime(2025, 1, 15),
+        measurementDate: 'test-measurementDate',
         notes: 'test-notes',
       );
 
@@ -36,7 +36,7 @@ void main() {
       final entity = BodyWeightEntry.create(
         athleteId: 'test-athleteId',
         weight: 70.5,
-        measurementDate: DateTime(2025, 1, 15),
+        measurementDate: 'test-measurementDate',
         notes: 'test-notes',
       );
 
@@ -55,7 +55,7 @@ void main() {
       final entity = BodyWeightEntry.create(
         athleteId: 'test-athleteId',
         weight: 70.5,
-        measurementDate: DateTime(2025, 1, 15),
+        measurementDate: 'test-measurementDate',
         notes: 'test-notes',
       );
 

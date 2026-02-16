@@ -12,7 +12,7 @@ class TrainingPlan with _$TrainingPlan implements SyncableEntity {
     required String id,
     required String athleteId,
     required String name,
-    required DateTime date,
+    required String date,
     required bool isLocked,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -31,7 +31,7 @@ class TrainingPlan with _$TrainingPlan implements SyncableEntity {
   factory TrainingPlan.create({
     required String athleteId,
     required String name,
-    required DateTime date,
+    required String date,
     bool isLocked = false,
   }) {
     final now = DateTime.now();

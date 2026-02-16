@@ -80,9 +80,9 @@ INSERT INTO training_plans (
     id, athlete_id, name, date, is_locked,
     created_at, updated_at, version, deleted_at, is_dirty, last_synced_at
 ) VALUES
-    ('01000000-0000-0000-0003-000000000001', '00000000-0000-0000-0000-000000000002', 'Upper Body Strength - Week 1', strftime('%s', '2026-02-03'), 0, strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
-    ('01000000-0000-0000-0003-000000000002', '00000000-0000-0000-0000-000000000002', 'Lower Body Hypertrophy - Week 1', strftime('%s', '2026-02-05'), 0, strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
-    ('01000000-0000-0000-0003-000000000003', '00000000-0000-0000-0000-000000000002', 'Push Day', strftime('%s', '2026-02-07'), 0, strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL);
+    ('01000000-0000-0000-0003-000000000001', '00000000-0000-0000-0000-000000000002', 'Upper Body Strength - Week 1', '2026-02-03', 0, strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
+    ('01000000-0000-0000-0003-000000000002', '00000000-0000-0000-0000-000000000002', 'Lower Body Hypertrophy - Week 1', '2026-02-05', 0, strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
+    ('01000000-0000-0000-0003-000000000003', '00000000-0000-0000-0000-000000000002', 'Push Day', '2026-02-07', 0, strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL);
 
 -- ===========================================================================================
 -- EXERCISE PLANS - Linked to training plans
@@ -162,8 +162,8 @@ INSERT INTO training_sessions (
     id, athlete_id, training_plan_id, session_date, notes,
     created_at, updated_at, version, deleted_at, is_dirty, last_synced_at
 ) VALUES
-    ('05000000-0000-0000-0006-000000000001', '00000000-0000-0000-0000-000000000002', '01000000-0000-0000-0003-000000000001', strftime('%s', '2026-02-03 10:00:00'), 'Great upper body session, felt strong!', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
-    ('05000000-0000-0000-0006-000000000002', '00000000-0000-0000-0000-000000000002', '01000000-0000-0000-0003-000000000002', strftime('%s', '2026-02-05 14:30:00'), 'Legs are on fire! Good session', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL);
+    ('05000000-0000-0000-0006-000000000001', '00000000-0000-0000-0000-000000000002', '01000000-0000-0000-0003-000000000001', '2026-02-03', 'Great upper body session, felt strong!', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
+    ('05000000-0000-0000-0006-000000000002', '00000000-0000-0000-0000-000000000002', '01000000-0000-0000-0003-000000000002', '2026-02-05', 'Legs are on fire! Good session', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL);
 
 -- ===========================================================================================
 -- EXERCISE SESSIONS - Exercises performed in training sessions
@@ -233,6 +233,6 @@ INSERT INTO body_weight_entries (
     id, athlete_id, measurement_date, weight, notes,
     created_at, updated_at, version, deleted_at, is_dirty, last_synced_at
 ) VALUES
-    ('09000000-0000-0000-0009-000000000001', '00000000-0000-0000-0000-000000000002', strftime('%s', '2026-02-01 08:00:00'), 82.5, 'Starting weight for bulk', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
-    ('09000000-0000-0000-0009-000000000002', '00000000-0000-0000-0000-000000000002', strftime('%s', '2026-02-08 08:00:00'), 82.8, 'Slight gain', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
-    ('09000000-0000-0000-0009-000000000003', '00000000-0000-0000-0000-000000000002', strftime('%s', '2026-02-15 08:00:00'), 83.1, 'Gaining steadily', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL);
+    ('09000000-0000-0000-0009-000000000001', '00000000-0000-0000-0000-000000000002', '2026-02-01', 82.5, 'Starting weight for bulk', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
+    ('09000000-0000-0000-0009-000000000002', '00000000-0000-0000-0000-000000000002', '2026-02-08', 82.8, 'Slight gain', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL),
+    ('09000000-0000-0000-0009-000000000003', '00000000-0000-0000-0000-000000000002', '2026-02-15', 83.1, 'Gaining steadily', strftime('%s', 'now'), strftime('%s', 'now'), 1, NULL, 1, NULL);

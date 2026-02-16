@@ -12,7 +12,7 @@ class BodyWeightEntry with _$BodyWeightEntry implements SyncableEntity {
     required String id,
     required String athleteId,
     required double weight,
-    required DateTime measurementDate,
+    required String measurementDate,
     String? notes,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -31,7 +31,7 @@ class BodyWeightEntry with _$BodyWeightEntry implements SyncableEntity {
   factory BodyWeightEntry.create({
     required String athleteId,
     required double weight,
-    required DateTime measurementDate,
+    required String measurementDate,
     String? notes,
   }) {
     final now = DateTime.now();

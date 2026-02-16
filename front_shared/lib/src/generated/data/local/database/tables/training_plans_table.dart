@@ -9,6 +9,6 @@ import 'users_table.dart';
 class TrainingPlans extends Table with SyncableTable {
   TextColumn get athleteId => text().references(Users, #id)();
   TextColumn get name => text().withLength(min: 1, max: 255)();
-  DateTimeColumn get date => dateTime()();
+  TextColumn get date => text()();
   BoolColumn get isLocked => boolean().withDefault(const Constant(false))();
 }

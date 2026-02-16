@@ -794,14 +794,13 @@ class $BodyWeightEntriesTable extends BodyWeightEntries
     'measurementDate',
   );
   @override
-  late final GeneratedColumn<DateTime> measurementDate =
-      GeneratedColumn<DateTime>(
-        'measurement_date',
-        aliasedName,
-        false,
-        type: DriftSqlType.dateTime,
-        requiredDuringInsert: true,
-      );
+  late final GeneratedColumn<String> measurementDate = GeneratedColumn<String>(
+    'measurement_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -958,7 +957,7 @@ class $BodyWeightEntriesTable extends BodyWeightEntries
         data['${effectivePrefix}weight'],
       )!,
       measurementDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}measurement_date'],
       )!,
       notes: attachedDatabase.typeMapping.read(
@@ -985,7 +984,7 @@ class BodyWeightEntryData extends DataClass
   final DateTime? lastSyncedAt;
   final String athleteId;
   final double weight;
-  final DateTime measurementDate;
+  final String measurementDate;
   final String? notes;
   const BodyWeightEntryData({
     required this.id,
@@ -1020,7 +1019,7 @@ class BodyWeightEntryData extends DataClass
     }
     map['athlete_id'] = Variable<String>(athleteId);
     map['weight'] = Variable<double>(weight);
-    map['measurement_date'] = Variable<DateTime>(measurementDate);
+    map['measurement_date'] = Variable<String>(measurementDate);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
@@ -1068,7 +1067,7 @@ class BodyWeightEntryData extends DataClass
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       athleteId: serializer.fromJson<String>(json['athleteId']),
       weight: serializer.fromJson<double>(json['weight']),
-      measurementDate: serializer.fromJson<DateTime>(json['measurementDate']),
+      measurementDate: serializer.fromJson<String>(json['measurementDate']),
       notes: serializer.fromJson<String?>(json['notes']),
     );
   }
@@ -1085,7 +1084,7 @@ class BodyWeightEntryData extends DataClass
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'athleteId': serializer.toJson<String>(athleteId),
       'weight': serializer.toJson<double>(weight),
-      'measurementDate': serializer.toJson<DateTime>(measurementDate),
+      'measurementDate': serializer.toJson<String>(measurementDate),
       'notes': serializer.toJson<String?>(notes),
     };
   }
@@ -1100,7 +1099,7 @@ class BodyWeightEntryData extends DataClass
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? athleteId,
     double? weight,
-    DateTime? measurementDate,
+    String? measurementDate,
     Value<String?> notes = const Value.absent(),
   }) => BodyWeightEntryData(
     id: id ?? this.id,
@@ -1194,7 +1193,7 @@ class BodyWeightEntriesCompanion extends UpdateCompanion<BodyWeightEntryData> {
   final Value<DateTime?> lastSyncedAt;
   final Value<String> athleteId;
   final Value<double> weight;
-  final Value<DateTime> measurementDate;
+  final Value<String> measurementDate;
   final Value<String?> notes;
   final Value<int> rowid;
   const BodyWeightEntriesCompanion({
@@ -1221,7 +1220,7 @@ class BodyWeightEntriesCompanion extends UpdateCompanion<BodyWeightEntryData> {
     this.lastSyncedAt = const Value.absent(),
     required String athleteId,
     required double weight,
-    required DateTime measurementDate,
+    required String measurementDate,
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : athleteId = Value(athleteId),
@@ -1237,7 +1236,7 @@ class BodyWeightEntriesCompanion extends UpdateCompanion<BodyWeightEntryData> {
     Expression<DateTime>? lastSyncedAt,
     Expression<String>? athleteId,
     Expression<double>? weight,
-    Expression<DateTime>? measurementDate,
+    Expression<String>? measurementDate,
     Expression<String>? notes,
     Expression<int>? rowid,
   }) {
@@ -1267,7 +1266,7 @@ class BodyWeightEntriesCompanion extends UpdateCompanion<BodyWeightEntryData> {
     Value<DateTime?>? lastSyncedAt,
     Value<String>? athleteId,
     Value<double>? weight,
-    Value<DateTime>? measurementDate,
+    Value<String>? measurementDate,
     Value<String?>? notes,
     Value<int>? rowid,
   }) {
@@ -1318,7 +1317,7 @@ class BodyWeightEntriesCompanion extends UpdateCompanion<BodyWeightEntryData> {
       map['weight'] = Variable<double>(weight.value);
     }
     if (measurementDate.present) {
-      map['measurement_date'] = Variable<DateTime>(measurementDate.value);
+      map['measurement_date'] = Variable<String>(measurementDate.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -1467,11 +1466,11 @@ class $TrainingPlansTable extends TrainingPlans
   );
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
     'date',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _isLockedMeta = const VerificationMeta(
@@ -1633,7 +1632,7 @@ class $TrainingPlansTable extends TrainingPlans
         data['${effectivePrefix}name'],
       )!,
       date: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}date'],
       )!,
       isLocked: attachedDatabase.typeMapping.read(
@@ -1660,7 +1659,7 @@ class TrainingPlanData extends DataClass
   final DateTime? lastSyncedAt;
   final String athleteId;
   final String name;
-  final DateTime date;
+  final String date;
   final bool isLocked;
   const TrainingPlanData({
     required this.id,
@@ -1695,7 +1694,7 @@ class TrainingPlanData extends DataClass
     }
     map['athlete_id'] = Variable<String>(athleteId);
     map['name'] = Variable<String>(name);
-    map['date'] = Variable<DateTime>(date);
+    map['date'] = Variable<String>(date);
     map['is_locked'] = Variable<bool>(isLocked);
     return map;
   }
@@ -1739,7 +1738,7 @@ class TrainingPlanData extends DataClass
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       athleteId: serializer.fromJson<String>(json['athleteId']),
       name: serializer.fromJson<String>(json['name']),
-      date: serializer.fromJson<DateTime>(json['date']),
+      date: serializer.fromJson<String>(json['date']),
       isLocked: serializer.fromJson<bool>(json['isLocked']),
     );
   }
@@ -1756,7 +1755,7 @@ class TrainingPlanData extends DataClass
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'athleteId': serializer.toJson<String>(athleteId),
       'name': serializer.toJson<String>(name),
-      'date': serializer.toJson<DateTime>(date),
+      'date': serializer.toJson<String>(date),
       'isLocked': serializer.toJson<bool>(isLocked),
     };
   }
@@ -1771,7 +1770,7 @@ class TrainingPlanData extends DataClass
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? athleteId,
     String? name,
-    DateTime? date,
+    String? date,
     bool? isLocked,
   }) => TrainingPlanData(
     id: id ?? this.id,
@@ -1863,7 +1862,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlanData> {
   final Value<DateTime?> lastSyncedAt;
   final Value<String> athleteId;
   final Value<String> name;
-  final Value<DateTime> date;
+  final Value<String> date;
   final Value<bool> isLocked;
   final Value<int> rowid;
   const TrainingPlansCompanion({
@@ -1890,7 +1889,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlanData> {
     this.lastSyncedAt = const Value.absent(),
     required String athleteId,
     required String name,
-    required DateTime date,
+    required String date,
     this.isLocked = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : athleteId = Value(athleteId),
@@ -1906,7 +1905,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlanData> {
     Expression<DateTime>? lastSyncedAt,
     Expression<String>? athleteId,
     Expression<String>? name,
-    Expression<DateTime>? date,
+    Expression<String>? date,
     Expression<bool>? isLocked,
     Expression<int>? rowid,
   }) {
@@ -1936,7 +1935,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlanData> {
     Value<DateTime?>? lastSyncedAt,
     Value<String>? athleteId,
     Value<String>? name,
-    Value<DateTime>? date,
+    Value<String>? date,
     Value<bool>? isLocked,
     Value<int>? rowid,
   }) {
@@ -1987,7 +1986,7 @@ class TrainingPlansCompanion extends UpdateCompanion<TrainingPlanData> {
       map['name'] = Variable<String>(name.value);
     }
     if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
+      map['date'] = Variable<String>(date.value);
     }
     if (isLocked.present) {
       map['is_locked'] = Variable<bool>(isLocked.value);
@@ -4798,11 +4797,11 @@ class $TrainingSessionsTable extends TrainingSessions
     'sessionDate',
   );
   @override
-  late final GeneratedColumn<DateTime> sessionDate = GeneratedColumn<DateTime>(
+  late final GeneratedColumn<String> sessionDate = GeneratedColumn<String>(
     'session_date',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
@@ -4964,7 +4963,7 @@ class $TrainingSessionsTable extends TrainingSessions
         data['${effectivePrefix}athlete_id'],
       )!,
       sessionDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
+        DriftSqlType.string,
         data['${effectivePrefix}session_date'],
       )!,
       notes: attachedDatabase.typeMapping.read(
@@ -4991,7 +4990,7 @@ class TrainingSessionData extends DataClass
   final DateTime? lastSyncedAt;
   final String trainingPlanId;
   final String athleteId;
-  final DateTime sessionDate;
+  final String sessionDate;
   final String? notes;
   const TrainingSessionData({
     required this.id,
@@ -5026,7 +5025,7 @@ class TrainingSessionData extends DataClass
     }
     map['training_plan_id'] = Variable<String>(trainingPlanId);
     map['athlete_id'] = Variable<String>(athleteId);
-    map['session_date'] = Variable<DateTime>(sessionDate);
+    map['session_date'] = Variable<String>(sessionDate);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
     }
@@ -5074,7 +5073,7 @@ class TrainingSessionData extends DataClass
       lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
       trainingPlanId: serializer.fromJson<String>(json['trainingPlanId']),
       athleteId: serializer.fromJson<String>(json['athleteId']),
-      sessionDate: serializer.fromJson<DateTime>(json['sessionDate']),
+      sessionDate: serializer.fromJson<String>(json['sessionDate']),
       notes: serializer.fromJson<String?>(json['notes']),
     );
   }
@@ -5091,7 +5090,7 @@ class TrainingSessionData extends DataClass
       'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
       'trainingPlanId': serializer.toJson<String>(trainingPlanId),
       'athleteId': serializer.toJson<String>(athleteId),
-      'sessionDate': serializer.toJson<DateTime>(sessionDate),
+      'sessionDate': serializer.toJson<String>(sessionDate),
       'notes': serializer.toJson<String?>(notes),
     };
   }
@@ -5106,7 +5105,7 @@ class TrainingSessionData extends DataClass
     Value<DateTime?> lastSyncedAt = const Value.absent(),
     String? trainingPlanId,
     String? athleteId,
-    DateTime? sessionDate,
+    String? sessionDate,
     Value<String?> notes = const Value.absent(),
   }) => TrainingSessionData(
     id: id ?? this.id,
@@ -5202,7 +5201,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
   final Value<DateTime?> lastSyncedAt;
   final Value<String> trainingPlanId;
   final Value<String> athleteId;
-  final Value<DateTime> sessionDate;
+  final Value<String> sessionDate;
   final Value<String?> notes;
   final Value<int> rowid;
   const TrainingSessionsCompanion({
@@ -5229,7 +5228,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     this.lastSyncedAt = const Value.absent(),
     required String trainingPlanId,
     required String athleteId,
-    required DateTime sessionDate,
+    required String sessionDate,
     this.notes = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : trainingPlanId = Value(trainingPlanId),
@@ -5245,7 +5244,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     Expression<DateTime>? lastSyncedAt,
     Expression<String>? trainingPlanId,
     Expression<String>? athleteId,
-    Expression<DateTime>? sessionDate,
+    Expression<String>? sessionDate,
     Expression<String>? notes,
     Expression<int>? rowid,
   }) {
@@ -5275,7 +5274,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
     Value<DateTime?>? lastSyncedAt,
     Value<String>? trainingPlanId,
     Value<String>? athleteId,
-    Value<DateTime>? sessionDate,
+    Value<String>? sessionDate,
     Value<String?>? notes,
     Value<int>? rowid,
   }) {
@@ -5326,7 +5325,7 @@ class TrainingSessionsCompanion extends UpdateCompanion<TrainingSessionData> {
       map['athlete_id'] = Variable<String>(athleteId.value);
     }
     if (sessionDate.present) {
-      map['session_date'] = Variable<DateTime>(sessionDate.value);
+      map['session_date'] = Variable<String>(sessionDate.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -9452,7 +9451,7 @@ typedef $$BodyWeightEntriesTableCreateCompanionBuilder =
       Value<DateTime?> lastSyncedAt,
       required String athleteId,
       required double weight,
-      required DateTime measurementDate,
+      required String measurementDate,
       Value<String?> notes,
       Value<int> rowid,
     });
@@ -9467,7 +9466,7 @@ typedef $$BodyWeightEntriesTableUpdateCompanionBuilder =
       Value<DateTime?> lastSyncedAt,
       Value<String> athleteId,
       Value<double> weight,
-      Value<DateTime> measurementDate,
+      Value<String> measurementDate,
       Value<String?> notes,
       Value<int> rowid,
     });
@@ -9553,7 +9552,7 @@ class $$BodyWeightEntriesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get measurementDate => $composableBuilder(
+  ColumnFilters<String> get measurementDate => $composableBuilder(
     column: $table.measurementDate,
     builder: (column) => ColumnFilters(column),
   );
@@ -9636,7 +9635,7 @@ class $$BodyWeightEntriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get measurementDate => $composableBuilder(
+  ColumnOrderings<String> get measurementDate => $composableBuilder(
     column: $table.measurementDate,
     builder: (column) => ColumnOrderings(column),
   );
@@ -9705,7 +9704,7 @@ class $$BodyWeightEntriesTableAnnotationComposer
   GeneratedColumn<double> get weight =>
       $composableBuilder(column: $table.weight, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get measurementDate => $composableBuilder(
+  GeneratedColumn<String> get measurementDate => $composableBuilder(
     column: $table.measurementDate,
     builder: (column) => column,
   );
@@ -9779,7 +9778,7 @@ class $$BodyWeightEntriesTableTableManager
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> athleteId = const Value.absent(),
                 Value<double> weight = const Value.absent(),
-                Value<DateTime> measurementDate = const Value.absent(),
+                Value<String> measurementDate = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BodyWeightEntriesCompanion(
@@ -9807,7 +9806,7 @@ class $$BodyWeightEntriesTableTableManager
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String athleteId,
                 required double weight,
-                required DateTime measurementDate,
+                required String measurementDate,
                 Value<String?> notes = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BodyWeightEntriesCompanion.insert(
@@ -9904,7 +9903,7 @@ typedef $$TrainingPlansTableCreateCompanionBuilder =
       Value<DateTime?> lastSyncedAt,
       required String athleteId,
       required String name,
-      required DateTime date,
+      required String date,
       Value<bool> isLocked,
       Value<int> rowid,
     });
@@ -9919,7 +9918,7 @@ typedef $$TrainingPlansTableUpdateCompanionBuilder =
       Value<DateTime?> lastSyncedAt,
       Value<String> athleteId,
       Value<String> name,
-      Value<DateTime> date,
+      Value<String> date,
       Value<bool> isLocked,
       Value<int> rowid,
     });
@@ -10045,7 +10044,7 @@ class $$TrainingPlansTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get date => $composableBuilder(
+  ColumnFilters<String> get date => $composableBuilder(
     column: $table.date,
     builder: (column) => ColumnFilters(column),
   );
@@ -10178,7 +10177,7 @@ class $$TrainingPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get date => $composableBuilder(
+  ColumnOrderings<String> get date => $composableBuilder(
     column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
@@ -10247,7 +10246,7 @@ class $$TrainingPlansTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get date =>
+  GeneratedColumn<String> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<bool> get isLocked =>
@@ -10368,7 +10367,7 @@ class $$TrainingPlansTableTableManager
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> athleteId = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<DateTime> date = const Value.absent(),
+                Value<String> date = const Value.absent(),
                 Value<bool> isLocked = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrainingPlansCompanion(
@@ -10396,7 +10395,7 @@ class $$TrainingPlansTableTableManager
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String athleteId,
                 required String name,
-                required DateTime date,
+                required String date,
                 Value<bool> isLocked = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrainingPlansCompanion.insert(
@@ -12998,7 +12997,7 @@ typedef $$TrainingSessionsTableCreateCompanionBuilder =
       Value<DateTime?> lastSyncedAt,
       required String trainingPlanId,
       required String athleteId,
-      required DateTime sessionDate,
+      required String sessionDate,
       Value<String?> notes,
       Value<int> rowid,
     });
@@ -13013,7 +13012,7 @@ typedef $$TrainingSessionsTableUpdateCompanionBuilder =
       Value<DateTime?> lastSyncedAt,
       Value<String> trainingPlanId,
       Value<String> athleteId,
-      Value<DateTime> sessionDate,
+      Value<String> sessionDate,
       Value<String?> notes,
       Value<int> rowid,
     });
@@ -13139,7 +13138,7 @@ class $$TrainingSessionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get sessionDate => $composableBuilder(
+  ColumnFilters<String> get sessionDate => $composableBuilder(
     column: $table.sessionDate,
     builder: (column) => ColumnFilters(column),
   );
@@ -13265,7 +13264,7 @@ class $$TrainingSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get sessionDate => $composableBuilder(
+  ColumnOrderings<String> get sessionDate => $composableBuilder(
     column: $table.sessionDate,
     builder: (column) => ColumnOrderings(column),
   );
@@ -13354,7 +13353,7 @@ class $$TrainingSessionsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<DateTime> get sessionDate => $composableBuilder(
+  GeneratedColumn<String> get sessionDate => $composableBuilder(
     column: $table.sessionDate,
     builder: (column) => column,
   );
@@ -13477,7 +13476,7 @@ class $$TrainingSessionsTableTableManager
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 Value<String> trainingPlanId = const Value.absent(),
                 Value<String> athleteId = const Value.absent(),
-                Value<DateTime> sessionDate = const Value.absent(),
+                Value<String> sessionDate = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrainingSessionsCompanion(
@@ -13505,7 +13504,7 @@ class $$TrainingSessionsTableTableManager
                 Value<DateTime?> lastSyncedAt = const Value.absent(),
                 required String trainingPlanId,
                 required String athleteId,
-                required DateTime sessionDate,
+                required String sessionDate,
                 Value<String?> notes = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrainingSessionsCompanion.insert(

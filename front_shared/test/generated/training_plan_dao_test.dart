@@ -20,7 +20,7 @@ void main() {
       final entity = TrainingPlan.create(
         athleteId: 'test-athleteId',
         name: 'test-name',
-        date: DateTime(2025, 1, 15),
+        date: 'test-date',
         isLocked: true,
       );
 
@@ -36,7 +36,7 @@ void main() {
       final entity = TrainingPlan.create(
         athleteId: 'test-athleteId',
         name: 'test-name',
-        date: DateTime(2025, 1, 15),
+        date: 'test-date',
         isLocked: true,
       );
 
@@ -55,7 +55,7 @@ void main() {
       final entity = TrainingPlan.create(
         athleteId: 'test-athleteId',
         name: 'test-name',
-        date: DateTime(2025, 1, 15),
+        date: 'test-date',
         isLocked: true,
       );
 

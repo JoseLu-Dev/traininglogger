@@ -12,7 +12,7 @@ class TrainingSession with _$TrainingSession implements SyncableEntity {
     required String id,
     required String trainingPlanId,
     required String athleteId,
-    required DateTime sessionDate,
+    required String sessionDate,
     String? notes,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -31,7 +31,7 @@ class TrainingSession with _$TrainingSession implements SyncableEntity {
   factory TrainingSession.create({
     required String trainingPlanId,
     required String athleteId,
-    required DateTime sessionDate,
+    required String sessionDate,
     String? notes,
   }) {
     final now = DateTime.now();

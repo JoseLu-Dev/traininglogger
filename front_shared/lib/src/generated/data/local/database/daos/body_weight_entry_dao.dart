@@ -81,7 +81,7 @@ class BodyWeightEntryDao extends BaseDao<BodyWeightEntries, BodyWeightEntryData>
         .get();
   }
 
-  Future<List<BodyWeightEntryData>> findByAthleteBetweenDates(String athleteId, DateTime start, DateTime end) {
+  Future<List<BodyWeightEntryData>> findByAthleteBetweenDates(String athleteId, String start, String end) {
     return (select(table)
           ..where((t) => t.athleteId.equals(athleteId) & t.measurementDate.isBiggerOrEqualValue(start) & t.measurementDate.isSmallerOrEqualValue(end) & t.deletedAt.isNull())
           ..orderBy([(t) => OrderingTerm.asc(t.measurementDate)]))

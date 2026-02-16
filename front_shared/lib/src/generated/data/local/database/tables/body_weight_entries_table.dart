@@ -9,6 +9,6 @@ import 'users_table.dart';
 class BodyWeightEntries extends Table with SyncableTable {
   TextColumn get athleteId => text().references(Users, #id)();
   RealColumn get weight => real()();
-  DateTimeColumn get measurementDate => dateTime()();
+  TextColumn get measurementDate => text()();
   TextColumn get notes => text().nullable()();
 }

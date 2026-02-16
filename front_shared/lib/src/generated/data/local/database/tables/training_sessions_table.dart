@@ -10,6 +10,6 @@ import 'users_table.dart';
 class TrainingSessions extends Table with SyncableTable {
   TextColumn get trainingPlanId => text().references(TrainingPlans, #id)();
   TextColumn get athleteId => text().references(Users, #id)();
-  DateTimeColumn get sessionDate => dateTime()();
+  TextColumn get sessionDate => text()();
   TextColumn get notes => text().nullable()();
 }

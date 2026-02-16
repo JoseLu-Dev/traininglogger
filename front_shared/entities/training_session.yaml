@@ -19,8 +19,8 @@ fields:
       column: id
 
   - name: sessionDate
-    type: DateTime
-    tableType: dateTime()
+    type: String
+    tableType: text()
 
   - name: notes
     type: String

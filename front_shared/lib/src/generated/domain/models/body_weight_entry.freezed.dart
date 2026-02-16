@@ -24,7 +24,7 @@ mixin _$BodyWeightEntry {
   String get id => throw _privateConstructorUsedError;
   String get athleteId => throw _privateConstructorUsedError;
   double get weight => throw _privateConstructorUsedError;
-  DateTime get measurementDate => throw _privateConstructorUsedError;
+  String get measurementDate => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -54,7 +54,7 @@ abstract class $BodyWeightEntryCopyWith<$Res> {
     String id,
     String athleteId,
     double weight,
-    DateTime measurementDate,
+    String measurementDate,
     String? notes,
     DateTime createdAt,
     DateTime updatedAt,
@@ -109,7 +109,7 @@ class _$BodyWeightEntryCopyWithImpl<$Res, $Val extends BodyWeightEntry>
             measurementDate: null == measurementDate
                 ? _value.measurementDate
                 : measurementDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as String,
             notes: freezed == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
@@ -157,7 +157,7 @@ abstract class _$$BodyWeightEntryImplCopyWith<$Res>
     String id,
     String athleteId,
     double weight,
-    DateTime measurementDate,
+    String measurementDate,
     String? notes,
     DateTime createdAt,
     DateTime updatedAt,
@@ -211,7 +211,7 @@ class __$$BodyWeightEntryImplCopyWithImpl<$Res>
         measurementDate: null == measurementDate
             ? _value.measurementDate
             : measurementDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as String,
         notes: freezed == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
@@ -272,7 +272,7 @@ class _$BodyWeightEntryImpl extends _BodyWeightEntry {
   @override
   final double weight;
   @override
-  final DateTime measurementDate;
+  final String measurementDate;
   @override
   final String? notes;
   @override
@@ -358,7 +358,7 @@ abstract class _BodyWeightEntry extends BodyWeightEntry {
     required final String id,
     required final String athleteId,
     required final double weight,
-    required final DateTime measurementDate,
+    required final String measurementDate,
     final String? notes,
     required final DateTime createdAt,
     required final DateTime updatedAt,
@@ -379,7 +379,7 @@ abstract class _BodyWeightEntry extends BodyWeightEntry {
   @override
   double get weight;
   @override
-  DateTime get measurementDate;
+  String get measurementDate;
   @override
   String? get notes;
   @override

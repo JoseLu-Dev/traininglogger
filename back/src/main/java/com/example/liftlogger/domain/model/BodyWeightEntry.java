@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -17,7 +18,7 @@ import java.util.UUID;
 public class BodyWeightEntry {
     private UUID id;
     private UUID athleteId;
-    private Instant measurementDate;
+    private LocalDate measurementDate;
     private Double weight;
     private String notes;
     private Instant createdAt;

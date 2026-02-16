@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -25,7 +26,7 @@ public class BodyWeightEntryJpaEntity extends BaseJpaEntity {
     private UUID athleteId;
 
     @Column(name = "measurement_date", nullable = false)
-    private Instant measurementDate;
+    private LocalDate measurementDate;
 
     @Column(nullable = false)
     private Double weight;

@@ -16,8 +16,8 @@ fields:
     tableType: real()
 
   - name: measurementDate
-    type: DateTime
-    tableType: dateTime()
+    type: String
+    tableType: text()
 
   - name: notes
     type: String
@@ -46,9 +46,9 @@ queries:
       - name: athleteId
         type: String
       - name: start
-        type: DateTime
+        type: String
       - name: end
-        type: DateTime
+        type: String
     returns: List<BodyWeightEntryData>
     where: t.athleteId.equals(athleteId) & t.measurementDate.isBiggerOrEqualValue(start) & t.measurementDate.isSmallerOrEqualValue(end) & t.deletedAt.isNull()
     orderBy: OrderingTerm.asc(t.measurementDate)

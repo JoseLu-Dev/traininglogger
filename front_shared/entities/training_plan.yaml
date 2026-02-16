@@ -17,8 +17,8 @@ fields:
     constraints: ".withLength(min: 1, max: 255)"
 
   - name: date
-    type: DateTime
-    tableType: dateTime()
+    type: String
+    tableType: text()
 
   - name: isLocked
     type: bool
@@ -47,9 +47,9 @@ queries:
       - name: athleteId
         type: String
       - name: start
-        type: DateTime
+        type: String
       - name: end
-        type: DateTime
+        type: String
     returns: List<TrainingPlanData>
     where: t.athleteId.equals(athleteId) & t.date.isBiggerOrEqualValue(start) & t.date.isSmallerOrEqualValue(end) & t.deletedAt.isNull()
     orderBy: OrderingTerm.desc(t.date)

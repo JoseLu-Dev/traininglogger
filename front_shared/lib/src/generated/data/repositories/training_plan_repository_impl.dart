@@ -26,7 +26,7 @@ class TrainingPlanRepositoryImpl implements TrainingPlanRepository {
   }
 
   @override
-  Future<List<TrainingPlan>> findByAthleteBetweenDates(String athleteId, DateTime start, DateTime end) async {
+  Future<List<TrainingPlan>> findByAthleteBetweenDates(String athleteId, String start, String end) async {
     final dataList = await _dao.findByAthleteBetweenDates(athleteId, start, end);
     return dataList.map(_dao.toDomain).toList();
   }

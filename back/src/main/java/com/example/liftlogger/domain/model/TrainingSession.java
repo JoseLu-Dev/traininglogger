@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -18,7 +19,7 @@ public class TrainingSession {
     private UUID id;
     private UUID athleteId;
     private UUID trainingPlanId;
-    private Instant sessionDate;
+    private LocalDate sessionDate;
     private String notes;
     private Instant createdAt;
     private Instant updatedAt;

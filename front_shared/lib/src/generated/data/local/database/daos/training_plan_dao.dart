@@ -81,7 +81,7 @@ class TrainingPlanDao extends BaseDao<TrainingPlans, TrainingPlanData>
         .get();
   }
 
-  Future<List<TrainingPlanData>> findByAthleteBetweenDates(String athleteId, DateTime start, DateTime end) {
+  Future<List<TrainingPlanData>> findByAthleteBetweenDates(String athleteId, String start, String end) {
     return (select(table)
           ..where((t) => t.athleteId.equals(athleteId) & t.date.isBiggerOrEqualValue(start) & t.date.isSmallerOrEqualValue(end) & t.deletedAt.isNull())
           ..orderBy([(t) => OrderingTerm.desc(t.date)]))

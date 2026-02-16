@@ -24,7 +24,7 @@ mixin _$TrainingSession {
   String get id => throw _privateConstructorUsedError;
   String get trainingPlanId => throw _privateConstructorUsedError;
   String get athleteId => throw _privateConstructorUsedError;
-  DateTime get sessionDate => throw _privateConstructorUsedError;
+  String get sessionDate => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -54,7 +54,7 @@ abstract class $TrainingSessionCopyWith<$Res> {
     String id,
     String trainingPlanId,
     String athleteId,
-    DateTime sessionDate,
+    String sessionDate,
     String? notes,
     DateTime createdAt,
     DateTime updatedAt,
@@ -109,7 +109,7 @@ class _$TrainingSessionCopyWithImpl<$Res, $Val extends TrainingSession>
             sessionDate: null == sessionDate
                 ? _value.sessionDate
                 : sessionDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as String,
             notes: freezed == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
@@ -157,7 +157,7 @@ abstract class _$$TrainingSessionImplCopyWith<$Res>
     String id,
     String trainingPlanId,
     String athleteId,
-    DateTime sessionDate,
+    String sessionDate,
     String? notes,
     DateTime createdAt,
     DateTime updatedAt,
@@ -211,7 +211,7 @@ class __$$TrainingSessionImplCopyWithImpl<$Res>
         sessionDate: null == sessionDate
             ? _value.sessionDate
             : sessionDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as String,
         notes: freezed == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
@@ -272,7 +272,7 @@ class _$TrainingSessionImpl extends _TrainingSession {
   @override
   final String athleteId;
   @override
-  final DateTime sessionDate;
+  final String sessionDate;
   @override
   final String? notes;
   @override
@@ -359,7 +359,7 @@ abstract class _TrainingSession extends TrainingSession {
     required final String id,
     required final String trainingPlanId,
     required final String athleteId,
-    required final DateTime sessionDate,
+    required final String sessionDate,
     final String? notes,
     required final DateTime createdAt,
     required final DateTime updatedAt,
@@ -380,7 +380,7 @@ abstract class _TrainingSession extends TrainingSession {
   @override
   String get athleteId;
   @override
-  DateTime get sessionDate;
+  String get sessionDate;
   @override
   String? get notes;
   @override

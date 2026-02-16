@@ -24,7 +24,7 @@ mixin _$TrainingPlan {
   String get id => throw _privateConstructorUsedError;
   String get athleteId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  DateTime get date => throw _privateConstructorUsedError;
+  String get date => throw _privateConstructorUsedError;
   bool get isLocked => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -54,7 +54,7 @@ abstract class $TrainingPlanCopyWith<$Res> {
     String id,
     String athleteId,
     String name,
-    DateTime date,
+    String date,
     bool isLocked,
     DateTime createdAt,
     DateTime updatedAt,
@@ -109,7 +109,7 @@ class _$TrainingPlanCopyWithImpl<$Res, $Val extends TrainingPlan>
             date: null == date
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as String,
             isLocked: null == isLocked
                 ? _value.isLocked
                 : isLocked // ignore: cast_nullable_to_non_nullable
@@ -157,7 +157,7 @@ abstract class _$$TrainingPlanImplCopyWith<$Res>
     String id,
     String athleteId,
     String name,
-    DateTime date,
+    String date,
     bool isLocked,
     DateTime createdAt,
     DateTime updatedAt,
@@ -211,7 +211,7 @@ class __$$TrainingPlanImplCopyWithImpl<$Res>
         date: null == date
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as String,
         isLocked: null == isLocked
             ? _value.isLocked
             : isLocked // ignore: cast_nullable_to_non_nullable
@@ -272,7 +272,7 @@ class _$TrainingPlanImpl extends _TrainingPlan {
   @override
   final String name;
   @override
-  final DateTime date;
+  final String date;
   @override
   final bool isLocked;
   @override
@@ -355,7 +355,7 @@ abstract class _TrainingPlan extends TrainingPlan {
     required final String id,
     required final String athleteId,
     required final String name,
-    required final DateTime date,
+    required final String date,
     required final bool isLocked,
     required final DateTime createdAt,
     required final DateTime updatedAt,
@@ -376,7 +376,7 @@ abstract class _TrainingPlan extends TrainingPlan {
   @override
   String get name;
   @override
-  DateTime get date;
+  String get date;
   @override
   bool get isLocked;
   @override
