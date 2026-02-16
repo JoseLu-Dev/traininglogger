@@ -5,7 +5,7 @@ void main() {
   group('ApiConstants', () {
     group('Base Configuration', () {
       test('should have correct base URL', () {
-        expect(ApiConstants.baseUrl, 'http://localhost:3000');
+        expect(ApiConstants.baseUrl, 'http://localhost:8080');
       });
 
       test('should have valid timeout durations', () {
@@ -134,7 +134,7 @@ void main() {
       test('should be able to construct full URLs', () {
         final fullLoginUrl =
             '${ApiConstants.baseUrl}${ApiConstants.loginPath}';
-        expect(fullLoginUrl, 'http://localhost:3000/api/v1/auth/login');
+        expect(fullLoginUrl, 'http://localhost:8080/api/v1/auth/login');
       });
 
       test('should be able to construct all auth URLs', () {
@@ -143,17 +143,17 @@ void main() {
         final registerUrl =
             '${ApiConstants.baseUrl}${ApiConstants.registerPath}';
 
-        expect(loginUrl, 'http://localhost:3000/api/v1/auth/login');
-        expect(logoutUrl, 'http://localhost:3000/api/v1/auth/logout');
-        expect(registerUrl, 'http://localhost:3000/api/v1/auth/register');
+        expect(loginUrl, 'http://localhost:8080/api/v1/auth/login');
+        expect(logoutUrl, 'http://localhost:8080/api/v1/auth/logout');
+        expect(registerUrl, 'http://localhost:8080/api/v1/auth/register');
       });
 
       test('should be able to construct all sync URLs', () {
         final pullUrl = '${ApiConstants.baseUrl}${ApiConstants.pullPath}';
         final pushUrl = '${ApiConstants.baseUrl}${ApiConstants.pushPath}';
 
-        expect(pullUrl, 'http://localhost:3000/api/v1/sync/pull');
-        expect(pushUrl, 'http://localhost:3000/api/v1/sync/push');
+        expect(pullUrl, 'http://localhost:8080/api/v1/sync/pull');
+        expect(pushUrl, 'http://localhost:8080/api/v1/sync/push');
       });
     });
   });

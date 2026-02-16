@@ -10,6 +10,7 @@ void main() {
   late EntityRegistry registry;
 
   setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
     db = createTestDatabase();
     registry = EntityRegistry();
     setupEntityRegistry(registry, db);
@@ -33,7 +34,7 @@ void main() {
       final entity = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Test Plan',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
       );
 
       await db.trainingPlanDao.create(entity);
@@ -77,12 +78,12 @@ void main() {
       final entity1 = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Plan 1',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
       );
       final entity2 = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Plan 2',
-        date: DateTime(2025, 1, 16),
+        date: DateTime(2025, 1, 16).toIso8601String(),
       );
 
       await db.trainingPlanDao.create(entity1);
@@ -100,7 +101,7 @@ void main() {
       final entity = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Test Plan',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
       );
 
       final dao = registry.getDao('TrainingPlan');
@@ -122,7 +123,7 @@ void main() {
       final entity = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Test Plan',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
         isLocked: true,
       );
 
@@ -162,17 +163,17 @@ void main() {
       final entity1 = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Plan 1',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
       );
       final entity2 = TrainingPlan.create(
         athleteId: 'athlete-2',
         name: 'Plan 2',
-        date: DateTime(2025, 1, 16),
+        date: DateTime(2025, 1, 16).toIso8601String(),
       );
       final entity3 = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Plan 3',
-        date: DateTime(2025, 1, 17),
+        date: DateTime(2025, 1, 17).toIso8601String(),
       );
 
       await db.trainingPlanDao.create(entity1);

@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:front_shared/src/sync/core/entity_registry.dart';
 import 'package:mockito/mockito.dart';
@@ -11,6 +13,17 @@ void main() {
   late EntityRegistry registry;
 
   setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    // Mock path_provider for LogService
+    const MethodChannel('plugins.flutter.io/path_provider')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getApplicationDocumentsDirectory') {
+        return Directory.systemTemp.path;
+      }
+      return null;
+    });
+
     registry = EntityRegistry();
   });
 

@@ -4,7 +4,7 @@ import 'package:front_shared/src/core/api_constants.dart';
 void main() {
   group('ApiConstants', () {
     test('should have correct base URL', () {
-      expect(ApiConstants.baseUrl, 'http://localhost:3000');
+      expect(ApiConstants.baseUrl, 'http://localhost:8080');
     });
 
     test('should have correct timeout durations', () {

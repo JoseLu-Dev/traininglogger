@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:front_shared/src/sync/core/entity_registry.dart';
 import 'package:front_shared/src/sync/core/entity_registry_setup.dart';
 import 'package:front_shared/src/sync/core/sync_manager.dart';
@@ -13,6 +16,17 @@ class IntegrationTestHelper {
   late SyncQueue syncQueue;
 
   Future<void> setUp() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    // Mock path_provider for LogService
+    const MethodChannel('plugins.flutter.io/path_provider')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getApplicationDocumentsDirectory') {
+        return Directory.systemTemp.path;
+      }
+      return null;
+    });
+
     db = createTestDatabase();
     registry = EntityRegistry();
     setupEntityRegistry(registry, db);

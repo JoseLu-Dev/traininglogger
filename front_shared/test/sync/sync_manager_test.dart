@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -27,11 +29,25 @@ void main() {
   late MockSecureStorageService mockStorage;
 
   setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    // Mock path_provider for LogService
+    const MethodChannel('plugins.flutter.io/path_provider')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getApplicationDocumentsDirectory') {
+        return Directory.systemTemp.path;
+      }
+      return null;
+    });
+
     mockPullStrategy = MockPullStrategy();
     mockPushStrategy = MockPushStrategy();
     mockSyncQueue = MockSyncQueue();
     mockNetworkInfo = MockNetworkInfo();
     mockStorage = MockSecureStorageService();
+
+    // Default stub for getLastSyncTime (can be overridden in individual tests)
+    when(mockStorage.getLastSyncTime()).thenAnswer((_) async => null);
 
     syncManager = SyncManager(
       mockPullStrategy,

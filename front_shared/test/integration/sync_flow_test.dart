@@ -27,6 +27,8 @@ void main() {
 
     when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
     when(mockStorage.getUserId()).thenAnswer((_) async => 'athlete-1');
+    when(mockStorage.getLastSyncTime()).thenAnswer((_) async => null);
+    when(mockStorage.saveLastSyncTime(any)).thenAnswer((_) async => {});
   });
 
   tearDown(() async {
@@ -39,7 +41,7 @@ void main() {
       final plan = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Test Plan',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
       );
 
       await helper.db.trainingPlanDao.create(plan);
@@ -148,7 +150,7 @@ void main() {
       final localPlan = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Local Version',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
       );
       final fixedId = 'conflict-plan-1';
       final planWithId = localPlan.copyWith(id: fixedId);
@@ -210,12 +212,12 @@ void main() {
       final plan1 = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Plan 1',
-        date: DateTime(2025, 1, 15),
+        date: DateTime(2025, 1, 15).toIso8601String(),
       );
       final plan2 = TrainingPlan.create(
         athleteId: 'athlete-1',
         name: 'Plan 2',
-        date: DateTime(2025, 1, 16),
+        date: DateTime(2025, 1, 16).toIso8601String(),
       );
 
       await helper.db.trainingPlanDao.create(plan1);

@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -22,6 +24,17 @@ void main() {
   late MockEntityRegistry mockRegistry;
 
   setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    // Mock path_provider for LogService
+    const MethodChannel('plugins.flutter.io/path_provider')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getApplicationDocumentsDirectory') {
+        return Directory.systemTemp.path;
+      }
+      return null;
+    });
+
     mockSyncApi = MockSyncApiService();
     mockNetworkInfo = MockNetworkInfo();
     mockSyncQueue = MockSyncQueue();

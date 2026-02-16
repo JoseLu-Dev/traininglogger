@@ -1,7 +1,22 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:front_shared/src/sync/core/sync_queue.dart';
 
 void main() {
+  setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    // Mock path_provider for LogService
+    const MethodChannel('plugins.flutter.io/path_provider')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'getApplicationDocumentsDirectory') {
+        return Directory.systemTemp.path;
+      }
+      return null;
+    });
+  });
+
   group('QueuedSync', () {
     test('creates with all required fields', () {
       final now = DateTime.now();
@@ -404,23 +419,24 @@ void main() {
     });
 
     test('remove removes item by id', () {
+      final pastTime = DateTime.now().subtract(const Duration(seconds: 1));
       final sync1 = QueuedSync(
         id: 'sync-1',
         entityType: 'Exercise',
         entityId: 'ex-1',
         data: {},
-        queuedAt: DateTime.now(),
+        queuedAt: pastTime,
         retryCount: 0,
-        nextRetryAt: DateTime.now(),
+        nextRetryAt: pastTime,
       );
       final sync2 = QueuedSync(
         id: 'sync-2',
         entityType: 'Exercise',
         entityId: 'ex-2',
         data: {},
-        queuedAt: DateTime.now(),
+        queuedAt: pastTime,
         retryCount: 0,
-        nextRetryAt: DateTime.now(),
+        nextRetryAt: pastTime,
       );
 
       queue.enqueue(sync1);

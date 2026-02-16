@@ -22,7 +22,7 @@ void main() {
         final plan = TrainingPlan.create(
           athleteId: 'athlete-1',
           name: 'Plan $i',
-          date: DateTime(2025, 1, i % 28 + 1),
+          date: DateTime(2025, 1, i % 28 + 1).toIso8601String(),
         );
         await helper.db.trainingPlanDao.create(plan);
       }
@@ -39,7 +39,7 @@ void main() {
         final plan = TrainingPlan.create(
           athleteId: 'athlete-1',
           name: 'Plan $i',
-          date: DateTime(2025, 1, i % 28 + 1),
+          date: DateTime(2025, 1, i % 28 + 1).toIso8601String(),
         );
         await helper.db.trainingPlanDao.create(plan);
       }
@@ -61,7 +61,7 @@ void main() {
         final plan = TrainingPlan.create(
           athleteId: i % 5 == 0 ? 'athlete-1' : 'athlete-2',
           name: 'Plan $i',
-          date: DateTime(2025, 1, i % 28 + 1),
+          date: DateTime(2025, 1, i % 28 + 1).toIso8601String(),
         );
         await helper.db.trainingPlanDao.create(plan);
       }
@@ -70,8 +70,8 @@ void main() {
 
       final results = await helper.db.trainingPlanDao.findByAthleteBetweenDates(
         'athlete-1',
-        DateTime(2025, 1, 1),
-        DateTime(2025, 1, 31),
+        DateTime(2025, 1, 1).toIso8601String(),
+        DateTime(2025, 1, 31).toIso8601String(),
       );
 
       stopwatch.stop();
