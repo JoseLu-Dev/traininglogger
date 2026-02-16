@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../shared/widgets/adaptive_scaffold.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 
 class AthletesScreen extends StatelessWidget {
@@ -7,12 +8,10 @@ class AthletesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Athletes'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      drawer: const AppDrawer(),
+    return AdaptiveScaffold(
+      title: const Text('Athletes'),
+      appBarBackgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      drawerContent: const AppDrawerContent(),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

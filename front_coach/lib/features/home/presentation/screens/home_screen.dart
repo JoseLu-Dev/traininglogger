@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:front_shared/front_shared.dart';
 
+import '../../../../shared/widgets/adaptive_scaffold.dart';
 import '../../../../shared/widgets/app_drawer.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -9,18 +10,16 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('LiftLogger Coach'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: const [
-          OfflineIndicator(),
-          SizedBox(width: 8),
-          SyncButton(),
-          SizedBox(width: 8),
-        ],
-      ),
-      drawer: const AppDrawer(),
+    return AdaptiveScaffold(
+      title: const Text('LiftLogger Coach'),
+      appBarBackgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      actions: const [
+        OfflineIndicator(),
+        SizedBox(width: 8),
+        SyncButton(),
+        SizedBox(width: 8),
+      ],
+      drawerContent: const AppDrawerContent(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
