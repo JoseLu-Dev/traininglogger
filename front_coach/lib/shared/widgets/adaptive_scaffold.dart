@@ -5,6 +5,7 @@ import '../constants/responsive_constants.dart';
 /// and a temporary drawer on small screens
 class AdaptiveScaffold extends StatelessWidget {
   final Widget title;
+  final Widget? leading;
   final List<Widget>? actions;
   final Color? appBarBackgroundColor;
   final Widget drawerContent;
@@ -15,6 +16,7 @@ class AdaptiveScaffold extends StatelessWidget {
   const AdaptiveScaffold({
     super.key,
     required this.title,
+    this.leading,
     this.actions,
     this.appBarBackgroundColor,
     required this.drawerContent,
@@ -33,10 +35,11 @@ class AdaptiveScaffold extends StatelessWidget {
           // Large screen: permanent drawer + content area
           return Scaffold(
             appBar: AppBar(
+              leading: leading,
               title: title,
               backgroundColor: appBarBackgroundColor,
               actions: actions,
-              automaticallyImplyLeading: false, // Hide hamburger icon
+              automaticallyImplyLeading: leading == null, // Hide hamburger icon if no custom leading
             ),
             body: Row(
               children: [
@@ -68,6 +71,7 @@ class AdaptiveScaffold extends StatelessWidget {
           // Small screen: traditional drawer
           return Scaffold(
             appBar: AppBar(
+              leading: leading,
               title: title,
               backgroundColor: appBarBackgroundColor,
               actions: actions,

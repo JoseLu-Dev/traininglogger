@@ -4,6 +4,7 @@ import 'package:front_shared/front_shared.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/athletes/presentation/screens/athletes_screen.dart';
+import '../features/athletes/presentation/screens/athlete_detail_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/library/presentation/screens/exercise_list_screen.dart';
 import '../features/library/presentation/screens/exercise_form_screen.dart';
@@ -69,6 +70,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/athletes',
         name: 'athletes',
         builder: (context, state) => const AthletesScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            name: 'athlete-detail',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              final name = state.uri.queryParameters['name'] ?? 'Athlete';
+              return AthleteDetailScreen(athleteId: id, athleteName: name);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/exercises',
