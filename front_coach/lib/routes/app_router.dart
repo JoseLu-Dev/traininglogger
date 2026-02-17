@@ -6,8 +6,10 @@ import 'package:go_router/go_router.dart';
 import '../features/athletes/presentation/screens/athletes_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
-import '../features/library/presentation/screens/exercises_screen.dart';
-import '../features/library/presentation/screens/variants_screen.dart';
+import '../features/library/presentation/screens/exercise_list_screen.dart';
+import '../features/library/presentation/screens/exercise_form_screen.dart';
+import '../features/library/presentation/screens/variant_list_screen.dart';
+import '../features/library/presentation/screens/variant_form_screen.dart';
 
 /// Notifier that listens to auth state changes and notifies GoRouter
 class GoRouterNotifier extends ChangeNotifier {
@@ -80,12 +82,42 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/exercises',
         name: 'exercises',
-        builder: (context, state) => const ExercisesScreen(),
+        builder: (context, state) => const ExerciseListScreen(),
+        routes: [
+          GoRoute(
+            path: 'create',
+            name: 'exercise-create',
+            builder: (context, state) => const ExerciseFormScreen(),
+          ),
+          GoRoute(
+            path: ':id/edit',
+            name: 'exercise-edit',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return ExerciseFormScreen(exerciseId: id);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/variants',
         name: 'variants',
-        builder: (context, state) => const VariantsScreen(),
+        builder: (context, state) => const VariantListScreen(),
+        routes: [
+          GoRoute(
+            path: 'create',
+            name: 'variant-create',
+            builder: (context, state) => const VariantFormScreen(),
+          ),
+          GoRoute(
+            path: ':id/edit',
+            name: 'variant-edit',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return VariantFormScreen(variantId: id);
+            },
+          ),
+        ],
       ),
     ],
   );
