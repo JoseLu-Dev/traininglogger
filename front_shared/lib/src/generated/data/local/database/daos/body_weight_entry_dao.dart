@@ -103,6 +103,19 @@ class BodyWeightEntryDao extends BaseDao<BodyWeightEntries, BodyWeightEntryData>
     return entity.id;
   }
 
+  Future<void> updateEntity(BodyWeightEntry entity) async {
+    await (update(bodyWeightEntries)..where((t) => t.id.equals(entity.id))).write(
+      BodyWeightEntriesCompanion(
+        athleteId: Value(entity.athleteId),
+        weight: Value(entity.weight),
+        measurementDate: Value(entity.measurementDate),
+        notes: Value(entity.notes),
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   /// Convert Drift data class to domain model
   BodyWeightEntry toDomain(BodyWeightEntryData data) {
     return BodyWeightEntry(

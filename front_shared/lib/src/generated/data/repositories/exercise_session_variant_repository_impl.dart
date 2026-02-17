@@ -39,7 +39,7 @@ class ExerciseSessionVariantRepositoryImpl implements ExerciseSessionVariantRepo
 
   @override
   Future<void> update(ExerciseSessionVariant entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

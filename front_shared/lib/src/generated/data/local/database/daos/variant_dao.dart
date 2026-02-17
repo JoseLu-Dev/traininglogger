@@ -95,6 +95,18 @@ class VariantDao extends BaseDao<Variants, VariantData>
     return entity.id;
   }
 
+  Future<void> updateEntity(Variant entity) async {
+    await (update(variants)..where((t) => t.id.equals(entity.id))).write(
+      VariantsCompanion(
+        coachId: Value(entity.coachId),
+        name: Value(entity.name),
+        description: Value(entity.description),
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   /// Convert Drift data class to domain model
   Variant toDomain(VariantData data) {
     return Variant(

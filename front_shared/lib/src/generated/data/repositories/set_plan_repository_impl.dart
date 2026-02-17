@@ -33,7 +33,7 @@ class SetPlanRepositoryImpl implements SetPlanRepository {
 
   @override
   Future<void> update(SetPlan entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

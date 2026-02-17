@@ -39,7 +39,7 @@ class BodyWeightEntryRepositoryImpl implements BodyWeightEntryRepository {
 
   @override
   Future<void> update(BodyWeightEntry entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

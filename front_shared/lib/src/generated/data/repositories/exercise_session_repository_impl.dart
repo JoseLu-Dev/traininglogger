@@ -33,7 +33,7 @@ class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository {
 
   @override
   Future<void> update(ExerciseSession entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

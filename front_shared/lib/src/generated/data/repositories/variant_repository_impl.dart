@@ -33,7 +33,7 @@ class VariantRepositoryImpl implements VariantRepository {
 
   @override
   Future<void> update(Variant entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

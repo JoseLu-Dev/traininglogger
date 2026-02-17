@@ -33,7 +33,7 @@ class SetSessionRepositoryImpl implements SetSessionRepository {
 
   @override
   Future<void> update(SetSession entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

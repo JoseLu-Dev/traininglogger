@@ -39,7 +39,7 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
 
   @override
   Future<void> update(Exercise entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

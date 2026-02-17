@@ -103,6 +103,19 @@ class TrainingPlanDao extends BaseDao<TrainingPlans, TrainingPlanData>
     return entity.id;
   }
 
+  Future<void> updateEntity(TrainingPlan entity) async {
+    await (update(trainingPlans)..where((t) => t.id.equals(entity.id))).write(
+      TrainingPlansCompanion(
+        athleteId: Value(entity.athleteId),
+        name: Value(entity.name),
+        date: Value(entity.date),
+        isLocked: Value(entity.isLocked),
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   /// Convert Drift data class to domain model
   TrainingPlan toDomain(TrainingPlanData data) {
     return TrainingPlan(

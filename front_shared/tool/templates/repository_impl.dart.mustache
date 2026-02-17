@@ -41,7 +41,7 @@ class {{name}}RepositoryImpl implements {{name}}Repository {
 
   @override
   Future<void> update({{name}} entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

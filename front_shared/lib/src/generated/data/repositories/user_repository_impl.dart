@@ -33,7 +33,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> update(User entity) async {
-    await _dao.markDirty(entity.id);
+    await _dao.updateEntity(entity);
   }
 
   @override

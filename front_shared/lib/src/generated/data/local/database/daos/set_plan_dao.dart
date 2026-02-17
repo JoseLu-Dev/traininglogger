@@ -99,6 +99,22 @@ class SetPlanDao extends BaseDao<SetPlans, SetPlanData>
     return entity.id;
   }
 
+  Future<void> updateEntity(SetPlan entity) async {
+    await (update(setPlans)..where((t) => t.id.equals(entity.id))).write(
+      SetPlansCompanion(
+        athleteId: Value(entity.athleteId),
+        exercisePlanId: Value(entity.exercisePlanId),
+        setNumber: Value(entity.setNumber),
+        targetReps: Value(entity.targetReps),
+        targetWeight: Value(entity.targetWeight),
+        targetRpe: Value(entity.targetRpe),
+        notes: Value(entity.notes),
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   /// Convert Drift data class to domain model
   SetPlan toDomain(SetPlanData data) {
     return SetPlan(

@@ -96,6 +96,19 @@ class UserDao extends BaseDao<Users, UserData>
     return entity.id;
   }
 
+  Future<void> updateEntity(User entity) async {
+    await (update(users)..where((t) => t.id.equals(entity.id))).write(
+      UsersCompanion(
+        email: Value(entity.email),
+        name: Value(entity.name),
+        role: Value(entity.role),
+        coachId: Value(entity.coachId),
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   /// Convert Drift data class to domain model
   User toDomain(UserData data) {
     return User(

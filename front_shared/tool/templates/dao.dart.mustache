@@ -97,6 +97,18 @@ class {{name}}Dao extends BaseDao<{{pluralName}}, {{name}}Data>
     return entity.id;
   }
 
+  Future<void> updateEntity({{name}} entity) async {
+    await (update({{camelPluralName}})..where((t) => t.id.equals(entity.id))).write(
+      {{pluralName}}Companion(
+        {{#fields}}
+        {{name}}: Value(entity.{{name}}),
+        {{/fields}}
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   /// Convert Drift data class to domain model
   {{name}} toDomain({{name}}Data data) {
     return {{name}}(

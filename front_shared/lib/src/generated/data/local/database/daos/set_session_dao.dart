@@ -100,6 +100,23 @@ class SetSessionDao extends BaseDao<SetSessions, SetSessionData>
     return entity.id;
   }
 
+  Future<void> updateEntity(SetSession entity) async {
+    await (update(setSessions)..where((t) => t.id.equals(entity.id))).write(
+      SetSessionsCompanion(
+        athleteId: Value(entity.athleteId),
+        exerciseSessionId: Value(entity.exerciseSessionId),
+        setPlanId: Value(entity.setPlanId),
+        setNumber: Value(entity.setNumber),
+        actualReps: Value(entity.actualReps),
+        actualWeight: Value(entity.actualWeight),
+        actualRpe: Value(entity.actualRpe),
+        notes: Value(entity.notes),
+        isDirty: const Value(true),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
   /// Convert Drift data class to domain model
   SetSession toDomain(SetSessionData data) {
     return SetSession(
