@@ -6,6 +6,12 @@
       <excludeFolder url="file://$MODULE_DIR$/front_shared/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/front_shared/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/front_shared/build" />
+      <excludeFolder url="file://$MODULE_DIR$/front_athlete/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/front_athlete/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/front_athlete/build" />
+      <excludeFolder url="file://$MODULE_DIR$/front_coach/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/front_coach/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/front_coach/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
