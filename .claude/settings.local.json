@@ -15,7 +15,18 @@
       "Bash(.mvnw compile:*)",
       "Bash(flutter analyze:*)",
       "Bash(dart run build_runner build:*)",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "Bash(dart tool/generate_entity.dart:*)",
+      "Bash(dart run:*)",
+      "Bash(./mvnw clean compile:*)",
+      "mcp__marionette__get_interactive_elements",
+      "mcp__marionette__tap",
+      "mcp__marionette__get_logs",
+      "mcp__marionette__hot_reload",
+      "Bash(flutter pub run build_runner build:*)",
+      "Bash(flutter pub get:*)",
+      "mcp__marionette__take_screenshots",
+      "mcp__marionette__enter_text"
     ]
   }
 }
