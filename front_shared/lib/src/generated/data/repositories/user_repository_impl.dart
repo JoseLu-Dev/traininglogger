@@ -1,9 +1,11 @@
 import '../../domain/models/user.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../local/database/daos/user_dao.dart';
+import 'package:front_shared/src/core/logging/app_logger.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserDao _dao;
+  final _log = AppLogger.forClass(UserRepositoryImpl);
 
   UserRepositoryImpl(this._dao);
 
@@ -28,16 +30,20 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<String> create(User entity) async {
-    return await _dao.create(entity);
+    final result = await _dao.create(entity);
+    _log.info('Created entity: ${entity.toString()}');
+    return result;
   }
 
   @override
   Future<void> update(User entity) async {
     await _dao.updateEntity(entity);
+    _log.info('Updated entity: ${entity.toString()}');
   }
 
   @override
   Future<void> delete(String id) async {
     await _dao.softDelete(id);
+    _log.info('Deleted entity with id: $id');
   }
 }

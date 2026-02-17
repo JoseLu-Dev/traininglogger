@@ -1,9 +1,11 @@
 import '../../domain/models/exercise_session_variant.dart';
 import '../../domain/repositories/exercise_session_variant_repository.dart';
 import '../local/database/daos/exercise_session_variant_dao.dart';
+import 'package:front_shared/src/core/logging/app_logger.dart';
 
 class ExerciseSessionVariantRepositoryImpl implements ExerciseSessionVariantRepository {
   final ExerciseSessionVariantDao _dao;
+  final _log = AppLogger.forClass(ExerciseSessionVariantRepositoryImpl);
 
   ExerciseSessionVariantRepositoryImpl(this._dao);
 
@@ -34,16 +36,20 @@ class ExerciseSessionVariantRepositoryImpl implements ExerciseSessionVariantRepo
 
   @override
   Future<String> create(ExerciseSessionVariant entity) async {
-    return await _dao.create(entity);
+    final result = await _dao.create(entity);
+    _log.info('Created entity: ${entity.toString()}');
+    return result;
   }
 
   @override
   Future<void> update(ExerciseSessionVariant entity) async {
     await _dao.updateEntity(entity);
+    _log.info('Updated entity: ${entity.toString()}');
   }
 
   @override
   Future<void> delete(String id) async {
     await _dao.softDelete(id);
+    _log.info('Deleted entity with id: $id');
   }
 }

@@ -1,9 +1,11 @@
 import '../../domain/models/set_plan.dart';
 import '../../domain/repositories/set_plan_repository.dart';
 import '../local/database/daos/set_plan_dao.dart';
+import 'package:front_shared/src/core/logging/app_logger.dart';
 
 class SetPlanRepositoryImpl implements SetPlanRepository {
   final SetPlanDao _dao;
+  final _log = AppLogger.forClass(SetPlanRepositoryImpl);
 
   SetPlanRepositoryImpl(this._dao);
 
@@ -28,16 +30,20 @@ class SetPlanRepositoryImpl implements SetPlanRepository {
 
   @override
   Future<String> create(SetPlan entity) async {
-    return await _dao.create(entity);
+    final result = await _dao.create(entity);
+    _log.info('Created entity: ${entity.toString()}');
+    return result;
   }
 
   @override
   Future<void> update(SetPlan entity) async {
     await _dao.updateEntity(entity);
+    _log.info('Updated entity: ${entity.toString()}');
   }
 
   @override
   Future<void> delete(String id) async {
     await _dao.softDelete(id);
+    _log.info('Deleted entity with id: $id');
   }
 }

@@ -1,9 +1,11 @@
 import '../../domain/models/exercise_plan_variant.dart';
 import '../../domain/repositories/exercise_plan_variant_repository.dart';
 import '../local/database/daos/exercise_plan_variant_dao.dart';
+import 'package:front_shared/src/core/logging/app_logger.dart';
 
 class ExercisePlanVariantRepositoryImpl implements ExercisePlanVariantRepository {
   final ExercisePlanVariantDao _dao;
+  final _log = AppLogger.forClass(ExercisePlanVariantRepositoryImpl);
 
   ExercisePlanVariantRepositoryImpl(this._dao);
 
@@ -34,16 +36,20 @@ class ExercisePlanVariantRepositoryImpl implements ExercisePlanVariantRepository
 
   @override
   Future<String> create(ExercisePlanVariant entity) async {
-    return await _dao.create(entity);
+    final result = await _dao.create(entity);
+    _log.info('Created entity: ${entity.toString()}');
+    return result;
   }
 
   @override
   Future<void> update(ExercisePlanVariant entity) async {
     await _dao.updateEntity(entity);
+    _log.info('Updated entity: ${entity.toString()}');
   }
 
   @override
   Future<void> delete(String id) async {
     await _dao.softDelete(id);
+    _log.info('Deleted entity with id: $id');
   }
 }

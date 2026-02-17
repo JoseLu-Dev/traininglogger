@@ -1,9 +1,11 @@
 import '../../domain/models/body_weight_entry.dart';
 import '../../domain/repositories/body_weight_entry_repository.dart';
 import '../local/database/daos/body_weight_entry_dao.dart';
+import 'package:front_shared/src/core/logging/app_logger.dart';
 
 class BodyWeightEntryRepositoryImpl implements BodyWeightEntryRepository {
   final BodyWeightEntryDao _dao;
+  final _log = AppLogger.forClass(BodyWeightEntryRepositoryImpl);
 
   BodyWeightEntryRepositoryImpl(this._dao);
 
@@ -34,16 +36,20 @@ class BodyWeightEntryRepositoryImpl implements BodyWeightEntryRepository {
 
   @override
   Future<String> create(BodyWeightEntry entity) async {
-    return await _dao.create(entity);
+    final result = await _dao.create(entity);
+    _log.info('Created entity: ${entity.toString()}');
+    return result;
   }
 
   @override
   Future<void> update(BodyWeightEntry entity) async {
     await _dao.updateEntity(entity);
+    _log.info('Updated entity: ${entity.toString()}');
   }
 
   @override
   Future<void> delete(String id) async {
     await _dao.softDelete(id);
+    _log.info('Deleted entity with id: $id');
   }
 }
