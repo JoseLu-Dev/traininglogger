@@ -4,7 +4,7 @@ import 'package:front_shared/front_shared.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/athletes/presentation/screens/athletes_screen.dart';
-import '../features/athletes/presentation/screens/athlete_detail_screen.dart';
+import '../features/athletes/presentation/screens/athlete_detail/athlete_detail_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/library/presentation/screens/exercise_list_screen.dart';
 import '../features/library/presentation/screens/exercise_form_screen.dart';

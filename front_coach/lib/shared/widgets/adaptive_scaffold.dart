@@ -13,12 +13,15 @@ class AdaptiveScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
 
+  final PreferredSizeWidget? bottom;
+
   const AdaptiveScaffold({
     super.key,
     required this.title,
     this.leading,
     this.actions,
     this.appBarBackgroundColor,
+    this.bottom,
     required this.drawerContent,
     required this.body,
     this.floatingActionButton,
@@ -40,6 +43,7 @@ class AdaptiveScaffold extends StatelessWidget {
               backgroundColor: appBarBackgroundColor,
               actions: actions,
               automaticallyImplyLeading: leading == null, // Hide hamburger icon if no custom leading
+              bottom: bottom,
             ),
             body: Row(
               children: [
@@ -75,6 +79,7 @@ class AdaptiveScaffold extends StatelessWidget {
               title: title,
               backgroundColor: appBarBackgroundColor,
               actions: actions,
+              bottom: bottom,
             ),
             drawer: Drawer(
               child: drawerContent,
