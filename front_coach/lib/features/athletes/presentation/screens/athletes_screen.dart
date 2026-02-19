@@ -1,53 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:front_shared/front_shared.dart';
+import 'package:front_shared/src/ui/sync_indicator.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/constants/responsive_constants.dart';
 import '../../../../shared/widgets/adaptive_scaffold.dart';
 import '../../../../shared/widgets/app_drawer.dart';
+import '../providers/athletes_providers.dart';
 
-// TODO: Replace with actual User model from front_shared when data layer is ready
-class _MockAthlete {
-  final String id;
-  final String name;
-  final String email;
-
-  const _MockAthlete({
-    required this.id,
-    required this.name,
-    required this.email,
-  });
-}
-
-class AthletesScreen extends StatefulWidget {
+class AthletesScreen extends ConsumerStatefulWidget {
   const AthletesScreen({super.key});
 
   @override
-  State<AthletesScreen> createState() => _AthletesScreenState();
+  ConsumerState<AthletesScreen> createState() => _AthletesScreenState();
 }
 
-class _AthletesScreenState extends State<AthletesScreen> {
+class _AthletesScreenState extends ConsumerState<AthletesScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-
-  // TODO: Replace with actual data from repository/provider
-  final List<_MockAthlete> _mockAthletes = const [
-    _MockAthlete(id: '1', name: 'John Doe', email: 'john@email.com'),
-    _MockAthlete(id: '2', name: 'Jane Smith', email: 'jane@email.com'),
-    _MockAthlete(id: '3', name: 'Mike Johnson', email: 'mike@email.com'),
-    _MockAthlete(id: '4', name: 'Sarah Williams', email: 'sarah@email.com'),
-    _MockAthlete(id: '5', name: 'Tom Brown', email: 'tom@email.com'),
-    _MockAthlete(id: '6', name: 'Emily Davis', email: 'emily@email.com'),
-  ];
-
-  List<_MockAthlete> get _filteredAthletes {
-    if (_searchQuery.isEmpty) {
-      return _mockAthletes;
-    }
-    return _mockAthletes
-        .where((athlete) =>
-            athlete.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
-  }
 
   @override
   void dispose() {
@@ -55,7 +26,14 @@ class _AthletesScreenState extends State<AthletesScreen> {
     super.dispose();
   }
 
-  void _onAthleteCardTap(_MockAthlete athlete) {
+  List<User> _filterAthletes(List<User> athletes) {
+    if (_searchQuery.isEmpty) return athletes;
+    return athletes
+        .where((a) => a.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+  }
+
+  void _onAthleteCardTap(User athlete) {
     context.goNamed(
       'athlete-detail',
       pathParameters: {'id': athlete.id},
@@ -65,9 +43,16 @@ class _AthletesScreenState extends State<AthletesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final athletesAsync = ref.watch(athletesProvider);
+
     return AdaptiveScaffold(
       title: const Text('Athletes'),
       appBarBackgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      actions: const [
+        OfflineIndicator(),
+        SyncIndicator(),
+        SyncButton(),
+      ],
       drawerContent: const AppDrawerContent(),
       body: Column(
         children: [
@@ -92,11 +77,18 @@ class _AthletesScreenState extends State<AthletesScreen> {
               },
             ),
           ),
-          // Athletes grid or empty state
+          // Athletes grid or loading/empty state
           Expanded(
-            child: _filteredAthletes.isEmpty
-                ? _buildEmptyState()
-                : _buildAthletesGrid(),
+            child: athletesAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Error loading athletes: $e')),
+              data: (athletes) {
+                final filtered = _filterAthletes(athletes);
+                return filtered.isEmpty
+                    ? _buildEmptyState()
+                    : _buildAthletesGrid(filtered);
+              },
+            ),
           ),
         ],
       ),
@@ -123,7 +115,7 @@ class _AthletesScreenState extends State<AthletesScreen> {
     );
   }
 
-  Widget _buildAthletesGrid() {
+  Widget _buildAthletesGrid(List<User> athletes) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isLargeScreen =
@@ -134,13 +126,13 @@ class _AthletesScreenState extends State<AthletesScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            mainAxisExtent: 90, // Fixed height instead of aspect ratio
+            mainAxisExtent: 90,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
-          itemCount: _filteredAthletes.length,
+          itemCount: athletes.length,
           itemBuilder: (context, index) {
-            final athlete = _filteredAthletes[index];
+            final athlete = athletes[index];
             return _AthleteCard(
               athlete: athlete,
               onTap: () => _onAthleteCardTap(athlete),
@@ -153,7 +145,7 @@ class _AthletesScreenState extends State<AthletesScreen> {
 }
 
 class _AthleteCard extends StatelessWidget {
-  final _MockAthlete athlete;
+  final User athlete;
   final VoidCallback onTap;
 
   const _AthleteCard({
