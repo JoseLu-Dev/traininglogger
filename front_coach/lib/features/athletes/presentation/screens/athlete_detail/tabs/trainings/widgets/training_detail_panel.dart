@@ -325,6 +325,7 @@ class _ExerciseList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReorderableListView(
       shrinkWrap: false,
+      buildDefaultDragHandles: false,
       onReorder: notifier.reorderExercise,
       footer: Padding(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -397,6 +398,7 @@ class _ExerciseCard extends StatelessWidget {
                           context,
                           notifier: notifier,
                           preselectedExercise: data.exercise,
+                          preselectedExercisePlanId: ep.id,
                         ),
                         padding: EdgeInsets.zero,
                         labelPadding:
@@ -477,8 +479,7 @@ class _SetTable extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
             children: [
-              const SizedBox(width: 28), // drag handle space
-              const SizedBox(width: 24), // #
+              const SizedBox(width: 22), // drag handle (18) + gap (4)
               _headerCell('#', 24),
               _headerCell('REPS', 60),
               _headerCell('WEIGHT', 70),
@@ -493,6 +494,7 @@ class _SetTable extends StatelessWidget {
         ReorderableListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          buildDefaultDragHandles: false,
           onReorder: (oldIdx, newIdx) =>
               notifier.reorderSet(epId, oldIdx, newIdx),
           children: [

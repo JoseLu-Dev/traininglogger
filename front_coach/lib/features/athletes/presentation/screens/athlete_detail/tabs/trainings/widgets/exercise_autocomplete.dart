@@ -11,12 +11,14 @@ Future<void> showExerciseAutocomplete(
   BuildContext context, {
   required TrainingDetailNotifier notifier,
   Exercise? preselectedExercise,
+  String? preselectedExercisePlanId,
 }) {
   return showDialog<void>(
     context: context,
     builder: (_) => _ExerciseAutocompleteDialog(
       notifier: notifier,
       preselectedExercise: preselectedExercise,
+      preselectedExercisePlanId: preselectedExercisePlanId,
     ),
   );
 }
@@ -26,10 +28,12 @@ Future<void> showExerciseAutocomplete(
 class _ExerciseAutocompleteDialog extends StatefulWidget {
   final TrainingDetailNotifier notifier;
   final Exercise? preselectedExercise;
+  final String? preselectedExercisePlanId;
 
   const _ExerciseAutocompleteDialog({
     required this.notifier,
     this.preselectedExercise,
+    this.preselectedExercisePlanId,
   });
 
   @override
@@ -115,11 +119,11 @@ class _ExerciseAutocompleteDialogState
 
   Future<void> _confirm() async {
     if (_selectedExercise == null) return;
-    if (widget.preselectedExercise != null) {
+    if (widget.preselectedExercisePlanId != null) {
       // Variant-only mode
       for (final v in _selectedVariants) {
         await widget.notifier.addVariantToExercise(
-          widget.preselectedExercise!.id,
+          widget.preselectedExercisePlanId!,
           v,
         );
       }

@@ -133,6 +133,7 @@ class TrainingDetailNotifier extends StateNotifier<TrainingDetailState> {
     final exercises = _currentExercises;
     if (exercises == null) return;
 
+    if (newIdx > oldIdx) newIdx -= 1;
     final reordered = List<ExerciseDetailData>.from(exercises);
     final item = reordered.removeAt(oldIdx);
     reordered.insert(newIdx, item);
@@ -208,6 +209,7 @@ class TrainingDetailNotifier extends StateNotifier<TrainingDetailState> {
     final eIdx = exercises.indexWhere((e) => e.plan.id == exercisePlanId);
     if (eIdx == -1) return;
 
+    if (newIdx > oldIdx) newIdx -= 1;
     final sets = List<SetPlan>.from(exercises[eIdx].sets);
     final item = sets.removeAt(oldIdx);
     sets.insert(newIdx, item);
