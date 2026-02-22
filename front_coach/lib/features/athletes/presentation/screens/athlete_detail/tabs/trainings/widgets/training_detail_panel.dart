@@ -405,8 +405,9 @@ class _ExerciseCard extends StatelessWidget {
                         onPressed: () => showExerciseAutocomplete(
                           context,
                           notifier: notifier,
-                          preselectedExercise: data.exercise,
+                          initialQuery: data.exercise.name,
                           preselectedExercisePlanId: ep.id,
+                          initialVariants: data.variants,
                         ),
                         padding: EdgeInsets.zero,
                         labelPadding: const EdgeInsets.symmetric(horizontal: 6),

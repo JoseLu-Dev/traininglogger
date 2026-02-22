@@ -4,24 +4,26 @@ import '../notifiers/training_detail_notifier.dart';
 
 /// Opens a dialog for exercise + variant selection.
 ///
-/// Normal mode  : type to search exercises; once the query is a prefix of an
-///                exercise name, variant rows appear below automatically.
-///                Continuing to type filters variants by the remaining suffix.
+/// Both "Add exercise" and "Add variant" use this same dialog.
 ///
-/// Variant-only : [preselectedExercise] / [preselectedExercisePlanId] are set.
-///                Text field filters variants directly; no exercise search.
+/// [initialQuery]          : pre-fills the search field (e.g. with the
+///                           exercise name so variants appear immediately).
+/// [preselectedExercisePlanId]: when set, confirm calls addVariantToExercise
+///                           on that plan instead of addExercise.
 Future<void> showExerciseAutocomplete(
   BuildContext context, {
   required TrainingDetailNotifier notifier,
-  Exercise? preselectedExercise,
+  String? initialQuery,
   String? preselectedExercisePlanId,
+  List<Variant> initialVariants = const [],
 }) {
   return showDialog<void>(
     context: context,
     builder: (_) => _ExerciseAutocompleteDialog(
       notifier: notifier,
-      preselectedExercise: preselectedExercise,
+      initialQuery: initialQuery,
       preselectedExercisePlanId: preselectedExercisePlanId,
+      initialVariants: initialVariants,
     ),
   );
 }
@@ -30,13 +32,15 @@ Future<void> showExerciseAutocomplete(
 
 class _ExerciseAutocompleteDialog extends StatefulWidget {
   final TrainingDetailNotifier notifier;
-  final Exercise? preselectedExercise;
+  final String? initialQuery;
   final String? preselectedExercisePlanId;
+  final List<Variant> initialVariants;
 
   const _ExerciseAutocompleteDialog({
     required this.notifier,
-    this.preselectedExercise,
+    this.initialQuery,
     this.preselectedExercisePlanId,
+    this.initialVariants = const [],
   });
 
   @override
@@ -53,11 +57,13 @@ class _ExerciseAutocompleteDialogState
   List<Variant> _allVariants = [];
   bool _loading = true;
 
-  bool get _isVariantOnly => widget.preselectedExercise != null;
-
   @override
   void initState() {
     super.initState();
+    if (widget.initialQuery != null) {
+      _queryCtrl.text = widget.initialQuery!;
+    }
+    _selectedVariants.addAll(widget.initialVariants);
     _loadData();
     _queryCtrl.addListener(_onQueryChanged);
   }
@@ -84,9 +90,7 @@ class _ExerciseAutocompleteDialogState
   // ── Derived getters ────────────────────────────────────────────────────────
 
   /// Longest exercise whose name is a case-insensitive prefix of the query.
-  /// Returns the preselected exercise in variant-only mode.
   Exercise? get _matchedExercise {
-    if (_isVariantOnly) return widget.preselectedExercise;
     final q = _queryCtrl.text;
     if (q.isEmpty) return null;
     Exercise? best;
@@ -102,7 +106,6 @@ class _ExerciseAutocompleteDialogState
 
   /// Text after the matched exercise name — used to filter variants.
   String get _variantFilter {
-    if (_isVariantOnly) return _queryCtrl.text.trim();
     final match = _matchedExercise;
     if (match == null) return '';
     return _queryCtrl.text.substring(match.name.length).trim();
@@ -110,18 +113,16 @@ class _ExerciseAutocompleteDialogState
 
   /// Exercise rows to display in the dropdown.
   List<Exercise> get _filteredExercises {
-    if (_isVariantOnly) return [];
     final match = _matchedExercise;
-    // When there's a prefix match, show only that exercise (not the full list)
-    if (match != null) return [match];
+    if (match != null) return [match]; // show only the matched exercise
     final q = _queryCtrl.text.trim().toLowerCase();
     if (q.isEmpty) return _exercises;
     return _exercises.where((e) => e.name.toLowerCase().contains(q)).toList();
   }
 
-  /// Variant rows to display — only when an exercise is matched (or variant-only).
+  /// Variant rows to display — only when an exercise is matched.
   List<Variant> get _filteredVariants {
-    if (!_isVariantOnly && _matchedExercise == null) return [];
+    if (_matchedExercise == null) return [];
     final filter = _variantFilter.toLowerCase();
     if (filter.isEmpty) return _allVariants;
     return _allVariants
@@ -146,14 +147,15 @@ class _ExerciseAutocompleteDialogState
   }
 
   Future<void> _confirm() async {
-    if (_isVariantOnly) {
-      for (final v in _selectedVariants) {
-        await widget.notifier
-            .addVariantToExercise(widget.preselectedExercisePlanId!, v);
-      }
+    final ex = _matchedExercise;
+    if (ex == null) return;
+    if (widget.preselectedExercisePlanId != null) {
+      await widget.notifier.replaceVariantsForExercise(
+        widget.preselectedExercisePlanId!,
+        ex,
+        _selectedVariants,
+      );
     } else {
-      final ex = _matchedExercise;
-      if (ex == null) return;
       await widget.notifier.addExercise(ex, _selectedVariants);
     }
     if (mounted) Navigator.of(context).pop();
@@ -171,9 +173,8 @@ class _ExerciseAutocompleteDialogState
   }
 
   Future<void> _createVariant() async {
-    final name = _variantFilter.trim().isNotEmpty
-        ? _variantFilter.trim()
-        : _queryCtrl.text.trim();
+    final name =
+        _variantFilter.isNotEmpty ? _variantFilter : _queryCtrl.text.trim();
     if (name.isEmpty) return;
     final v = await widget.notifier.createVariant(name);
     if (!mounted) return;
@@ -193,19 +194,12 @@ class _ExerciseAutocompleteDialogState
     final filteredVariants = _filteredVariants;
     final query = _queryCtrl.text.trim();
     final variantFilter = _variantFilter;
-    final showVariants = _isVariantOnly || matchedEx != null;
+    final showVariants = matchedEx != null;
 
-    // Add is enabled once an exercise is identified (variants are optional).
-    // In variant-only mode at least one variant must be chosen.
-    final canConfirm =
-        _isVariantOnly ? _selectedVariants.isNotEmpty : matchedEx != null;
+    final canConfirm = matchedEx != null;
 
     return AlertDialog(
-      title: Text(
-        _isVariantOnly
-            ? 'Add variant to ${widget.preselectedExercise!.name}'
-            : 'Add exercise',
-      ),
+      title: Text(widget.preselectedExercisePlanId != null ? 'Edit exercise' : 'Add exercise'),
       contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       content: SizedBox(
         width: 420,
@@ -249,9 +243,7 @@ class _ExerciseAutocompleteDialogState
                     controller: _queryCtrl,
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: _isVariantOnly
-                          ? 'Filter variants…'
-                          : 'Search exercise…',
+                      hintText: 'Search exercise…',
                       prefixIcon: const Icon(Icons.search),
                       suffixIcon: query.isNotEmpty
                           ? IconButton(
@@ -276,22 +268,19 @@ class _ExerciseAutocompleteDialogState
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Exercise rows (normal mode only, hidden once a
-                          // prefix match is found and only variants are shown)
-                          if (!_isVariantOnly)
-                            ...filteredExercises.map(
-                              (ex) => _ExerciseRow(
-                                exercise: ex,
-                                colorScheme: colorScheme,
-                                onTap: () => _pickExercise(ex),
-                              ),
+                          // Exercise rows (hidden once a prefix match locks in)
+                          ...filteredExercises.map(
+                            (ex) => _ExerciseRow(
+                              exercise: ex,
+                              colorScheme: colorScheme,
+                              onTap: () => _pickExercise(ex),
                             ),
+                          ),
 
                           // Variant section — appears automatically once the
-                          // query matches an exercise prefix
+                          // query is a prefix of a known exercise name
                           if (showVariants) ...[
-                            if (!_isVariantOnly &&
-                                filteredExercises.isNotEmpty)
+                            if (filteredExercises.isNotEmpty)
                               const Divider(height: 12),
                             if (filteredVariants.isEmpty)
                               Padding(
@@ -310,9 +299,7 @@ class _ExerciseAutocompleteDialogState
                             else
                               ...filteredVariants.map(
                                 (v) => _VariantRow(
-                                  exerciseName: _isVariantOnly
-                                      ? widget.preselectedExercise!.name
-                                      : matchedEx!.name,
+                                  exerciseName: matchedEx.name,
                                   variant: v,
                                   isSelected: _isSelected(v),
                                   colorScheme: colorScheme,
@@ -322,9 +309,7 @@ class _ExerciseAutocompleteDialogState
                           ],
 
                           // Footer: create new exercise (only before a match)
-                          if (!_isVariantOnly &&
-                              matchedEx == null &&
-                              query.isNotEmpty) ...[
+                          if (matchedEx == null && query.isNotEmpty) ...[
                             const Divider(height: 16),
                             _FooterAction(
                               label: '+ Add new exercise "$query"',
@@ -337,17 +322,6 @@ class _ExerciseAutocompleteDialogState
                             const Divider(height: 16),
                             _FooterAction(
                               label: '+ Add new variant "$variantFilter"',
-                              onTap: _createVariant,
-                            ),
-                          ],
-
-                          // Footer: create variant in variant-only mode with no filter
-                          if (_isVariantOnly &&
-                              variantFilter.isEmpty &&
-                              query.isNotEmpty) ...[
-                            const Divider(height: 16),
-                            _FooterAction(
-                              label: '+ Add new variant "$query"',
                               onTap: _createVariant,
                             ),
                           ],

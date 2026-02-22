@@ -231,6 +231,78 @@ class TrainingDetailNotifier extends StateNotifier<TrainingDetailState> {
     _updateExercises(updatedExercises);
   }
 
+  /// Updates the exercise referenced by an exercise plan.
+  /// No-ops if the exercise hasn't changed.
+  Future<void> changeExerciseInPlan(
+    String exercisePlanId,
+    Exercise newExercise,
+  ) async {
+    final exercises = _currentExercises;
+    if (exercises == null) return;
+
+    final idx = exercises.indexWhere((e) => e.plan.id == exercisePlanId);
+    if (idx == -1) return;
+    if (exercises[idx].exercise.id == newExercise.id) return;
+
+    final updatedPlan = exercises[idx].plan.copyWith(
+      exerciseId: newExercise.id,
+      isDirty: true,
+      updatedAt: DateTime.now(),
+    );
+    await _exercisePlanRepo.update(updatedPlan);
+
+    final updatedExercises = List<ExerciseDetailData>.from(exercises);
+    updatedExercises[idx] = updatedExercises[idx].copyWith(
+      plan: updatedPlan,
+      exercise: newExercise,
+    );
+    _updateExercises(updatedExercises);
+  }
+
+  /// Replaces all variants for an exercise plan with [newVariants].
+  /// Also updates the exercise itself if it changed.
+  Future<void> replaceVariantsForExercise(
+    String exercisePlanId,
+    Exercise newExercise,
+    List<Variant> newVariants,
+  ) async {
+    final exercises = _currentExercises;
+    if (exercises == null) return;
+
+    final idx = exercises.indexWhere((e) => e.plan.id == exercisePlanId);
+    if (idx == -1) return;
+
+    ExercisePlan plan = exercises[idx].plan;
+    if (plan.exerciseId != newExercise.id) {
+      plan = plan.copyWith(
+        exerciseId: newExercise.id,
+        isDirty: true,
+        updatedAt: DateTime.now(),
+      );
+      await _exercisePlanRepo.update(plan);
+    }
+
+    final epvs = await _epvRepo.findByExercisePlanId(exercisePlanId);
+    for (final epv in epvs) {
+      await _epvRepo.delete(epv.id);
+    }
+    for (final v in newVariants) {
+      await _epvRepo.create(ExercisePlanVariant.create(
+        athleteId: _athleteId,
+        exercisePlanId: exercisePlanId,
+        variantId: v.id,
+      ));
+    }
+
+    final updated = List<ExerciseDetailData>.from(exercises);
+    updated[idx] = updated[idx].copyWith(
+      plan: plan,
+      exercise: newExercise,
+      variants: newVariants,
+    );
+    _updateExercises(updated);
+  }
+
   Future<void> addVariantToExercise(String exercisePlanId, Variant v) async {
     await _epvRepo.create(ExercisePlanVariant.create(
       athleteId: _athleteId,
