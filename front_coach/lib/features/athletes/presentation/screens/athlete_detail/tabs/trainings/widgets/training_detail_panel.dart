@@ -152,6 +152,114 @@ String _formatDate(String dateKey) {
 }
 
 // ---------------------------------------------------------------------------
+// Copy dialog (shared by edition and see views)
+// ---------------------------------------------------------------------------
+
+Future<void> _showCopyDialog(
+  BuildContext context,
+  TrainingDetailNotifier notifier,
+  TrainingsCalendarNotifier calendarNotifier, {
+  required bool hasSession,
+}) async {
+  DateTime? selectedDate;
+  bool fromSession = false;
+
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setDialogState) {
+        final dateLabel = selectedDate == null
+            ? 'No date selected'
+            : _formatDate(
+                '${selectedDate!.year.toString().padLeft(4, '0')}-'
+                '${selectedDate!.month.toString().padLeft(2, '0')}-'
+                '${selectedDate!.day.toString().padLeft(2, '0')}',
+              );
+        return AlertDialog(
+          title: const Text('Copy training to…'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(child: Text(dateLabel)),
+                  TextButton(
+                    onPressed: () async {
+                      final picked = await showDatePicker(
+                        context: ctx,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        setDialogState(() => selectedDate = picked);
+                      }
+                    },
+                    child: const Text('Pick date'),
+                  ),
+                ],
+              ),
+              if (hasSession) ...[
+                const SizedBox(height: 16),
+                const Text('Copy from:'),
+                const SizedBox(height: 8),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: false, label: Text('Plan targets')),
+                    ButtonSegment(value: true, label: Text('Session actuals')),
+                  ],
+                  selected: {fromSession},
+                  onSelectionChanged: (v) =>
+                      setDialogState(() => fromSession = v.first),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed:
+                  selectedDate == null ? null : () => Navigator.pop(ctx, true),
+              child: const Text('Copy'),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+
+  if (confirmed != true || selectedDate == null) return;
+
+  final targetDate =
+      '${selectedDate!.year.toString().padLeft(4, '0')}-'
+      '${selectedDate!.month.toString().padLeft(2, '0')}-'
+      '${selectedDate!.day.toString().padLeft(2, '0')}';
+
+  final success = await notifier.copyToDate(
+    targetDate,
+    fromSession: fromSession,
+  );
+
+  await calendarNotifier.loadMonth(selectedDate!);
+
+  if (context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success
+              ? 'Training copied successfully'
+              : 'A training already exists on that date',
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Edition view
 // ---------------------------------------------------------------------------
 
@@ -272,6 +380,16 @@ class _EditionViewState extends State<_EditionView> {
                   size: 20,
                 ),
                 onPressed: widget.exercises.isEmpty ? null : _toggleCollapseAll,
+              ),
+              IconButton(
+                tooltip: 'Copy training',
+                icon: const Icon(Icons.copy_outlined),
+                onPressed: () => _showCopyDialog(
+                  context,
+                  widget.notifier,
+                  widget.calendarNotifier,
+                  hasSession: false,
+                ),
               ),
               IconButton(
                 tooltip: 'Delete training',
@@ -1029,6 +1147,16 @@ class _SeeView extends StatelessWidget {
                 ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
               ),
               const Spacer(),
+              IconButton(
+                tooltip: 'Copy training',
+                icon: const Icon(Icons.copy_outlined),
+                onPressed: () => _showCopyDialog(
+                  context,
+                  notifier,
+                  calendarNotifier,
+                  hasSession: session != null,
+                ),
+              ),
             ],
           ),
 

@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:front_shared/front_shared.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../notifiers/training_detail_notifier.dart';
 import '../notifiers/trainings_calendar_notifier.dart';
+import '../providers/training_detail_providers.dart';
 import '../providers/trainings_calendar_providers.dart';
 import 'training_day_context_menu.dart';
 
@@ -49,9 +51,13 @@ class _TrainingCalendarPanelState extends ConsumerState<TrainingCalendarPanel> {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (msg) => Center(child: Text('Error: $msg')),
           loaded: (plansByDate, sessionsByDate, focusedMonth, selectedDate) {
+            final detailNotifier = ref.read(
+              trainingDetailProvider(widget.athleteId).notifier,
+            );
             return _buildCalendar(
               context,
               notifier,
+              detailNotifier,
               plansByDate,
               selectedDate,
               cellWidth,
@@ -66,6 +72,7 @@ class _TrainingCalendarPanelState extends ConsumerState<TrainingCalendarPanel> {
   Widget _buildCalendar(
     BuildContext context,
     TrainingsCalendarNotifier notifier,
+    TrainingDetailNotifier detailNotifier,
     Map<String, TrainingPlan> plansByDate,
     String? selectedDate,
     double cellWidth,
@@ -76,7 +83,9 @@ class _TrainingCalendarPanelState extends ConsumerState<TrainingCalendarPanel> {
     final headerFontSize = (cellWidth * 0.35).clamp(12.0, 20.0);
     final dowFontSize = (cellWidth * 0.22).clamp(9.0, 13.0);
 
-    return TableCalendar<TrainingPlan>(
+    return Column(
+      children: [
+        TableCalendar<TrainingPlan>(
       firstDay: DateTime.utc(2020, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
       focusedDay: _focusedDay,
@@ -166,7 +175,187 @@ class _TrainingCalendarPanelState extends ConsumerState<TrainingCalendarPanel> {
           dayNumFontSize: dayNumFontSize,
         ),
       ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              icon: const Icon(Icons.copy_all_outlined, size: 18),
+              label: const Text('Copy week'),
+              onPressed: selectedDate == null
+                  ? null
+                  : () => _showCopyWeekDialog(
+                        context,
+                        selectedDate,
+                        detailNotifier,
+                        notifier,
+                      ),
+            ),
+          ),
+        ),
+      ],
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Copy week dialog
+// ---------------------------------------------------------------------------
+
+String _mondayKey(String dateKey) {
+  final p = dateKey.split('-');
+  final dt = DateTime(int.parse(p[0]), int.parse(p[1]), int.parse(p[2]));
+  final monday = dt.subtract(Duration(days: dt.weekday - 1));
+  return '${monday.year.toString().padLeft(4, '0')}-'
+      '${monday.month.toString().padLeft(2, '0')}-'
+      '${monday.day.toString().padLeft(2, '0')}';
+}
+
+String _friendlyDate(String dateKey) {
+  final p = dateKey.split('-');
+  final dt = DateTime(int.parse(p[0]), int.parse(p[1]), int.parse(p[2]));
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+  return '${days[dt.weekday - 1]} ${months[dt.month - 1]} ${dt.day}';
+}
+
+Future<void> _showCopyWeekDialog(
+  BuildContext context,
+  String selectedDate,
+  TrainingDetailNotifier detailNotifier,
+  TrainingsCalendarNotifier calendarNotifier,
+) async {
+  final sourceMonday = _mondayKey(selectedDate);
+  final sourceMondayDt = DateTime.parse(sourceMonday);
+  final defaultTargetDt = sourceMondayDt.add(const Duration(days: 7));
+
+  DateTime targetMondayDt = defaultTargetDt;
+
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setDialogState) {
+        final targetMonday = _mondayKey(
+          '${targetMondayDt.year.toString().padLeft(4, '0')}-'
+          '${targetMondayDt.month.toString().padLeft(2, '0')}-'
+          '${targetMondayDt.day.toString().padLeft(2, '0')}',
+        );
+        final targetSunday = DateTime.parse(targetMonday)
+            .add(const Duration(days: 6));
+        final targetSundayKey =
+            '${targetSunday.year.toString().padLeft(4, '0')}-'
+            '${targetSunday.month.toString().padLeft(2, '0')}-'
+            '${targetSunday.day.toString().padLeft(2, '0')}';
+
+        final sourceSundayKey = (() {
+          final dt = DateTime.parse(sourceMonday).add(const Duration(days: 6));
+          return '${dt.year.toString().padLeft(4, '0')}-'
+              '${dt.month.toString().padLeft(2, '0')}-'
+              '${dt.day.toString().padLeft(2, '0')}';
+        })();
+        return AlertDialog(
+          title: const Text('Copy week'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Source: ${_friendlyDate(sourceMonday)} – '
+                '${_friendlyDate(sourceSundayKey)}',
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Target: ${_friendlyDate(targetMonday)} – '
+                      '${_friendlyDate(targetSundayKey)}',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final picked = await showDatePicker(
+                        context: ctx,
+                        initialDate: targetMondayDt,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        setDialogState(() {
+                          // Snap to Monday of picked week
+                          targetMondayDt =
+                              picked.subtract(Duration(days: picked.weekday - 1));
+                        });
+                      }
+                    },
+                    child: const Text('Change'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Copy'),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+
+  if (confirmed != true) return;
+
+  final targetMondayKey =
+      '${targetMondayDt.year.toString().padLeft(4, '0')}-'
+      '${targetMondayDt.month.toString().padLeft(2, '0')}-'
+      '${targetMondayDt.day.toString().padLeft(2, '0')}';
+
+  final result = await detailNotifier.copyWeek(sourceMonday, targetMondayKey);
+
+  switch (result.status) {
+    case CopyWeekStatus.success:
+      await calendarNotifier.loadMonth(targetMondayDt);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Week copied successfully')),
+        );
+      }
+    case CopyWeekStatus.empty:
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No trainings found in this week')),
+        );
+      }
+    case CopyWeekStatus.conflict:
+      if (context.mounted) {
+        final dateList = result.conflictingDates.map(_friendlyDate).join(', ');
+        showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Cannot copy week'),
+            content: Text(
+              'The target week already has trainings on: $dateList.\n\n'
+              'Remove them first, then try again.',
+            ),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
   }
 }
 

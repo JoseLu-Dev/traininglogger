@@ -3,6 +3,20 @@ import 'package:front_shared/front_shared.dart';
 import '../models/exercise_detail_data.dart';
 import '../state/training_detail_state.dart';
 
+// ── Week copy result ───────────────────────────────────────────────────────
+
+enum CopyWeekStatus { success, conflict, empty }
+
+class CopyWeekResult {
+  final CopyWeekStatus status;
+  final List<String> conflictingDates;
+  const CopyWeekResult._(this.status, [this.conflictingDates = const []]);
+  static const success = CopyWeekResult._(CopyWeekStatus.success);
+  static const empty = CopyWeekResult._(CopyWeekStatus.empty);
+  factory CopyWeekResult.conflict(List<String> dates) =>
+      CopyWeekResult._(CopyWeekStatus.conflict, dates);
+}
+
 class TrainingDetailNotifier extends StateNotifier<TrainingDetailState> {
   final ExercisePlanRepository _exercisePlanRepo;
   final SetPlanRepository _setPlanRepo;
@@ -387,7 +401,186 @@ class TrainingDetailNotifier extends StateNotifier<TrainingDetailState> {
 
   Future<List<Variant>> allVariants() => _variantRepo.findAllActive();
 
+  /// Copies the current training to [targetDate].
+  /// Returns true on success, false if [targetDate] already has a training.
+  Future<bool> copyToDate(String targetDate, {bool fromSession = false}) async {
+    final plan = _currentPlan;
+    final exercises = state.maybeWhen(
+      editionMode: (p, ex) => ex,
+      seeMode: (p, s, ex) => ex,
+      orElse: () => null,
+    );
+    if (plan == null || exercises == null) return false;
+
+    final existing = await _planRepo.findByAthleteBetweenDates(
+      _athleteId,
+      targetDate,
+      targetDate,
+    );
+    if (existing.isNotEmpty) return false;
+
+    final newPlan = TrainingPlan.create(
+      athleteId: _athleteId,
+      name: plan.name,
+      date: targetDate,
+    );
+    await _planRepo.create(newPlan);
+
+    for (final ex in exercises) {
+      final newEp = ExercisePlan.create(
+        athleteId: _athleteId,
+        trainingPlanId: newPlan.id,
+        exerciseId: ex.exercise.id,
+        orderIndex: ex.plan.orderIndex,
+        notes: ex.plan.notes,
+      );
+      await _exercisePlanRepo.create(newEp);
+
+      final variantsToCopy = fromSession && ex.sessionVariants.isNotEmpty
+          ? ex.sessionVariants
+          : ex.variants;
+      for (final v in variantsToCopy) {
+        await _epvRepo.create(ExercisePlanVariant.create(
+          athleteId: _athleteId,
+          exercisePlanId: newEp.id,
+          variantId: v.id,
+        ));
+      }
+
+      if (fromSession && ex.sessionSets.isNotEmpty) {
+        for (int i = 0; i < ex.sessionSets.length; i++) {
+          final ss = ex.sessionSets[i];
+          await _setPlanRepo.create(SetPlan.create(
+            athleteId: _athleteId,
+            exercisePlanId: newEp.id,
+            setNumber: ss.setNumber ?? (i + 1),
+            targetReps: ss.actualReps,
+            targetWeight: ss.actualWeight,
+            targetRpe: ss.actualRpe,
+            notes: ss.notes,
+          ));
+        }
+      } else {
+        for (final sp in ex.sets) {
+          await _setPlanRepo.create(SetPlan.create(
+            athleteId: _athleteId,
+            exercisePlanId: newEp.id,
+            setNumber: sp.setNumber,
+            targetReps: sp.targetReps,
+            targetWeight: sp.targetWeight,
+            targetRpe: sp.targetRpe,
+            notes: sp.notes,
+          ));
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /// Copies all trainings from the week starting on [sourceMonday] to the
+  /// week starting on [targetMonday] (both in YYYY-MM-DD format, must be Mondays).
+  /// Returns [CopyWeekResult.conflict] listing occupied target days if any clash.
+  Future<CopyWeekResult> copyWeek(
+    String sourceMonday,
+    String targetMonday, {
+    bool fromSession = false,
+  }) async {
+    final sourceSunday = _addDays(sourceMonday, 6);
+    final targetSunday = _addDays(targetMonday, 6);
+
+    final sourcePlans = await _planRepo.findByAthleteBetweenDates(
+      _athleteId,
+      sourceMonday,
+      sourceSunday,
+    );
+    if (sourcePlans.isEmpty) return CopyWeekResult.empty;
+
+    final targetPlans = await _planRepo.findByAthleteBetweenDates(
+      _athleteId,
+      targetMonday,
+      targetSunday,
+    );
+    final occupiedDates = targetPlans.map((p) => p.date).toSet();
+
+    final conflicts = <String>[];
+    for (final plan in sourcePlans) {
+      final targetDate = _addDays(targetMonday, _dayOffset(sourceMonday, plan.date));
+      if (occupiedDates.contains(targetDate)) conflicts.add(targetDate);
+    }
+    if (conflicts.isNotEmpty) return CopyWeekResult.conflict(conflicts);
+
+    for (final plan in sourcePlans) {
+      final targetDate = _addDays(targetMonday, _dayOffset(sourceMonday, plan.date));
+      await _deepCopyPlan(plan, targetDate);
+    }
+    return CopyWeekResult.success;
+  }
+
   // ── Private helpers ───────────────────────────────────────────────────────
+
+  Future<void> _deepCopyPlan(TrainingPlan plan, String targetDate) async {
+    final newPlan = TrainingPlan.create(
+      athleteId: _athleteId,
+      name: plan.name,
+      date: targetDate,
+    );
+    await _planRepo.create(newPlan);
+
+    final exercisePlans = await _exercisePlanRepo.findByTrainingPlanId(plan.id);
+    exercisePlans.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+
+    for (final ep in exercisePlans) {
+      final newEp = ExercisePlan.create(
+        athleteId: _athleteId,
+        trainingPlanId: newPlan.id,
+        exerciseId: ep.exerciseId,
+        orderIndex: ep.orderIndex,
+        notes: ep.notes,
+      );
+      await _exercisePlanRepo.create(newEp);
+
+      final epvs = await _epvRepo.findByExercisePlanId(ep.id);
+      for (final epv in epvs) {
+        await _epvRepo.create(ExercisePlanVariant.create(
+          athleteId: _athleteId,
+          exercisePlanId: newEp.id,
+          variantId: epv.variantId,
+        ));
+      }
+
+      final sets = await _setPlanRepo.findByExercisePlanId(ep.id);
+      sets.sort((a, b) => (a.setNumber ?? 0).compareTo(b.setNumber ?? 0));
+      for (final sp in sets) {
+        await _setPlanRepo.create(SetPlan.create(
+          athleteId: _athleteId,
+          exercisePlanId: newEp.id,
+          setNumber: sp.setNumber,
+          targetReps: sp.targetReps,
+          targetWeight: sp.targetWeight,
+          targetRpe: sp.targetRpe,
+          notes: sp.notes,
+        ));
+      }
+    }
+  }
+
+  static String _addDays(String dateKey, int days) {
+    final p = dateKey.split('-');
+    final dt = DateTime(int.parse(p[0]), int.parse(p[1]), int.parse(p[2]))
+        .add(Duration(days: days));
+    return '${dt.year.toString().padLeft(4, '0')}-'
+        '${dt.month.toString().padLeft(2, '0')}-'
+        '${dt.day.toString().padLeft(2, '0')}';
+  }
+
+  static int _dayOffset(String from, String to) {
+    final fp = from.split('-');
+    final tp = to.split('-');
+    final fromDt = DateTime(int.parse(fp[0]), int.parse(fp[1]), int.parse(fp[2]));
+    final toDt = DateTime(int.parse(tp[0]), int.parse(tp[1]), int.parse(tp[2]));
+    return toDt.difference(fromDt).inDays;
+  }
 
   TrainingPlan? get _currentPlan => state.maybeWhen(
         editionMode: (plan, exercises) => plan,
