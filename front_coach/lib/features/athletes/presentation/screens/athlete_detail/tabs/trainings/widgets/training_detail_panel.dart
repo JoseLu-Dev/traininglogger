@@ -338,13 +338,11 @@ class _EditionViewState extends State<_EditionView> {
           const Divider(height: 20),
 
           // ── Exercise list ──────────────────────────────────────────────
-          Expanded(
-            child: _ExerciseList(
-              exercises: widget.exercises,
-              notifier: widget.notifier,
-              collapsedIds: _collapsedIds,
-              onToggleCollapse: _toggleCollapse,
-            ),
+          _ExerciseList(
+            exercises: widget.exercises,
+            notifier: widget.notifier,
+            collapsedIds: _collapsedIds,
+            onToggleCollapse: _toggleCollapse,
           ),
         ],
       ),
@@ -372,7 +370,8 @@ class _ExerciseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ReorderableListView(
-      shrinkWrap: false,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       buildDefaultDragHandles: false,
       onReorder: notifier.reorderExercise,
       footer: Padding(
@@ -470,10 +469,12 @@ class _ExerciseCardState extends State<_ExerciseCard> {
     final ep = widget.data.plan;
     final notifier = widget.notifier;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(height: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -599,6 +600,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
           ],
         ),
       ),
+    ],
     );
   }
 }
@@ -1075,11 +1077,9 @@ class _SeeView extends StatelessWidget {
           const Divider(height: 20),
 
           // ── Body ──────────────────────────────────────────────────────
-          Expanded(
-            child: session == null && exercises.every((e) => e.session == null)
-                ? _NoSessionPlaceholder()
-                : _SeeExerciseList(exercises: exercises),
-          ),
+          session == null && exercises.every((e) => e.session == null)
+              ? _NoSessionPlaceholder()
+              : _SeeExerciseList(exercises: exercises),
         ],
       ),
     );
@@ -1119,6 +1119,8 @@ class _SeeExerciseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: exercises.length,
       itemBuilder: (ctx, i) => _SeeExerciseCard(data: exercises[i]),
     );
