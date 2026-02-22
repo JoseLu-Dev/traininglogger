@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'trainings/widgets/training_calendar_panel.dart';
+import 'trainings/widgets/training_detail_panel.dart';
 
 class TrainingsTab extends StatelessWidget {
   final String athleteId;
@@ -10,7 +11,7 @@ class TrainingsTab extends StatelessWidget {
     return Row(
       children: [
         Flexible(flex: 2, child: TrainingCalendarPanel(athleteId: athleteId)),
-        const Flexible(flex: 3, child: SizedBox()),
+        Flexible(flex: 3, child: TrainingDetailPanel(athleteId: athleteId)),
       ],
     );
   }
