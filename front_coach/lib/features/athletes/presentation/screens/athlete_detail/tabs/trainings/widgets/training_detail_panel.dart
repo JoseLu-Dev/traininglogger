@@ -380,13 +380,14 @@ class _ExerciseList extends StatelessWidget {
         child: _AddExerciseButton(notifier: notifier),
       ),
       children: [
-        for (final ex in exercises)
+        for (int i = 0; i < exercises.length; i++)
           _ExerciseCard(
-            key: ValueKey(ex.plan.id),
-            data: ex,
+            key: ValueKey(exercises[i].plan.id),
+            data: exercises[i],
             notifier: notifier,
-            isCollapsed: collapsedIds.contains(ex.plan.id),
-            onToggleCollapse: () => onToggleCollapse(ex.plan.id),
+            isCollapsed: collapsedIds.contains(exercises[i].plan.id),
+            onToggleCollapse: () => onToggleCollapse(exercises[i].plan.id),
+            index: i,
           ),
       ],
     );
@@ -402,6 +403,7 @@ class _ExerciseCard extends StatefulWidget {
   final TrainingDetailNotifier notifier;
   final bool isCollapsed;
   final VoidCallback onToggleCollapse;
+  final int index;
 
   const _ExerciseCard({
     super.key,
@@ -409,6 +411,7 @@ class _ExerciseCard extends StatefulWidget {
     required this.notifier,
     required this.isCollapsed,
     required this.onToggleCollapse,
+    required this.index,
   });
 
   @override
@@ -478,7 +481,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
             Row(
               children: [
                 ReorderableDragStartListener(
-                  index: widget.data.plan.orderIndex,
+                  index: widget.index,
                   child: const Icon(Icons.drag_indicator),
                 ),
                 const SizedBox(width: 8),
