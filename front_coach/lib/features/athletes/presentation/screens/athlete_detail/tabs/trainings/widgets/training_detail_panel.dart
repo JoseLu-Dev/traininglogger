@@ -179,6 +179,27 @@ class _EditionView extends StatefulWidget {
 class _EditionViewState extends State<_EditionView> {
   bool _editingName = false;
   late TextEditingController _nameCtrl;
+  final Set<String> _collapsedIds = {};
+
+  bool get _allCollapsed =>
+      widget.exercises.isNotEmpty &&
+      widget.exercises.every((e) => _collapsedIds.contains(e.plan.id));
+
+  void _toggleCollapseAll() => setState(() {
+        if (_allCollapsed) {
+          _collapsedIds.clear();
+        } else {
+          _collapsedIds.addAll(widget.exercises.map((e) => e.plan.id));
+        }
+      });
+
+  void _toggleCollapse(String id) => setState(() {
+        if (_collapsedIds.contains(id)) {
+          _collapsedIds.remove(id);
+        } else {
+          _collapsedIds.add(id);
+        }
+      });
 
   @override
   void initState() {
@@ -244,6 +265,14 @@ class _EditionViewState extends State<_EditionView> {
                 ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
               ),
               const Spacer(),
+              IconButton(
+                tooltip: _allCollapsed ? 'Expand all' : 'Collapse all',
+                icon: Icon(
+                  _allCollapsed ? Icons.unfold_more : Icons.unfold_less,
+                  size: 20,
+                ),
+                onPressed: widget.exercises.isEmpty ? null : _toggleCollapseAll,
+              ),
               IconButton(
                 tooltip: 'Delete training',
                 onPressed: _deletePlan,
@@ -313,6 +342,8 @@ class _EditionViewState extends State<_EditionView> {
             child: _ExerciseList(
               exercises: widget.exercises,
               notifier: widget.notifier,
+              collapsedIds: _collapsedIds,
+              onToggleCollapse: _toggleCollapse,
             ),
           ),
         ],
@@ -328,8 +359,15 @@ class _EditionViewState extends State<_EditionView> {
 class _ExerciseList extends StatelessWidget {
   final List<ExerciseDetailData> exercises;
   final TrainingDetailNotifier notifier;
+  final Set<String> collapsedIds;
+  final void Function(String) onToggleCollapse;
 
-  const _ExerciseList({required this.exercises, required this.notifier});
+  const _ExerciseList({
+    required this.exercises,
+    required this.notifier,
+    required this.collapsedIds,
+    required this.onToggleCollapse,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -347,6 +385,8 @@ class _ExerciseList extends StatelessWidget {
             key: ValueKey(ex.plan.id),
             data: ex,
             notifier: notifier,
+            isCollapsed: collapsedIds.contains(ex.plan.id),
+            onToggleCollapse: () => onToggleCollapse(ex.plan.id),
           ),
       ],
     );
@@ -357,15 +397,75 @@ class _ExerciseList extends StatelessWidget {
 // Exercise card
 // ---------------------------------------------------------------------------
 
-class _ExerciseCard extends StatelessWidget {
+class _ExerciseCard extends StatefulWidget {
   final ExerciseDetailData data;
   final TrainingDetailNotifier notifier;
+  final bool isCollapsed;
+  final VoidCallback onToggleCollapse;
 
-  const _ExerciseCard({super.key, required this.data, required this.notifier});
+  const _ExerciseCard({
+    super.key,
+    required this.data,
+    required this.notifier,
+    required this.isCollapsed,
+    required this.onToggleCollapse,
+  });
+
+  @override
+  State<_ExerciseCard> createState() => _ExerciseCardState();
+}
+
+class _ExerciseCardState extends State<_ExerciseCard> {
+  late TextEditingController _countCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _countCtrl = TextEditingController(
+      text: widget.data.sets.length.toString(),
+    );
+  }
+
+  @override
+  void didUpdateWidget(_ExerciseCard old) {
+    super.didUpdateWidget(old);
+    if (old.data.sets.length != widget.data.sets.length) {
+      _countCtrl.text = widget.data.sets.length.toString();
+    }
+  }
+
+  @override
+  void dispose() {
+    _countCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _applySetCount() async {
+    final newCount = int.tryParse(_countCtrl.text);
+    if (newCount == null || newCount < 0) {
+      _countCtrl.text = widget.data.sets.length.toString();
+      return;
+    }
+    final current = widget.data.sets.length;
+    final epId = widget.data.plan.id;
+    if (newCount > current) {
+      for (int i = 0; i < newCount - current; i++) {
+        await widget.notifier.addSet(epId);
+      }
+    } else if (newCount < current) {
+      final toDelete = widget.data.sets.reversed
+          .take(current - newCount)
+          .toList();
+      for (final s in toDelete) {
+        await widget.notifier.deleteSet(s.id);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final ep = data.plan;
+    final ep = widget.data.plan;
+    final notifier = widget.notifier;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -378,12 +478,33 @@ class _ExerciseCard extends StatelessWidget {
             Row(
               children: [
                 ReorderableDragStartListener(
-                  index: data.plan.orderIndex,
+                  index: widget.data.plan.orderIndex,
                   child: const Icon(Icons.drag_indicator),
                 ),
                 const SizedBox(width: 8),
+                // Set count input
+                SizedBox(
+                  width: 38,
+                  child: TextField(
+                    controller: _countCtrl,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    onEditingComplete: _applySetCount,
+                    onTapOutside: (_) => _applySetCount(),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 6,
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Text(
-                  '${ep.orderIndex + 1}. ${data.exercise.name}',
+                  '${ep.orderIndex + 1}. ${widget.data.exercise.name}',
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(width: 8),
@@ -392,28 +513,38 @@ class _ExerciseCard extends StatelessWidget {
                   child: Wrap(
                     spacing: 4,
                     children: [
-                      ...data.variants.map(
+                      ...widget.data.variants.map(
                         (v) => _VariantChip(
                           label: v.name,
                           onRemove: () =>
                               notifier.removeVariantFromExercise(ep.id, v.id),
                         ),
                       ),
-                      // Add variant button
                       ActionChip(
                         label: const Text('+↓'),
                         onPressed: () => showExerciseAutocomplete(
                           context,
                           notifier: notifier,
-                          initialQuery: data.exercise.name,
+                          initialQuery: widget.data.exercise.name,
                           preselectedExercisePlanId: ep.id,
-                          initialVariants: data.variants,
+                          initialVariants: widget.data.variants,
                         ),
                         padding: EdgeInsets.zero,
                         labelPadding: const EdgeInsets.symmetric(horizontal: 6),
                       ),
                     ],
                   ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    widget.isCollapsed
+                        ? Icons.expand_more
+                        : Icons.expand_less,
+                    size: 18,
+                  ),
+                  onPressed: widget.onToggleCollapse,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 ),
                 IconButton(
                   tooltip: 'Delete exercise',
@@ -423,20 +554,22 @@ class _ExerciseCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 8),
+            if (!widget.isCollapsed) ...[
+              const SizedBox(height: 8),
 
-            // ── Set table ─────────────────────────────────────────────────
-            _SetTable(exerciseData: data, notifier: notifier),
+              // ── Set table ───────────────────────────────────────────────
+              _SetTable(exerciseData: widget.data, notifier: notifier),
 
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
 
-            // ── Notes field ───────────────────────────────────────────────
-            _NotesField(
-              initialValue: ep.notes ?? '',
-              onChanged: (v) async {
-                await notifier.updateExerciseNotes(ep.id, v);
-              },
-            ),
+              // ── Notes field ─────────────────────────────────────────────
+              _NotesField(
+                initialValue: ep.notes ?? '',
+                onChanged: (v) async {
+                  await notifier.updateExerciseNotes(ep.id, v);
+                },
+              ),
+            ],
           ],
         ),
       ),
