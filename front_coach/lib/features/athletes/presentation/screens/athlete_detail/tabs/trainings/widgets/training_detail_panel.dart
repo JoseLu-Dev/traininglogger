@@ -504,7 +504,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '${ep.orderIndex + 1}. ${widget.data.exercise.name}',
+                  widget.data.exercise.name,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(width: 8),
@@ -549,7 +549,30 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                 IconButton(
                   tooltip: 'Delete exercise',
                   icon: const Icon(Icons.delete_outline, size: 18),
-                  onPressed: () => notifier.deleteExercise(ep.id),
+                  onPressed: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete exercise?'),
+                        content: Text(
+                          'Delete "${widget.data.exercise.name}"? This cannot be undone.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      notifier.deleteExercise(ep.id);
+                    }
+                  },
                 ),
               ],
             ),
@@ -621,12 +644,11 @@ class _SetTable extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 22), // drag handle (18) + gap (4)
-              _headerCell('#', 24),
               _headerCell('REPS', 60),
               _headerCell('WEIGHT', 70),
               _headerCell('RPE', 50),
               _headerCell('NOTES', 100),
-              const SizedBox(width: 32), // delete button
+              const SizedBox(width: 64), // copy + delete buttons
             ],
           ),
         ),
@@ -645,6 +667,18 @@ class _SetTable extends StatelessWidget {
                 set: sets[i],
                 index: i,
                 notifier: notifier,
+                onCopyBelow: i < sets.length - 1
+                    ? (reps, weight, rpe, notes) {
+                        for (int j = i + 1; j < sets.length; j++) {
+                          notifier.updateSet(sets[j].copyWith(
+                            targetReps: reps,
+                            targetWeight: weight,
+                            targetRpe: rpe,
+                            notes: notes,
+                          ));
+                        }
+                      }
+                    : null,
               ),
           ],
         ),
@@ -686,12 +720,15 @@ class _SetRow extends StatefulWidget {
   final SetPlan set;
   final int index;
   final TrainingDetailNotifier notifier;
+  final void Function(int? reps, double? weight, double? rpe, String? notes)?
+      onCopyBelow;
 
   const _SetRow({
     super.key,
     required this.set,
     required this.index,
     required this.notifier,
+    this.onCopyBelow,
   });
 
   @override
@@ -722,11 +759,17 @@ class _SetRowState extends State<_SetRow> {
   @override
   void didUpdateWidget(_SetRow old) {
     super.didUpdateWidget(old);
-    if (old.set.id != widget.set.id) {
-      _repsCtrl.text = widget.set.targetReps?.toString() ?? '';
-      _weightCtrl.text = widget.set.targetWeight?.toString() ?? '';
-      _rpeCtrl.text = widget.set.targetRpe?.toString() ?? '';
-      _notesCtrl.text = widget.set.notes ?? '';
+    final o = old.set;
+    final s = widget.set;
+    if (o.id != s.id ||
+        o.targetReps != s.targetReps ||
+        o.targetWeight != s.targetWeight ||
+        o.targetRpe != s.targetRpe ||
+        o.notes != s.notes) {
+      _repsCtrl.text = s.targetReps?.toString() ?? '';
+      _weightCtrl.text = s.targetWeight?.toString() ?? '';
+      _rpeCtrl.text = s.targetRpe?.toString() ?? '';
+      _notesCtrl.text = s.notes ?? '';
     }
   }
 
@@ -761,23 +804,52 @@ class _SetRowState extends State<_SetRow> {
             child: const Icon(Icons.drag_indicator, size: 18),
           ),
           const SizedBox(width: 4),
-          SizedBox(
-            width: 24,
-            child: Text(
-              '${widget.index + 1}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
           _numField(_repsCtrl, 60),
           _numField(_weightCtrl, 70),
           _numField(_rpeCtrl, 50),
           SizedBox(width: 100, child: _compactTextField(_notesCtrl, hint: '')),
           IconButton(
-            icon: const Icon(Icons.close, size: 14),
+            tooltip: 'Copy to sets below',
+            icon: const Icon(Icons.content_copy, size: 14),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-            onPressed: () => widget.notifier.deleteSet(widget.set.id),
+            onPressed: widget.onCopyBelow == null
+                ? null
+                : () => widget.onCopyBelow!(
+                      int.tryParse(_repsCtrl.text),
+                      double.tryParse(_weightCtrl.text),
+                      double.tryParse(_rpeCtrl.text),
+                      _notesCtrl.text.isEmpty ? null : _notesCtrl.text,
+                    ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, size: 14),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            onPressed: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Delete set?'),
+                  content: Text(
+                    'Delete set ${widget.index + 1}? This cannot be undone.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('Cancel'),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: const Text('Delete'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true) {
+                widget.notifier.deleteSet(widget.set.id);
+              }
+            },
           ),
         ],
       ),
