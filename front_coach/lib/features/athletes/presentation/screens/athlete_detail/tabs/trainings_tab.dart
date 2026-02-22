@@ -9,8 +9,8 @@ class TrainingsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: TrainingCalendarPanel(athleteId: athleteId)),
-        const Expanded(child: SizedBox()),
+        Flexible(flex: 2, child: TrainingCalendarPanel(athleteId: athleteId)),
+        const Flexible(flex: 3, child: SizedBox()),
       ],
     );
   }
