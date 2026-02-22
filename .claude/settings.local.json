@@ -26,7 +26,8 @@
       "Bash(flutter pub run build_runner build:*)",
       "Bash(flutter pub get:*)",
       "mcp__marionette__take_screenshots",
-      "mcp__marionette__enter_text"
+      "mcp__marionette__enter_text",
+      "Bash(dart analyze:*)"
     ]
   }
 }
