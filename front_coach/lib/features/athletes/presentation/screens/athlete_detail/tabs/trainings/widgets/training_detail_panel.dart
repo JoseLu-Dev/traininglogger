@@ -1029,11 +1029,6 @@ class _SeeView extends StatelessWidget {
                 ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
               ),
               const Spacer(),
-              IconButton(
-                tooltip: 'Delete training',
-                onPressed: () => _deletePlan(context),
-                icon: const Icon(Icons.delete_outline),
-              ),
             ],
           ),
 
