@@ -119,10 +119,29 @@ class _ExerciseAutocompleteDialogState
   }
 
   /// Text after the matched exercise name — used to filter variants.
+  ///
+  /// Greedily strips already-selected variant names from the front (longest
+  /// first) so that after selecting "Low Bar" the filter is empty and the user
+  /// can immediately type to search for the next variant.
   String get _variantFilter {
     final match = _matchedExercise;
     if (match == null) return '';
-    return _queryCtrl.text.substring(match.name.length).trim();
+    String remaining = _queryCtrl.text.substring(match.name.length);
+    final sorted = [..._selectedVariants]
+      ..sort((a, b) => b.name.length.compareTo(a.name.length));
+    bool found = true;
+    while (found) {
+      found = false;
+      remaining = remaining.trimLeft();
+      for (final v in sorted) {
+        if (remaining.toLowerCase().startsWith(v.name.toLowerCase())) {
+          remaining = remaining.substring(v.name.length);
+          found = true;
+          break;
+        }
+      }
+    }
+    return remaining.trim();
   }
 
   /// Exercise rows to display in the dropdown.
@@ -146,32 +165,36 @@ class _ExerciseAutocompleteDialogState
 
   bool _isSelected(Variant v) => _selectedVariants.any((s) => s.id == v.id);
 
+  /// Builds the canonical query text: "ExerciseName Variant1 Variant2 "
+  /// (trailing space lets the user type the next variant filter immediately).
+  String _buildQueryText(Exercise ex, List<Variant> variants) {
+    final parts = [ex.name, ...variants.map((v) => v.name)];
+    return '${parts.join(' ')} ';
+  }
+
+  void _setQueryText(String text) {
+    _queryCtrl.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
   void _toggleVariant(Variant v) {
     final matchedEx = _matchedExercise;
-    setState(() {
-      if (_isSelected(v)) {
-        _selectedVariants.removeWhere((s) => s.id == v.id);
-      } else {
-        _selectedVariants.add(v);
-      }
-    });
-    // Clear the variant-filter portion of the text so the user can
-    // immediately type to filter for the next variant.
-    if (matchedEx != null && _queryCtrl.text != matchedEx.name) {
-      _queryCtrl.value = TextEditingValue(
-        text: matchedEx.name,
-        selection: TextSelection.collapsed(offset: matchedEx.name.length),
-      );
+    if (_isSelected(v)) {
+      setState(() => _selectedVariants.removeWhere((s) => s.id == v.id));
+    } else {
+      setState(() => _selectedVariants.add(v));
+    }
+    if (matchedEx != null) {
+      _setQueryText(_buildQueryText(matchedEx, _selectedVariants));
     }
   }
 
   /// Clicking an exercise row fills the text field with the exercise name,
   /// which triggers the prefix-match and makes variant rows appear.
   void _pickExercise(Exercise ex) {
-    _queryCtrl.value = TextEditingValue(
-      text: ex.name,
-      selection: TextSelection.collapsed(offset: ex.name.length),
-    );
+    _setQueryText('${ex.name} ');
   }
 
   Future<void> _confirm() async {
