@@ -233,8 +233,9 @@ class _DayCell extends StatelessWidget {
       chipBg = colorScheme.secondaryContainer;
       chipText = colorScheme.onSecondaryContainer;
     }
-    final IconData chipIcon =
-        isLocked ? Icons.check : Icons.radio_button_unchecked;
+    final IconData chipIcon = isLocked
+        ? Icons.check
+        : Icons.radio_button_unchecked;
 
     // ── Visual widget (pure, no gestures) ───────────────────────────────────
     Widget visual = Container(
@@ -292,8 +293,8 @@ class _DayCell extends StatelessWidget {
     );
 
     // ── Draggable wrapper (only when plan exists) ────────────────────────────
-    Widget draggable = plan != null
-        ? LongPressDraggable<TrainingPlan>(
+    Widget draggable = plan != null && !plan!.isLocked
+        ? Draggable<TrainingPlan>(
             data: plan!,
             feedback: Material(
               elevation: 4,
