@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:front_shared/front_shared.dart';
 import '../notifiers/training_detail_notifier.dart';
 
 /// Opens a dialog for exercise + variant selection.
 ///
-/// If [preselectedExercise] is provided the dialog skips directly to
-/// variant-only mode (for the [+↓] button on an existing exercise row).
+/// Normal mode  : type to search exercises; once the query is a prefix of an
+///                exercise name, variant rows appear below automatically.
+///                Continuing to type filters variants by the remaining suffix.
+///
+/// Variant-only : [preselectedExercise] / [preselectedExercisePlanId] are set.
+///                Text field filters variants directly; no exercise search.
 Future<void> showExerciseAutocomplete(
   BuildContext context, {
   required TrainingDetailNotifier notifier,
@@ -44,19 +47,17 @@ class _ExerciseAutocompleteDialog extends StatefulWidget {
 class _ExerciseAutocompleteDialogState
     extends State<_ExerciseAutocompleteDialog> {
   final _queryCtrl = TextEditingController();
-  final _focusNode = FocusNode();
-
-  Exercise? _selectedExercise;
   final List<Variant> _selectedVariants = [];
 
   List<Exercise> _exercises = [];
   List<Variant> _allVariants = [];
   bool _loading = true;
 
+  bool get _isVariantOnly => widget.preselectedExercise != null;
+
   @override
   void initState() {
     super.initState();
-    _selectedExercise = widget.preselectedExercise;
     _loadData();
     _queryCtrl.addListener(_onQueryChanged);
   }
@@ -64,7 +65,6 @@ class _ExerciseAutocompleteDialogState
   @override
   void dispose() {
     _queryCtrl.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -79,74 +79,101 @@ class _ExerciseAutocompleteDialogState
     });
   }
 
-  void _onQueryChanged() {
-    setState(() {}); // rebuild filtered list
+  void _onQueryChanged() => setState(() {});
+
+  // ── Derived getters ────────────────────────────────────────────────────────
+
+  /// Longest exercise whose name is a case-insensitive prefix of the query.
+  /// Returns the preselected exercise in variant-only mode.
+  Exercise? get _matchedExercise {
+    if (_isVariantOnly) return widget.preselectedExercise;
+    final q = _queryCtrl.text;
+    if (q.isEmpty) return null;
+    Exercise? best;
+    for (final ex in _exercises) {
+      if (q.toLowerCase().startsWith(ex.name.toLowerCase())) {
+        if (best == null || ex.name.length > best.name.length) {
+          best = ex;
+        }
+      }
+    }
+    return best;
   }
 
+  /// Text after the matched exercise name — used to filter variants.
+  String get _variantFilter {
+    if (_isVariantOnly) return _queryCtrl.text.trim();
+    final match = _matchedExercise;
+    if (match == null) return '';
+    return _queryCtrl.text.substring(match.name.length).trim();
+  }
+
+  /// Exercise rows to display in the dropdown.
   List<Exercise> get _filteredExercises {
+    if (_isVariantOnly) return [];
+    final match = _matchedExercise;
+    // When there's a prefix match, show only that exercise (not the full list)
+    if (match != null) return [match];
     final q = _queryCtrl.text.trim().toLowerCase();
     if (q.isEmpty) return _exercises;
     return _exercises.where((e) => e.name.toLowerCase().contains(q)).toList();
   }
 
-  Exercise? get _exactMatch {
-    final q = _queryCtrl.text.trim().toLowerCase();
-    if (q.isEmpty) return null;
-    return _exercises
-        .where((e) => e.name.toLowerCase() == q)
-        .firstOrNull;
+  /// Variant rows to display — only when an exercise is matched (or variant-only).
+  List<Variant> get _filteredVariants {
+    if (!_isVariantOnly && _matchedExercise == null) return [];
+    final filter = _variantFilter.toLowerCase();
+    if (filter.isEmpty) return _allVariants;
+    return _allVariants
+        .where((v) => v.name.toLowerCase().contains(filter))
+        .toList();
   }
 
-  bool _isVariantSelected(Variant v) =>
-      _selectedVariants.any((s) => s.id == v.id);
+  bool _isSelected(Variant v) => _selectedVariants.any((s) => s.id == v.id);
 
-  void _toggleVariant(Variant v) {
-    setState(() {
-      if (_isVariantSelected(v)) {
-        _selectedVariants.removeWhere((s) => s.id == v.id);
-      } else {
-        _selectedVariants.add(v);
-      }
-    });
-  }
+  void _toggleVariant(Variant v) => setState(() {
+        if (_isSelected(v)) {
+          _selectedVariants.removeWhere((s) => s.id == v.id);
+        } else {
+          _selectedVariants.add(v);
+        }
+      });
 
-  Future<void> _selectExercise(Exercise ex) async {
-    setState(() {
-      _selectedExercise = ex;
-      _queryCtrl.text = ex.name;
-    });
+  /// Clicking an exercise row fills the text field with the exercise name,
+  /// which triggers the prefix-match and makes variant rows appear.
+  void _pickExercise(Exercise ex) {
+    setState(() => _queryCtrl.text = ex.name);
   }
 
   Future<void> _confirm() async {
-    if (_selectedExercise == null) return;
-    if (widget.preselectedExercisePlanId != null) {
-      // Variant-only mode
+    if (_isVariantOnly) {
       for (final v in _selectedVariants) {
-        await widget.notifier.addVariantToExercise(
-          widget.preselectedExercisePlanId!,
-          v,
-        );
+        await widget.notifier
+            .addVariantToExercise(widget.preselectedExercisePlanId!, v);
       }
     } else {
-      await widget.notifier.addExercise(_selectedExercise!, _selectedVariants);
+      final ex = _matchedExercise;
+      if (ex == null) return;
+      await widget.notifier.addExercise(ex, _selectedVariants);
     }
     if (mounted) Navigator.of(context).pop();
   }
 
-  Future<void> _createAndSelectExercise() async {
+  Future<void> _createExercise() async {
     final name = _queryCtrl.text.trim();
     if (name.isEmpty) return;
     final ex = await widget.notifier.createExercise(name);
     if (!mounted) return;
     setState(() {
       _exercises.add(ex);
-      _selectedExercise = ex;
       _queryCtrl.text = ex.name;
     });
   }
 
-  Future<void> _createAndAddVariant() async {
-    final name = _queryCtrl.text.trim();
+  Future<void> _createVariant() async {
+    final name = _variantFilter.trim().isNotEmpty
+        ? _variantFilter.trim()
+        : _queryCtrl.text.trim();
     if (name.isEmpty) return;
     final v = await widget.notifier.createVariant(name);
     if (!mounted) return;
@@ -156,180 +183,191 @@ class _ExerciseAutocompleteDialogState
     });
   }
 
+  // ── Build ──────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isVariantOnly = widget.preselectedExercise != null;
-    final exactMatch = _exactMatch;
+    final matchedEx = _matchedExercise;
+    final filteredExercises = _filteredExercises;
+    final filteredVariants = _filteredVariants;
+    final query = _queryCtrl.text.trim();
+    final variantFilter = _variantFilter;
+    final showVariants = _isVariantOnly || matchedEx != null;
 
-    return KeyboardListener(
-      focusNode: FocusNode(),
-      onKeyEvent: (event) {
-        if (event is KeyDownEvent &&
-            event.logicalKey == LogicalKeyboardKey.escape) {
-          Navigator.of(context).pop();
-        }
-      },
-      child: AlertDialog(
-        title: Text(isVariantOnly
+    // Add is enabled once an exercise is identified (variants are optional).
+    // In variant-only mode at least one variant must be chosen.
+    final canConfirm =
+        _isVariantOnly ? _selectedVariants.isNotEmpty : matchedEx != null;
+
+    return AlertDialog(
+      title: Text(
+        _isVariantOnly
             ? 'Add variant to ${widget.preselectedExercise!.name}'
-            : 'Add exercise'),
-        contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-        content: SizedBox(
-          width: 420,
-          child: _loading
-              ? const SizedBox(
-                  height: 120,
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ── Search field ───────────────────────────────────────
-                    if (!isVariantOnly) ...[
-                      TextField(
-                        controller: _queryCtrl,
-                        focusNode: _focusNode,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          hintText: 'Search exercise…',
-                          prefixIcon: const Icon(Icons.search),
-                          suffixIcon: _queryCtrl.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
-                                    _queryCtrl.clear();
-                                    setState(() {
-                                      _selectedExercise = null;
-                                      _selectedVariants.clear();
-                                    });
-                                  },
-                                )
-                              : null,
-                          border: const OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-
-                    // ── Selected exercise + chosen variants chips ───────────
-                    if (_selectedExercise != null) ...[
-                      Wrap(
-                        spacing: 4,
-                        children: [
-                          Chip(
-                            label: Text(_selectedExercise!.name),
-                            backgroundColor: colorScheme.secondaryContainer,
-                          ),
-                          ..._selectedVariants.map((v) => Chip(
-                                label: Text(v.name),
+            : 'Add exercise',
+      ),
+      contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      content: SizedBox(
+        width: 420,
+        child: _loading
+            ? const SizedBox(
+                height: 120,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Selected variant chips ─────────────────────────────────
+                  if (_selectedVariants.isNotEmpty) ...[
+                    Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: _selectedVariants
+                          .map((v) => Chip(
+                                label: Text(
+                                  v.name,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
                                 backgroundColor: colorScheme.tertiaryContainer,
                                 deleteIcon: const Icon(Icons.close, size: 14),
                                 onDeleted: () => _toggleVariant(v),
-                              )),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-
-                    // ── Dropdown results ───────────────────────────────────
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 300),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Exercise list (only when not variant-only)
-                            if (!isVariantOnly && _selectedExercise == null)
-                              ..._filteredExercises.map(
-                                (ex) => _ExerciseRow(
-                                  exercise: ex,
-                                  colorScheme: colorScheme,
-                                  onTap: () => _selectExercise(ex),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                padding: EdgeInsets.zero,
+                                labelPadding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
                                 ),
-                              ),
+                              ))
+                          .toList(),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
 
-                            // Variant list (shown once exercise selected OR in variant-only mode)
-                            if (_selectedExercise != null || isVariantOnly) ...[
-                              if (!isVariantOnly)
-                                const Divider(height: 8),
+                  // ── Search / filter field ──────────────────────────────────
+                  TextField(
+                    controller: _queryCtrl,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: _isVariantOnly
+                          ? 'Filter variants…'
+                          : 'Search exercise…',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: query.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () => setState(() {
+                                _queryCtrl.clear();
+                                _selectedVariants.clear();
+                              }),
+                            )
+                          : null,
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // ── Dropdown ───────────────────────────────────────────────
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 300),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Exercise rows (normal mode only, hidden once a
+                          // prefix match is found and only variants are shown)
+                          if (!_isVariantOnly)
+                            ...filteredExercises.map(
+                              (ex) => _ExerciseRow(
+                                exercise: ex,
+                                colorScheme: colorScheme,
+                                onTap: () => _pickExercise(ex),
+                              ),
+                            ),
+
+                          // Variant section — appears automatically once the
+                          // query matches an exercise prefix
+                          if (showVariants) ...[
+                            if (!_isVariantOnly &&
+                                filteredExercises.isNotEmpty)
+                              const Divider(height: 12),
+                            if (filteredVariants.isEmpty)
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 4),
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: Text(
-                                  'Variants',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelSmall
-                                      ?.copyWith(
-                                          color: colorScheme.outline),
+                                  variantFilter.isNotEmpty
+                                      ? 'No variants match "$variantFilter"'
+                                      : 'No variants available',
+                                  style: TextStyle(
+                                    color: colorScheme.outline,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                              ),
-                              ..._allVariants.map(
+                              )
+                            else
+                              ...filteredVariants.map(
                                 (v) => _VariantRow(
-                                  exercise: isVariantOnly
-                                      ? widget.preselectedExercise!
-                                      : _selectedExercise!,
+                                  exerciseName: _isVariantOnly
+                                      ? widget.preselectedExercise!.name
+                                      : matchedEx!.name,
                                   variant: v,
-                                  isSelected: _isVariantSelected(v),
+                                  isSelected: _isSelected(v),
                                   colorScheme: colorScheme,
                                   onTap: () => _toggleVariant(v),
                                 ),
                               ),
-                            ],
-
-                            // Divider + footer actions
-                            if (!isVariantOnly && _queryCtrl.text.isNotEmpty) ...[
-                              const Divider(height: 16),
-                              if (_selectedExercise == null ||
-                                  exactMatch == null)
-                                _FooterAction(
-                                  label:
-                                      '+ Add new exercise "${_queryCtrl.text.trim()}"',
-                                  onTap: _createAndSelectExercise,
-                                ),
-                            ],
-                            if (_selectedExercise != null &&
-                                _queryCtrl.text.isNotEmpty) ...[
-                              if (!isVariantOnly) const SizedBox(height: 4),
-                              _FooterAction(
-                                label:
-                                    '+ Add new variant "${_queryCtrl.text.trim()}"',
-                                onTap: _createAndAddVariant,
-                              ),
-                            ],
-                            if (isVariantOnly) ...[
-                              const Divider(height: 16),
-                              _FooterAction(
-                                label:
-                                    '+ Add new variant "${_queryCtrl.text.trim()}"',
-                                onTap: _createAndAddVariant,
-                              ),
-                            ],
                           ],
-                        ),
+
+                          // Footer: create new exercise (only before a match)
+                          if (!_isVariantOnly &&
+                              matchedEx == null &&
+                              query.isNotEmpty) ...[
+                            const Divider(height: 16),
+                            _FooterAction(
+                              label: '+ Add new exercise "$query"',
+                              onTap: _createExercise,
+                            ),
+                          ],
+
+                          // Footer: create new variant (once exercise matched)
+                          if (showVariants && variantFilter.isNotEmpty) ...[
+                            const Divider(height: 16),
+                            _FooterAction(
+                              label: '+ Add new variant "$variantFilter"',
+                              onTap: _createVariant,
+                            ),
+                          ],
+
+                          // Footer: create variant in variant-only mode with no filter
+                          if (_isVariantOnly &&
+                              variantFilter.isEmpty &&
+                              query.isNotEmpty) ...[
+                            const Divider(height: 16),
+                            _FooterAction(
+                              label: '+ Add new variant "$query"',
+                              onTap: _createVariant,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                  ],
-                ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: (_selectedExercise != null || isVariantOnly) &&
-                    _selectedVariants.isNotEmpty
-                ? _confirm
-                : null,
-            child: const Text('Add'),
-          ),
-        ],
+                  ),
+                ],
+              ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: canConfirm ? _confirm : null,
+          child: const Text('Add'),
+        ),
+      ],
     );
   }
 }
@@ -382,14 +420,14 @@ class _ExerciseRow extends StatelessWidget {
 }
 
 class _VariantRow extends StatelessWidget {
-  final Exercise exercise;
+  final String exerciseName;
   final Variant variant;
   final bool isSelected;
   final ColorScheme colorScheme;
   final VoidCallback onTap;
 
   const _VariantRow({
-    required this.exercise,
+    required this.exerciseName,
     required this.variant,
     required this.isSelected,
     required this.colorScheme,
@@ -412,7 +450,7 @@ class _VariantRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                exercise.name,
+                exerciseName,
                 style: TextStyle(
                   fontSize: 11,
                   color: colorScheme.onSecondaryContainer,

@@ -22,9 +22,12 @@ class _TrainingDetailPanelState extends ConsumerState<TrainingDetailPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final calendarState = ref.watch(trainingsCalendarProvider(widget.athleteId));
-    final detailNotifier =
-        ref.read(trainingDetailProvider(widget.athleteId).notifier);
+    final calendarState = ref.watch(
+      trainingsCalendarProvider(widget.athleteId),
+    );
+    final detailNotifier = ref.read(
+      trainingDetailProvider(widget.athleteId).notifier,
+    );
     final detailState = ref.watch(trainingDetailProvider(widget.athleteId));
 
     // React to calendar selection changes
@@ -128,8 +131,18 @@ String _formatDate(String dateKey) {
     );
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     // weekday: 1=Mon … 7=Sun
     return '${days[dt.weekday - 1]}, ${months[dt.month - 1]} ${dt.day}';
@@ -226,9 +239,9 @@ class _EditionViewState extends State<_EditionView> {
             children: [
               Text(
                 _formatDate(widget.plan.date),
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: colorScheme.outline,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
               ),
               const Spacer(),
               IconButton(
@@ -316,10 +329,7 @@ class _ExerciseList extends StatelessWidget {
   final List<ExerciseDetailData> exercises;
   final TrainingDetailNotifier notifier;
 
-  const _ExerciseList({
-    required this.exercises,
-    required this.notifier,
-  });
+  const _ExerciseList({required this.exercises, required this.notifier});
 
   @override
   Widget build(BuildContext context) {
@@ -351,11 +361,7 @@ class _ExerciseCard extends StatelessWidget {
   final ExerciseDetailData data;
   final TrainingDetailNotifier notifier;
 
-  const _ExerciseCard({
-    super.key,
-    required this.data,
-    required this.notifier,
-  });
+  const _ExerciseCard({super.key, required this.data, required this.notifier});
 
   @override
   Widget build(BuildContext context) {
@@ -386,11 +392,13 @@ class _ExerciseCard extends StatelessWidget {
                   child: Wrap(
                     spacing: 4,
                     children: [
-                      ...data.variants.map((v) => _VariantChip(
-                            label: v.name,
-                            onRemove: () =>
-                                notifier.removeVariantFromExercise(ep.id, v.id),
-                          )),
+                      ...data.variants.map(
+                        (v) => _VariantChip(
+                          label: v.name,
+                          onRemove: () =>
+                              notifier.removeVariantFromExercise(ep.id, v.id),
+                        ),
+                      ),
                       // Add variant button
                       ActionChip(
                         label: const Text('+↓'),
@@ -401,8 +409,7 @@ class _ExerciseCard extends StatelessWidget {
                           preselectedExercisePlanId: ep.id,
                         ),
                         padding: EdgeInsets.zero,
-                        labelPadding:
-                            const EdgeInsets.symmetric(horizontal: 6),
+                        labelPadding: const EdgeInsets.symmetric(horizontal: 6),
                       ),
                     ],
                   ),
@@ -516,11 +523,10 @@ class _SetTable extends StatelessWidget {
             child: TextButton.icon(
               onPressed: () => notifier.addSet(epId),
               icon: const Icon(Icons.add, size: 16),
-              label: const Text('+ Set'),
+              label: const Text('Set'),
               style: TextButton.styleFrom(
                 foregroundColor: colorScheme.primary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
             ),
@@ -568,11 +574,14 @@ class _SetRowState extends State<_SetRow> {
   void initState() {
     super.initState();
     _repsCtrl = TextEditingController(
-        text: widget.set.targetReps?.toString() ?? '');
+      text: widget.set.targetReps?.toString() ?? '',
+    );
     _weightCtrl = TextEditingController(
-        text: widget.set.targetWeight?.toString() ?? '');
+      text: widget.set.targetWeight?.toString() ?? '',
+    );
     _rpeCtrl = TextEditingController(
-        text: widget.set.targetRpe?.toString() ?? '');
+      text: widget.set.targetRpe?.toString() ?? '',
+    );
     _notesCtrl = TextEditingController(text: widget.set.notes ?? '');
   }
 
@@ -597,12 +606,14 @@ class _SetRowState extends State<_SetRow> {
   }
 
   void _save() {
-    widget.notifier.updateSet(widget.set.copyWith(
-      targetReps: int.tryParse(_repsCtrl.text),
-      targetWeight: double.tryParse(_weightCtrl.text),
-      targetRpe: double.tryParse(_rpeCtrl.text),
-      notes: _notesCtrl.text.isEmpty ? null : _notesCtrl.text,
-    ));
+    widget.notifier.updateSet(
+      widget.set.copyWith(
+        targetReps: int.tryParse(_repsCtrl.text),
+        targetWeight: double.tryParse(_weightCtrl.text),
+        targetRpe: double.tryParse(_rpeCtrl.text),
+        notes: _notesCtrl.text.isEmpty ? null : _notesCtrl.text,
+      ),
+    );
   }
 
   @override
@@ -627,10 +638,7 @@ class _SetRowState extends State<_SetRow> {
           _numField(_repsCtrl, 60),
           _numField(_weightCtrl, 70),
           _numField(_rpeCtrl, 50),
-          SizedBox(
-            width: 100,
-            child: _compactTextField(_notesCtrl, hint: ''),
-          ),
+          SizedBox(width: 100, child: _compactTextField(_notesCtrl, hint: '')),
           IconButton(
             icon: const Icon(Icons.close, size: 14),
             padding: EdgeInsets.zero,
@@ -659,8 +667,7 @@ class _SetRowState extends State<_SetRow> {
       onTapOutside: (_) => _save(),
       decoration: InputDecoration(
         isDense: true,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         border: const OutlineInputBorder(),
         hintText: hint,
       ),
@@ -702,8 +709,10 @@ class _NotesFieldState extends State<_NotesField> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Text('Notes: ',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+        const Text(
+          'Notes: ',
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        ),
         Expanded(
           child: TextField(
             controller: _ctrl,
@@ -711,8 +720,7 @@ class _NotesFieldState extends State<_NotesField> {
             onTapOutside: (_) => widget.onChanged(_ctrl.text),
             decoration: const InputDecoration(
               isDense: true,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               border: OutlineInputBorder(),
             ),
             style: const TextStyle(fontSize: 12),
@@ -738,9 +746,7 @@ class _AddExerciseButton extends StatelessWidget {
       onPressed: () => showExerciseAutocomplete(context, notifier: notifier),
       icon: const Icon(Icons.add),
       label: const Text('Add exercise…'),
-      style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(44),
-      ),
+      style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
     );
   }
 }
@@ -807,9 +813,9 @@ class _SeeView extends StatelessWidget {
             children: [
               Text(
                 _formatDate(plan.date),
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: colorScheme.outline,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
               ),
               const Spacer(),
               IconButton(
@@ -823,14 +829,13 @@ class _SeeView extends StatelessWidget {
           // ── Plan name + locked badge ───────────────────────────────────
           Row(
             children: [
-              Text(
-                plan.name,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text(plan.name, style: Theme.of(context).textTheme.titleMedium),
               const Spacer(),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(20),
@@ -838,8 +843,11 @@ class _SeeView extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.lock_outline,
-                        size: 14, color: colorScheme.onTertiaryContainer),
+                    Icon(
+                      Icons.lock_outline,
+                      size: 14,
+                      color: colorScheme.onTertiaryContainer,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'LOCKED',
@@ -877,8 +885,11 @@ class _NoSessionPlaceholder extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.assignment_late_outlined,
-              size: 48, color: colorScheme.outline),
+          Icon(
+            Icons.assignment_late_outlined,
+            size: 48,
+            color: colorScheme.outline,
+          ),
           const SizedBox(height: 16),
           Text(
             'No session recorded\nfor this training',
@@ -933,15 +944,20 @@ class _SeeExerciseCard extends StatelessWidget {
                 Wrap(
                   spacing: 4,
                   children: data.variants
-                      .map((v) => Chip(
-                            label: Text(v.name,
-                                style: const TextStyle(fontSize: 11)),
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            padding: EdgeInsets.zero,
-                            labelPadding: const EdgeInsets.symmetric(
-                                horizontal: 6),
-                          ))
+                      .map(
+                        (v) => Chip(
+                          label: Text(
+                            v.name,
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          padding: EdgeInsets.zero,
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
               ],
@@ -967,7 +983,8 @@ class _SeeExerciseCard extends StatelessWidget {
               final setSession = data.sessionSets
                   .where((ss) => ss.setPlanId == setPlan.id)
                   .firstOrNull;
-              final hasNote = (setPlan.notes?.isNotEmpty == true) ||
+              final hasNote =
+                  (setPlan.notes?.isNotEmpty == true) ||
                   (setSession?.notes?.isNotEmpty == true);
               return Column(
                 children: [
@@ -989,14 +1006,19 @@ class _SeeExerciseCard extends StatelessWidget {
 
             // Extra session sets without a plan counterpart
             ...data.sessionSets
-                .where((ss) => ss.setPlanId == null ||
-                    !data.sets.any((sp) => sp.id == ss.setPlanId))
-                .map((ss) => _SetComparisonRow(
-                      setNumber: ss.setNumber ?? 0,
-                      plan: null,
-                      session: ss,
-                      colorScheme: colorScheme,
-                    )),
+                .where(
+                  (ss) =>
+                      ss.setPlanId == null ||
+                      !data.sets.any((sp) => sp.id == ss.setPlanId),
+                )
+                .map(
+                  (ss) => _SetComparisonRow(
+                    setNumber: ss.setNumber ?? 0,
+                    plan: null,
+                    session: ss,
+                    colorScheme: colorScheme,
+                  ),
+                ),
           ],
         ),
       ),
@@ -1027,7 +1049,9 @@ class _NotesComparisonRow extends StatelessWidget {
                 ? Text(
                     '📝 $planNote',
                     style: TextStyle(
-                        fontSize: 12, color: colorScheme.onSurface),
+                      fontSize: 12,
+                      color: colorScheme.onSurface,
+                    ),
                   )
                 : const SizedBox.shrink(),
           ),
@@ -1042,7 +1066,9 @@ class _NotesComparisonRow extends StatelessWidget {
                 ? Text(
                     '🗣 $sessionNote',
                     style: TextStyle(
-                        fontSize: 12, color: colorScheme.onSurface),
+                      fontSize: 12,
+                      color: colorScheme.onSurface,
+                    ),
                   )
                 : const SizedBox.shrink(),
           ),
@@ -1101,8 +1127,7 @@ class _TableHeader extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.center,
-        style:
-            const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -1220,8 +1245,7 @@ class _SetNoteRow extends StatelessWidget {
             child: planNote?.isNotEmpty == true
                 ? Text(
                     '📝 $planNote',
-                    style: TextStyle(
-                        fontSize: 11, color: colorScheme.outline),
+                    style: TextStyle(fontSize: 11, color: colorScheme.outline),
                   )
                 : const SizedBox.shrink(),
           ),
@@ -1230,8 +1254,7 @@ class _SetNoteRow extends StatelessWidget {
             child: sessionNote?.isNotEmpty == true
                 ? Text(
                     '🗣 $sessionNote',
-                    style: TextStyle(
-                        fontSize: 11, color: colorScheme.outline),
+                    style: TextStyle(fontSize: 11, color: colorScheme.outline),
                   )
                 : const SizedBox.shrink(),
           ),
