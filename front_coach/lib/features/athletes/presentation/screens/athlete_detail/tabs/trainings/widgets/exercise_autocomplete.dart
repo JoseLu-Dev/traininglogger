@@ -51,6 +51,7 @@ class _ExerciseAutocompleteDialog extends StatefulWidget {
 class _ExerciseAutocompleteDialogState
     extends State<_ExerciseAutocompleteDialog> {
   final _queryCtrl = TextEditingController();
+  final _focusNode = FocusNode();
   final List<Variant> _selectedVariants = [];
 
   List<Exercise> _exercises = [];
@@ -71,7 +72,20 @@ class _ExerciseAutocompleteDialogState
   @override
   void dispose() {
     _queryCtrl.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  void _selectFirst() {
+    final matchedEx = _matchedExercise;
+    if (matchedEx == null) {
+      final exercises = _filteredExercises;
+      if (exercises.isNotEmpty) _pickExercise(exercises.first);
+    } else {
+      final variants = _filteredVariants;
+      if (variants.isNotEmpty) _toggleVariant(variants.first);
+    }
+    _focusNode.requestFocus();
   }
 
   Future<void> _loadData() async {
@@ -132,18 +146,32 @@ class _ExerciseAutocompleteDialogState
 
   bool _isSelected(Variant v) => _selectedVariants.any((s) => s.id == v.id);
 
-  void _toggleVariant(Variant v) => setState(() {
-        if (_isSelected(v)) {
-          _selectedVariants.removeWhere((s) => s.id == v.id);
-        } else {
-          _selectedVariants.add(v);
-        }
-      });
+  void _toggleVariant(Variant v) {
+    final matchedEx = _matchedExercise;
+    setState(() {
+      if (_isSelected(v)) {
+        _selectedVariants.removeWhere((s) => s.id == v.id);
+      } else {
+        _selectedVariants.add(v);
+      }
+    });
+    // Clear the variant-filter portion of the text so the user can
+    // immediately type to filter for the next variant.
+    if (matchedEx != null && _queryCtrl.text != matchedEx.name) {
+      _queryCtrl.value = TextEditingValue(
+        text: matchedEx.name,
+        selection: TextSelection.collapsed(offset: matchedEx.name.length),
+      );
+    }
+  }
 
   /// Clicking an exercise row fills the text field with the exercise name,
   /// which triggers the prefix-match and makes variant rows appear.
   void _pickExercise(Exercise ex) {
-    setState(() => _queryCtrl.text = ex.name);
+    _queryCtrl.value = TextEditingValue(
+      text: ex.name,
+      selection: TextSelection.collapsed(offset: ex.name.length),
+    );
   }
 
   Future<void> _confirm() async {
@@ -212,36 +240,12 @@ class _ExerciseAutocompleteDialogState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Selected variant chips ─────────────────────────────────
-                  if (_selectedVariants.isNotEmpty) ...[
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: _selectedVariants
-                          .map((v) => Chip(
-                                label: Text(
-                                  v.name,
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                                backgroundColor: colorScheme.tertiaryContainer,
-                                deleteIcon: const Icon(Icons.close, size: 14),
-                                onDeleted: () => _toggleVariant(v),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                                padding: EdgeInsets.zero,
-                                labelPadding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-
                   // ── Search / filter field ──────────────────────────────────
                   TextField(
                     controller: _queryCtrl,
+                    focusNode: _focusNode,
                     autofocus: true,
+                    onSubmitted: (_) => _selectFirst(),
                     decoration: InputDecoration(
                       hintText: 'Search exercise…',
                       prefixIcon: const Icon(Icons.search),
@@ -258,6 +262,51 @@ class _ExerciseAutocompleteDialogState
                       isDense: true,
                     ),
                   ),
+
+                  // ── Selected exercise + variant chips (below search) ───────
+                  if (matchedEx != null) ...[
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: [
+                        Chip(
+                          label: Text(
+                            matchedEx.name,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          backgroundColor: colorScheme.secondaryContainer,
+                          labelStyle: TextStyle(
+                            color: colorScheme.onSecondaryContainer,
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          padding: EdgeInsets.zero,
+                          labelPadding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                          ),
+                        ),
+                        ..._selectedVariants.map(
+                          (v) => Chip(
+                            label: Text(
+                              v.name,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            backgroundColor: colorScheme.tertiaryContainer,
+                            deleteIcon: const Icon(Icons.close, size: 14),
+                            onDeleted: () => _toggleVariant(v),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            padding: EdgeInsets.zero,
+                            labelPadding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+
                   const SizedBox(height: 8),
 
                   // ── Dropdown ───────────────────────────────────────────────
