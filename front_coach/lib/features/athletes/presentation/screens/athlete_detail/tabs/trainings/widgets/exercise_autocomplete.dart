@@ -317,20 +317,18 @@ class _ExerciseAutocompleteDialogState
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Exercise rows (hidden once a prefix match locks in)
-                          ...filteredExercises.map(
-                            (ex) => _ExerciseRow(
-                              exercise: ex,
-                              colorScheme: colorScheme,
-                              onTap: () => _pickExercise(ex),
+                          // Exercise rows — only while no exercise is matched
+                          if (!showVariants)
+                            ...filteredExercises.map(
+                              (ex) => _ExerciseRow(
+                                exercise: ex,
+                                colorScheme: colorScheme,
+                                onTap: () => _pickExercise(ex),
+                              ),
                             ),
-                          ),
 
-                          // Variant section — appears automatically once the
-                          // query is a prefix of a known exercise name
+                          // Variant section — appears once an exercise is matched
                           if (showVariants) ...[
-                            if (filteredExercises.isNotEmpty)
-                              const Divider(height: 12),
                             if (filteredVariants.isEmpty)
                               Padding(
                                 padding:
