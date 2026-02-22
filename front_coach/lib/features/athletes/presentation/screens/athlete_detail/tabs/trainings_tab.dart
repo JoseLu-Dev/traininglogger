@@ -8,22 +8,26 @@ class TrainingsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.all(12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
             flex: 2,
-            child: Card(
-              child: TrainingCalendarPanel(athleteId: athleteId),
+            child: SingleChildScrollView(
+              child: Card(
+                child: TrainingCalendarPanel(athleteId: athleteId),
+              ),
             ),
           ),
           const SizedBox(width: 12),
           Flexible(
             flex: 3,
-            child: Card(
-              child: TrainingDetailPanel(athleteId: athleteId),
+            child: SingleChildScrollView(
+              child: Card(
+                child: TrainingDetailPanel(athleteId: athleteId),
+              ),
             ),
           ),
         ],
