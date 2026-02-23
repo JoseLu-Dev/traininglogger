@@ -453,8 +453,6 @@ class _EditionViewState extends State<_EditionView> {
               ),
             ),
 
-          const Divider(height: 20),
-
           // ── Exercise list ──────────────────────────────────────────────
           _ExerciseList(
             exercises: widget.exercises,
@@ -642,8 +640,12 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                               notifier.removeVariantFromExercise(ep.id, v.id),
                         ),
                       ),
-                      ActionChip(
-                        label: const Text('+↓'),
+                      IconButton(
+                        icon: Icon(
+                          Icons.edit_outlined,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
                         onPressed: () => showExerciseAutocomplete(
                           context,
                           notifier: notifier,
@@ -652,7 +654,7 @@ class _ExerciseCardState extends State<_ExerciseCard> {
                           initialVariants: widget.data.variants,
                         ),
                         padding: EdgeInsets.zero,
-                        labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+                        constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
                       ),
                     ],
                   ),
