@@ -23,6 +23,7 @@ class TrainingsCalendarNotifier extends StateNotifier<TrainingsCalendarState> {
     DateTime month, {
     bool initial = false,
     String? selectAfter,
+    bool clearSelection = false,
   }) async {
     _focusedMonth = month;
     try {
@@ -57,7 +58,7 @@ class TrainingsCalendarNotifier extends StateNotifier<TrainingsCalendarState> {
         plansByDate: plansByDate,
         sessionsByDate: sessionsByDate,
         focusedMonth: _focusedMonth,
-        selectedDate: selectAfter ?? prevSelected,
+        selectedDate: clearSelection ? null : (selectAfter ?? prevSelected),
       );
     } catch (e) {
       state = TrainingsCalendarState.error('Failed to load trainings: $e');
@@ -83,7 +84,7 @@ class TrainingsCalendarNotifier extends StateNotifier<TrainingsCalendarState> {
   Future<void> deleteTraining(String planId) async {
     try {
       await _planRepo.delete(planId);
-      await _loadMonth(_focusedMonth);
+      await _loadMonth(_focusedMonth, clearSelection: true);
     } catch (e) {
       state = TrainingsCalendarState.error('Failed to delete training: $e');
     }
