@@ -234,6 +234,7 @@ Future<void> _showCopyWeekDialog(
   final defaultTargetDt = sourceMondayDt.add(const Duration(days: 7));
 
   DateTime targetMondayDt = defaultTargetDt;
+  bool fromSession = true;
 
   final confirmed = await showDialog<bool>(
     context: context,
@@ -286,7 +287,6 @@ Future<void> _showCopyWeekDialog(
                       );
                       if (picked != null) {
                         setDialogState(() {
-                          // Snap to Monday of picked week
                           targetMondayDt =
                               picked.subtract(Duration(days: picked.weekday - 1));
                         });
@@ -295,6 +295,18 @@ Future<void> _showCopyWeekDialog(
                     child: const Text('Change'),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              const Text('Copy from:'),
+              const SizedBox(height: 8),
+              SegmentedButton<bool>(
+                segments: const [
+                  ButtonSegment(value: false, label: Text('Plan targets')),
+                  ButtonSegment(value: true, label: Text('Session actuals')),
+                ],
+                selected: {fromSession},
+                onSelectionChanged: (v) =>
+                    setDialogState(() => fromSession = v.first),
               ),
             ],
           ),
@@ -320,7 +332,11 @@ Future<void> _showCopyWeekDialog(
       '${targetMondayDt.month.toString().padLeft(2, '0')}-'
       '${targetMondayDt.day.toString().padLeft(2, '0')}';
 
-  final result = await detailNotifier.copyWeek(sourceMonday, targetMondayKey);
+  final result = await detailNotifier.copyWeek(
+    sourceMonday,
+    targetMondayKey,
+    fromSession: fromSession,
+  );
 
   switch (result.status) {
     case CopyWeekStatus.success:

@@ -162,7 +162,7 @@ Future<void> _showCopyDialog(
   required bool hasSession,
 }) async {
   DateTime? selectedDate;
-  bool fromSession = false;
+  bool fromSession = true;
 
   final confirmed = await showDialog<bool>(
     context: context,

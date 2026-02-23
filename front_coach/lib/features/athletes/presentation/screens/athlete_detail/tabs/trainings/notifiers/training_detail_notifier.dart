@@ -512,14 +512,28 @@ class TrainingDetailNotifier extends StateNotifier<TrainingDetailState> {
 
     for (final plan in sourcePlans) {
       final targetDate = _addDays(targetMonday, _dayOffset(sourceMonday, plan.date));
-      await _deepCopyPlan(plan, targetDate);
+      await _deepCopyPlan(plan, targetDate, fromSession: fromSession);
     }
     return CopyWeekResult.success;
   }
 
   // ── Private helpers ───────────────────────────────────────────────────────
 
-  Future<void> _deepCopyPlan(TrainingPlan plan, String targetDate) async {
+  Future<void> _deepCopyPlan(
+    TrainingPlan plan,
+    String targetDate, {
+    bool fromSession = false,
+  }) async {
+    // Load session data upfront if needed
+    List<ExerciseSession> exerciseSessions = [];
+    if (fromSession) {
+      final sessions = await _sessionRepo.findByTrainingPlanId(plan.id);
+      if (sessions.isNotEmpty) {
+        exerciseSessions = await _exerciseSessionRepo
+            .findByTrainingSessionId(sessions.first.id);
+      }
+    }
+
     final newPlan = TrainingPlan.create(
       athleteId: _athleteId,
       name: plan.name,
@@ -540,27 +554,56 @@ class TrainingDetailNotifier extends StateNotifier<TrainingDetailState> {
       );
       await _exercisePlanRepo.create(newEp);
 
-      final epvs = await _epvRepo.findByExercisePlanId(ep.id);
-      for (final epv in epvs) {
-        await _epvRepo.create(ExercisePlanVariant.create(
-          athleteId: _athleteId,
-          exercisePlanId: newEp.id,
-          variantId: epv.variantId,
-        ));
-      }
+      final exSession = exerciseSessions
+          .where((es) => es.exercisePlanId == ep.id)
+          .firstOrNull;
 
-      final sets = await _setPlanRepo.findByExercisePlanId(ep.id);
-      sets.sort((a, b) => (a.setNumber ?? 0).compareTo(b.setNumber ?? 0));
-      for (final sp in sets) {
-        await _setPlanRepo.create(SetPlan.create(
-          athleteId: _athleteId,
-          exercisePlanId: newEp.id,
-          setNumber: sp.setNumber,
-          targetReps: sp.targetReps,
-          targetWeight: sp.targetWeight,
-          targetRpe: sp.targetRpe,
-          notes: sp.notes,
-        ));
+      if (fromSession && exSession != null) {
+        final esvs = await _esvRepo.findByExerciseSessionId(exSession.id);
+        for (final esv in esvs) {
+          await _epvRepo.create(ExercisePlanVariant.create(
+            athleteId: _athleteId,
+            exercisePlanId: newEp.id,
+            variantId: esv.variantId,
+          ));
+        }
+        final sessionSets =
+            await _setSessionRepo.findByExerciseSessionId(exSession.id);
+        sessionSets.sort((a, b) => (a.setNumber ?? 0).compareTo(b.setNumber ?? 0));
+        for (int i = 0; i < sessionSets.length; i++) {
+          final ss = sessionSets[i];
+          await _setPlanRepo.create(SetPlan.create(
+            athleteId: _athleteId,
+            exercisePlanId: newEp.id,
+            setNumber: ss.setNumber ?? (i + 1),
+            targetReps: ss.actualReps,
+            targetWeight: ss.actualWeight,
+            targetRpe: ss.actualRpe,
+            notes: ss.notes,
+          ));
+        }
+      } else {
+        final epvs = await _epvRepo.findByExercisePlanId(ep.id);
+        for (final epv in epvs) {
+          await _epvRepo.create(ExercisePlanVariant.create(
+            athleteId: _athleteId,
+            exercisePlanId: newEp.id,
+            variantId: epv.variantId,
+          ));
+        }
+        final sets = await _setPlanRepo.findByExercisePlanId(ep.id);
+        sets.sort((a, b) => (a.setNumber ?? 0).compareTo(b.setNumber ?? 0));
+        for (final sp in sets) {
+          await _setPlanRepo.create(SetPlan.create(
+            athleteId: _athleteId,
+            exercisePlanId: newEp.id,
+            setNumber: sp.setNumber,
+            targetReps: sp.targetReps,
+            targetWeight: sp.targetWeight,
+            targetRpe: sp.targetRpe,
+            notes: sp.notes,
+          ));
+        }
       }
     }
   }
