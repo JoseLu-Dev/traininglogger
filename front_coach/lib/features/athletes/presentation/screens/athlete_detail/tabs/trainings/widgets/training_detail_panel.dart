@@ -454,6 +454,7 @@ class _EditionViewState extends State<_EditionView> {
             ),
 
           // ── Exercise list ──────────────────────────────────────────────
+          const SizedBox(height: 8),
           _ExerciseList(
             exercises: widget.exercises,
             notifier: widget.notifier,
@@ -1199,9 +1200,8 @@ class _SeeView extends StatelessWidget {
             ],
           ),
 
-          const Divider(height: 20),
-
           // ── Body ──────────────────────────────────────────────────────
+          const SizedBox(height: 8),
           session == null && exercises.every((e) => e.session == null)
               ? _NoSessionPlaceholder()
               : _SeeExerciseList(exercises: exercises),
@@ -1262,10 +1262,12 @@ class _SeeExerciseCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final ep = data.plan;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(height: 1),
+        Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1273,7 +1275,7 @@ class _SeeExerciseCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  '${ep.orderIndex + 1}. ${data.exercise.name}',
+                  data.exercise.name,
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(width: 8),
@@ -1358,7 +1360,8 @@ class _SeeExerciseCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ],
+  );
   }
 }
 
@@ -1425,13 +1428,12 @@ class _TableHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          _hCell('#', 30),
           const Expanded(
             flex: 3,
             child: Row(
               children: [
                 _HCellFlex('REPS'),
-                _HCellFlex('WT'),
+                _HCellFlex('WEIGHT'),
                 _HCellFlex('RPE'),
               ],
             ),
@@ -1447,7 +1449,7 @@ class _TableHeader extends StatelessWidget {
             child: Row(
               children: [
                 _HCellFlex('REPS'),
-                _HCellFlex('WT'),
+                _HCellFlex('WEIGHT'),
                 _HCellFlex('RPE'),
               ],
             ),
@@ -1457,16 +1459,7 @@ class _TableHeader extends StatelessWidget {
     );
   }
 
-  Widget _hCell(String text, double width) {
-    return SizedBox(
-      width: width,
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-      ),
-    );
-  }
+
 }
 
 class _HCellFlex extends StatelessWidget {
@@ -1506,14 +1499,6 @@ class _SetComparisonRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          SizedBox(
-            width: 30,
-            child: Text(
-              '$setNumber',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-            ),
-          ),
           // Target
           Expanded(
             flex: 3,
