@@ -358,110 +358,121 @@ class _EditionViewState extends State<_EditionView> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header row ─────────────────────────────────────────────────
-          Row(
+    return Align(
+      alignment: Alignment.topCenter,
+      widthFactor: 1.0,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                _formatDate(widget.plan.date),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
+              // ── Header row ─────────────────────────────────────────────────
+              Row(
+                children: [
+                  Text(
+                    _formatDate(widget.plan.date),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    tooltip: _allCollapsed ? 'Expand all' : 'Collapse all',
+                    icon: Icon(
+                      _allCollapsed ? Icons.unfold_more : Icons.unfold_less,
+                      size: 20,
+                    ),
+                    onPressed: widget.exercises.isEmpty ? null : _toggleCollapseAll,
+                  ),
+                  IconButton(
+                    tooltip: 'Copy training',
+                    icon: const Icon(Icons.copy_outlined),
+                    onPressed: () => _showCopyDialog(
+                      context,
+                      widget.notifier,
+                      widget.calendarNotifier,
+                      hasSession: false,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Delete training',
+                    onPressed: _deletePlan,
+                    icon: const Icon(Icons.delete_outline),
+                  ),
+                ],
               ),
-              const Spacer(),
-              IconButton(
-                tooltip: _allCollapsed ? 'Expand all' : 'Collapse all',
-                icon: Icon(
-                  _allCollapsed ? Icons.unfold_more : Icons.unfold_less,
-                  size: 20,
+
+              // ── Plan name (editable) ────────────────────────────────────────
+              if (_editingName)
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _nameCtrl,
+                        autofocus: true,
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          border: OutlineInputBorder(),
+                        ),
+                        style: Theme.of(context).textTheme.titleMedium,
+                        onSubmitted: (v) async {
+                          final trimmed = v.trim();
+                          if (trimmed.isNotEmpty) {
+                            await widget.notifier.renamePlan(trimmed);
+                          }
+                          setState(() => _editingName = false);
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => setState(() => _editingName = false),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                )
+              else
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: InkWell(
+                    onTap: () => setState(() {
+                      _nameCtrl.text = widget.plan.name;
+                      _editingName = true;
+                    }),
+                    borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            widget.plan.name,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.edit_outlined,
+                            size: 16,
+                            color: colorScheme.outline,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                onPressed: widget.exercises.isEmpty ? null : _toggleCollapseAll,
-              ),
-              IconButton(
-                tooltip: 'Copy training',
-                icon: const Icon(Icons.copy_outlined),
-                onPressed: () => _showCopyDialog(
-                  context,
-                  widget.notifier,
-                  widget.calendarNotifier,
-                  hasSession: false,
-                ),
-              ),
-              IconButton(
-                tooltip: 'Delete training',
-                onPressed: _deletePlan,
-                icon: const Icon(Icons.delete_outline),
+
+              // ── Exercise list ──────────────────────────────────────────────
+              const SizedBox(height: 8),
+              _ExerciseList(
+                exercises: widget.exercises,
+                notifier: widget.notifier,
+                collapsedIds: _collapsedIds,
+                onToggleCollapse: _toggleCollapse,
               ),
             ],
           ),
-
-          // ── Plan name (editable) ────────────────────────────────────────
-          if (_editingName)
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _nameCtrl,
-                    autofocus: true,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      border: OutlineInputBorder(),
-                    ),
-                    style: Theme.of(context).textTheme.titleMedium,
-                    onSubmitted: (v) async {
-                      final trimmed = v.trim();
-                      if (trimmed.isNotEmpty) {
-                        await widget.notifier.renamePlan(trimmed);
-                      }
-                      setState(() => _editingName = false);
-                    },
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => setState(() => _editingName = false),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            )
-          else
-            InkWell(
-              onTap: () => setState(() {
-                _nameCtrl.text = widget.plan.name;
-                _editingName = true;
-              }),
-              borderRadius: BorderRadius.circular(4),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  children: [
-                    Text(
-                      widget.plan.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(width: 6),
-                    Icon(
-                      Icons.edit_outlined,
-                      size: 16,
-                      color: colorScheme.outline,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-          // ── Exercise list ──────────────────────────────────────────────
-          const SizedBox(height: 8),
-          _ExerciseList(
-            exercises: widget.exercises,
-            notifier: widget.notifier,
-            collapsedIds: _collapsedIds,
-            onToggleCollapse: _toggleCollapse,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -1074,11 +1085,13 @@ class _AddExerciseButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () => showExerciseAutocomplete(context, notifier: notifier),
-      icon: const Icon(Icons.add),
-      label: const Text('Add exercise…'),
-      style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: OutlinedButton.icon(
+        onPressed: () => showExerciseAutocomplete(context, notifier: notifier),
+        icon: const Icon(Icons.add),
+        label: const Text('Add exercise…'),
+      ),
     );
   }
 }
@@ -1135,77 +1148,84 @@ class _SeeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Header ────────────────────────────────────────────────────
-          Row(
+    return Align(
+      alignment: Alignment.topCenter,
+      widthFactor: 1.0,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                _formatDate(plan.date),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
+              // ── Header ────────────────────────────────────────────────────
+              Row(
+                children: [
+                  Text(
+                    _formatDate(plan.date),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(color: colorScheme.outline),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    tooltip: 'Copy training',
+                    icon: const Icon(Icons.copy_outlined),
+                    onPressed: () => _showCopyDialog(
+                      context,
+                      notifier,
+                      calendarNotifier,
+                      hasSession: session != null,
+                    ),
+                  ),
+                ],
               ),
-              const Spacer(),
-              IconButton(
-                tooltip: 'Copy training',
-                icon: const Icon(Icons.copy_outlined),
-                onPressed: () => _showCopyDialog(
-                  context,
-                  notifier,
-                  calendarNotifier,
-                  hasSession: session != null,
-                ),
+
+              // ── Plan name + locked badge ───────────────────────────────────
+              Row(
+                children: [
+                  Text(plan.name, style: Theme.of(context).textTheme.titleMedium),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          size: 14,
+                          color: colorScheme.onTertiaryContainer,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'LOCKED',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onTertiaryContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
+
+              // ── Body ──────────────────────────────────────────────────────
+              const SizedBox(height: 8),
+              session == null && exercises.every((e) => e.session == null)
+                  ? _NoSessionPlaceholder()
+                  : _SeeExerciseList(exercises: exercises),
             ],
           ),
-
-          // ── Plan name + locked badge ───────────────────────────────────
-          Row(
-            children: [
-              Text(plan.name, style: Theme.of(context).textTheme.titleMedium),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.lock_outline,
-                      size: 14,
-                      color: colorScheme.onTertiaryContainer,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'LOCKED',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onTertiaryContainer,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          // ── Body ──────────────────────────────────────────────────────
-          const SizedBox(height: 8),
-          session == null && exercises.every((e) => e.session == null)
-              ? _NoSessionPlaceholder()
-              : _SeeExerciseList(exercises: exercises),
-        ],
+        ),
       ),
     );
   }

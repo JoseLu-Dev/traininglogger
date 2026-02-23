@@ -24,9 +24,12 @@ class TrainingsTab extends StatelessWidget {
           const SizedBox(width: 12),
           Flexible(
             flex: 3,
-            child: SingleChildScrollView(
-              child: Card(
-                child: TrainingDetailPanel(athleteId: athleteId),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: SingleChildScrollView(
+                child: Card(
+                  child: TrainingDetailPanel(athleteId: athleteId),
+                ),
               ),
             ),
           ),
