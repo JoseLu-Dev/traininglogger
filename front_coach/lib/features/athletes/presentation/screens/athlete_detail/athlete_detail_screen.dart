@@ -33,9 +33,9 @@ class AthleteDetailScreen extends StatelessWidget {
           ],
         ),
         drawerContent: const AppDrawerContent(),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            TrainingsTab(),
+            TrainingsTab(athleteId: athleteId),
             StatisticsTab(),
           ],
         ),

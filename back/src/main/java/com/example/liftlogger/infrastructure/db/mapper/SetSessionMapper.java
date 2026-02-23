@@ -10,6 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface SetSessionMapper {
+    @BeanMapping(builder = @Builder(disableBuilder = true))
     SetSession toDomain(SetSessionJpaEntity jpaEntity);
 
     @BeanMapping(builder = @Builder(disableBuilder = true))
