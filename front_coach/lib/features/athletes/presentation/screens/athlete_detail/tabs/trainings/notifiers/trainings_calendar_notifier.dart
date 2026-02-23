@@ -19,7 +19,11 @@ class TrainingsCalendarNotifier extends StateNotifier<TrainingsCalendarState> {
       '${dt.month.toString().padLeft(2, '0')}-'
       '${dt.day.toString().padLeft(2, '0')}';
 
-  Future<void> _loadMonth(DateTime month, {bool initial = false}) async {
+  Future<void> _loadMonth(
+    DateTime month, {
+    bool initial = false,
+    String? selectAfter,
+  }) async {
     _focusedMonth = month;
     try {
       if (initial) state = const TrainingsCalendarState.loading();
@@ -45,7 +49,7 @@ class TrainingsCalendarNotifier extends StateNotifier<TrainingsCalendarState> {
         sessionsByDate[session.sessionDate] = session;
       }
 
-      // Preserve selectedDate if still valid
+      // Use selectAfter if provided, otherwise preserve the current selection
       final current = state;
       final prevSelected = current.maybeWhen(loaded: (_, _, _, sel) => sel, orElse: () => null);
 
@@ -53,7 +57,7 @@ class TrainingsCalendarNotifier extends StateNotifier<TrainingsCalendarState> {
         plansByDate: plansByDate,
         sessionsByDate: sessionsByDate,
         focusedMonth: _focusedMonth,
-        selectedDate: prevSelected,
+        selectedDate: selectAfter ?? prevSelected,
       );
     } catch (e) {
       state = TrainingsCalendarState.error('Failed to load trainings: $e');
@@ -70,7 +74,7 @@ class TrainingsCalendarNotifier extends StateNotifier<TrainingsCalendarState> {
         date: date,
       );
       await _planRepo.create(plan);
-      await _loadMonth(_focusedMonth);
+      await _loadMonth(_focusedMonth, selectAfter: date);
     } catch (e) {
       state = TrainingsCalendarState.error('Failed to add training: $e');
     }

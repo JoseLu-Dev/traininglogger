@@ -10,16 +10,16 @@ Future<void> showAddTrainingMenu(
   final parts = date.split('-');
   final label = '${_monthName(int.parse(parts[1]))} ${int.parse(parts[2])}, ${parts[0]}';
 
-  final controller = TextEditingController();
+  var name = '';
 
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
       title: Text(label),
       content: TextField(
-        controller: controller,
         autofocus: true,
         decoration: const InputDecoration(labelText: 'Training name'),
+        onChanged: (v) => name = v,
         onSubmitted: (_) => Navigator.of(ctx).pop(true),
       ),
       actions: [
@@ -35,14 +35,9 @@ Future<void> showAddTrainingMenu(
     ),
   );
 
-  if (confirmed == true) {
-    final name = controller.text.trim();
-    if (name.isNotEmpty) {
-      notifier.addTraining(date, name);
-    }
+  if (confirmed == true && name.trim().isNotEmpty) {
+    notifier.addTraining(date, name.trim());
   }
-
-  controller.dispose();
 }
 
 String _monthName(int month) => const [
